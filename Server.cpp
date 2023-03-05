@@ -18,16 +18,15 @@ Server::~Server()
 
 void	Server::Setup()
 {
-	//create a master socket
 	CreateServer();
 	SetOptions();
-	BindSocket();
-	printf("Listener on port %d \n", port);
-	StartListening();
-	
-	//accept the incoming connection
 	addrlen = sizeof(address);
-	puts("Waiting for connections ...");
+	BindSocket();
+
+	std::cout << "Listener on port " << port << std::endl;
+	
+	StartListening();
+	std::cout << "Waiting for connections ..." << std::endl;
 }
 
 
@@ -72,7 +71,7 @@ void	Server::BindSocket()
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
 	address.sin_port = htons(port);
-	if (bind(master_socket, (struct sockaddr *)&address, sizeof(address))<0)
+	if (bind(master_socket, (struct sockaddr *)&address, addrlen)<0)
 	{
 		perror("bind failed");
 		exit(EXIT_FAILURE);
@@ -99,9 +98,10 @@ void	Server::AddNewSocket(int sockfd)
 void	Server::ListenForClientInput()
 {
 	int sd, valread;
-	for (it = clients_map.begin(); it != clients_map.end(); it++)
+	for (it = clients_map.begin(); it != clients_map.end();)
 	{
-		sd = it->first;
+		std::cout << "iterating!" << std::endl;
+		sd = it->first; 
 		if (FD_ISSET(sd , &readfds))
 		{
 			//Check if it was for closing , and also read the
@@ -116,7 +116,9 @@ void	Server::ListenForClientInput()
 					
 				//Close the socket and mark as 0 in list for reuse
 				close( sd );
-				clients_map.erase(sd);
+				std::cout << "trying to clear!" << std::endl;
+				clients_map.erase(it++);
+				std::cout << "cleared" << std::endl;
 			}
 			//Echo back the message that came in
 			else
@@ -125,14 +127,16 @@ void	Server::ListenForClientInput()
 				//of the data read
 				buffer[valread] = '\0';
 				std::cout << "I got this message: " << buffer;
+				++it;
 			}
 		}
+		++it;
 	}
 }
 
 void	Server::SentToClient(int sockfd, const char *message)
 {
-	if ((size_t)send(sockfd, message, strlen(message), 0) < 0)
+	if (send(sockfd, message, strlen(message), 0) < 0)
 		perror("send");
 }
 

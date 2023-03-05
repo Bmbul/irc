@@ -8,8 +8,10 @@
 
 
 #include <map>
-#include <iostream>
+#include <cerrno>
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "Client.hpp"
 #include "unistd.h"
 
@@ -20,7 +22,7 @@ class Server
 		int max_sd;
 		int	port;
 		std::string password;	
-		char buffer[1025]; //data buffer of 1K
+		char buffer[1025];
 
 	public:
 		std::map<int, Client>	clients_map;

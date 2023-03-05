@@ -61,6 +61,15 @@
 		"tuple": "cpp",
 		"type_traits": "cpp",
 		"unordered_map": "cpp",
-		"utility": "cpp"
+		"utility": "cpp",
+		"*.tcc": "cpp",
+		"clocale": "cpp",
+		"compare": "cpp",
+		"concepts": "cpp",
+		"deque": "cpp",
+		"memory_resource": "cpp",
+		"numeric": "cpp",
+		"random": "cpp",
+		"numbers": "cpp"
 	}
 }
