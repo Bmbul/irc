@@ -18,28 +18,19 @@ Server::~Server()
 
 void	Server::Setup()
 {
+	addrlen = sizeof(address);
 	CreateServer();
 	SetOptions();
-	addrlen = sizeof(address);
 	BindSocket();
-
-	std::cout << "Listener on port " << port << std::endl;
-	
 	StartListening();
-	std::cout << "Waiting for connections ..." << std::endl;
 }
 
 
 void	Server::ResetSockets()
 {
-	//clear the socket set
 	FD_ZERO(&readfds);
-
-	//add master socket to set
 	FD_SET(master_socket, &readfds);
 	max_sd = master_socket;
-		
-	//add child sockets to set
 	for (it = clients_map.begin(); it != clients_map.end(); it++)
 		FD_SET(it->first, &readfds);
 	if (clients_map.size() > 0)
@@ -80,19 +71,22 @@ void	Server::BindSocket()
 
 void	Server::StartListening()
 {
+	std::cout << "Listener on port " << port << std::endl;
 	// specifying maximum of 3 pending connections for the master socket
 	if (listen(master_socket, 3) < 0)
 	{
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
+	std::cout << "Waiting for connections ..." << std::endl;
 }
 
 void	Server::AddNewSocket(int sockfd)
 {
 	std::pair<int, Client> newClient(sockfd, Client("Client Name"));
 	clients_map.insert(newClient);
-	printf("Adding to list of sockets as %lu\n" , clients_map.size());
+	std::cout << "Adding to list of sockets as "
+		<< clients_map.size() << std::endl;
 }
 
 void	Server::ListenForClientInput()
@@ -100,13 +94,13 @@ void	Server::ListenForClientInput()
 	int sd, valread;
 	for (it = clients_map.begin(); it != clients_map.end();)
 	{
-		std::cout << "iterating!" << std::endl;
 		sd = it->first; 
 		if (FD_ISSET(sd , &readfds))
 		{
 			//Check if it was for closing , and also read the
 			//incoming message
-			if ((valread = read( sd , buffer, 1024)) == 0)
+			// read( sd , buffer, 1024)
+			if ((valread = recv(sd, buffer, 1024, MSG_DONTWAIT)) == 0)
 			{
 				//Somebody disconnected , get his details and print
 				getpeername(sd , (struct sockaddr*)&address , \
@@ -116,21 +110,17 @@ void	Server::ListenForClientInput()
 					
 				//Close the socket and mark as 0 in list for reuse
 				close( sd );
-				std::cout << "trying to clear!" << std::endl;
 				clients_map.erase(it++);
-				std::cout << "cleared" << std::endl;
 			}
-			//Echo back the message that came in
-			else
+			else // in case if client inputed message
 			{
-				//set the string terminating NULL byte on the end
-				//of the data read
 				buffer[valread] = '\0';
-				std::cout << "I got this message: " << buffer;
+				clients_map[sd].SentToServer(this, buffer);
 				++it;
 			}
 		}
-		++it;
+		else
+			++it;
 	}
 }
 
@@ -146,7 +136,19 @@ void	Server::WaitForActivity()
 	int activity = select(max_sd + 1 , &readfds , NULL , NULL , NULL);
 	
 	if ((activity < 0) && (errno!=EINTR))
-		printf("select error");
+		std::cout << "select error" << std::endl;
+}
+
+int	Server::AcceptNewSocket()
+{
+	int new_socket;
+	if ((new_socket = accept(master_socket,
+				(struct sockaddr *)&address, &addrlen))<0)
+	{
+		perror("accept");
+		exit(EXIT_FAILURE);
+	}
+	return (new_socket);
 }
 
 void	Server::HandleIncomingConnections()
@@ -154,23 +156,22 @@ void	Server::HandleIncomingConnections()
 	int new_socket;
 	if (FD_ISSET(master_socket, &readfds))
 	{
-		if ((new_socket = accept(master_socket,
-				(struct sockaddr *)&address, &addrlen))<0)
-		{
-			perror("accept");
-			exit(EXIT_FAILURE);
-		}
+		new_socket = AcceptNewSocket();
 		//inform user of socket number - used in send and receive commands
-		printf("New connection , socket fd is %d , ip is : %s , port : %d \
-		\n" , new_socket , inet_ntoa(address.sin_addr) , ntohs
-			(address.sin_port));
-	
+		std::cout << "New connection , socket fd is " << new_socket
+			<< ", ip is : " << inet_ntoa(address.sin_addr) << ", port : "
+			<< ntohs(address.sin_port) << std::endl;
+		
 		SentToClient(new_socket, "First Login\n");
 		
 		AddNewSocket(new_socket);
-		puts("Welcome message sent successfully");
 	}
+}
 
+bool	Server::TryToAuthenticate(std::string request)
+{
+	(void) request;
+	return (true);
 }
 
 

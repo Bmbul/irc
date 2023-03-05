@@ -26,14 +26,11 @@ int main(int argc, char **argv)
 
 	while(true)
 	{
-		std::cout << "start of the loop" << std::endl;
 		server.ResetSockets();
 		server.WaitForActivity();
 		server.HandleIncomingConnections();
 		server.ListenForClientInput();
-		std::cout << "end of the loop" << std::endl;
 	}
-		
-	return 0;
+	return (0);
 }
 

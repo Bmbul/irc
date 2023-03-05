@@ -8,6 +8,7 @@
 
 
 #include <map>
+#include <iostream>
 #include <cerrno>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +22,7 @@ class Server
 		int	master_socket;
 		int max_sd;
 		int	port;
-		std::string password;	
+		std::string password;
 		char buffer[1025];
 
 	public:
@@ -42,12 +43,13 @@ class Server
 		void	SetOptions();
 		void	BindSocket();
 		void	StartListening();
+		int		AcceptNewSocket();
 		void	AddNewSocket(int sockfd);
 		void	ListenForClientInput();
 		void	SentToClient(int sockfd, const char *message);
 		void	WaitForActivity();
 		void	HandleIncomingConnections();
-
+		bool	TryToAuthenticate(std::string request);
 		int		getMaster();
 
 	private:
