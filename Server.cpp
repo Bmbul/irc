@@ -124,7 +124,7 @@ void	Server::ListenForClientInput()
 			else // in case if client inputed message
 			{
 				buffer[valread] = '\0';
-				clients_map[sd].SentToServer(this, buffer);
+				// clients_map[sd].SentToServer(this, buffer);
 				++it;
 			}
 		}

@@ -19,7 +19,6 @@ class Client
 		int	getSock();
 		std::string getName();
 		std::string getNick();
-		void	SentToServer(Server *server, std::string request);
 };
 
 

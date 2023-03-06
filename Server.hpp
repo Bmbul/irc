@@ -6,17 +6,19 @@
 #include <sys/types.h>
 #include <arpa/inet.h> //close
 
-
 #include <map>
-#include <iostream>
 #include <cerrno>
 #include <stdio.h>
 #include <stdlib.h>
 #include <cstring>
-#include "Client.hpp"
+#include <iostream>
 #include "unistd.h"
 
-class Server
+#include "Client.hpp"
+#include "MessageController.hpp"
+
+
+class Server : private MessageController
 {
 	public:
 		int	master_socket;
