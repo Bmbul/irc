@@ -14,7 +14,7 @@ class Client
 	public:
 		Client();
 		Client(std::string _name);
-		virtual ~Client();
+		~Client();
 		
 		int	getSock();
 		std::string getName();

@@ -12,7 +12,7 @@
 #include <cerrno>
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h>
+#include <cstring>
 #include "Client.hpp"
 #include "unistd.h"
 
@@ -24,14 +24,15 @@ class Server
 		int	port;
 		std::string password;
 		char buffer[1025];
+		static Server *instance;
 
-	public:
 		std::map<int, Client>	clients_map;
 		std::map<int, Client>::iterator it;
 
 		struct sockaddr_in address;
 		socklen_t	addrlen;
 		fd_set readfds;
+		static Server	*getServer();
 
 	public:
 		Server(int port, std::string password);

@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "CommandHandler.hpp"
 
 void	ValidateInput(int argc, char **argv)
 {
@@ -20,8 +21,10 @@ void	ValidateInput(int argc, char **argv)
 int main(int argc, char **argv)
 {
 	ValidateInput(argc, argv);
+
 	Server	server(atoi(argv[1]), argv[2]);
 
+	CommandHandler handler;
 	server.Setup();
 
 	while(true)

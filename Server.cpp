@@ -1,5 +1,7 @@
 #include "Server.hpp"
 
+Server *Server::instance = NULL;
+
 Server::Server()
 {
 
@@ -8,7 +10,14 @@ Server::Server()
 Server::Server(int _port, std::string _password) 
 	: port(_port), password(_password)
 {
-	
+	if (!instance)
+		instance = this;
+	else
+	{
+		std::cout << "Creating second instance of Server!!!" << std::endl 
+			<< "Bad idea, try new tricks!!!" << std::endl;
+		this->~Server();
+	}
 }
 
 Server::~Server()
@@ -172,6 +181,13 @@ bool	Server::TryToAuthenticate(std::string request)
 {
 	(void) request;
 	return (true);
+}
+
+Server	*Server::getServer()
+{
+	if (!instance)
+		instance = new Server();
+	return (instance);
 }
 
 
