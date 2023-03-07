@@ -20,7 +20,7 @@
 
 class Server : private MessageController
 {
-	public:
+	private:
 		int	master_socket;
 		int max_sd;
 		int	port;
@@ -34,12 +34,12 @@ class Server : private MessageController
 		struct sockaddr_in address;
 		socklen_t	addrlen;
 		fd_set readfds;
-		static Server	*getServer();
 
 	public:
 		Server(int port, std::string password);
 		~Server();
 
+		static Server	*getServer();
 		void	Setup();
 		void	ResetSockets();
 		void	CreateServer();

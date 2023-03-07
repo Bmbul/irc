@@ -10,10 +10,10 @@ void	ValidateInput(int argc, char **argv)
 		exit(1);
 	}
 	int port = atoi(argv[1]);
-	if (port < 1024 || port > 65535)
+	if (port < 0 || port > 65535)
 	{
 		std::cout << "Wrong PORT specified!!! Please input a valid PORT" << std::endl
-		<< "It should be a number between 1024 and 65535" << std::endl;
+		<< "It should be a number between 0 and 65535" << std::endl;
 		exit(1);
 	}
 }
@@ -24,8 +24,8 @@ int main(int argc, char **argv)
 
 	Server	server(atoi(argv[1]), argv[2]);
 
-	CommandHandler handler;
 	server.Setup();
+	CommandHandler handler;
 
 	while(true)
 	{

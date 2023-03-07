@@ -8,15 +8,4 @@ class MessageController
 		~MessageController();
 };
 
-MessageController::MessageController()
-{
-
-}
-
-MessageController::~MessageController()
-{
-
-}
-
-
 #endif // MESSAGE_CONTROLLER_HPP
