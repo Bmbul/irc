@@ -106,9 +106,6 @@ void	Server::ListenForClientInput()
 		sd = it->first; 
 		if (FD_ISSET(sd , &readfds))
 		{
-			//Check if it was for closing , and also read the
-			//incoming message
-			// read( sd , buffer, 1024)
 			if ((valread = recv(sd, buffer, 1024, MSG_DONTWAIT)) == 0)
 			{
 				//Somebody disconnected , get his details and print

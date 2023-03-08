@@ -15,6 +15,7 @@
 #include "unistd.h"
 
 #include "Client.hpp"
+#include "Channel.hpp"
 #include "MessageController.hpp"
 
 
@@ -29,6 +30,7 @@ class Server : private MessageController
 		static Server *instance;
 
 		std::map<int, Client>	clients_map;
+		std::map<std::string, Channel> channels;
 		std::map<int, Client>::iterator it;
 
 		struct sockaddr_in address;
