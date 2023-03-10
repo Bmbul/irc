@@ -8,7 +8,7 @@ Server::Server()
 }
 
 Server::Server(int _port, std::string _password) 
-	: port(_port), password(_password)
+	: port(_port), password(_password), clientManager(ClientManager::getManager())
 {
 	if (!instance)
 		instance = this;
@@ -39,11 +39,9 @@ void	Server::ResetSockets()
 {
 	FD_ZERO(&readfds);
 	FD_SET(master_socket, &readfds);
-	max_sd = master_socket;
-	for (it = clients_map.begin(); it != clients_map.end(); it++)
-		FD_SET(it->first, &readfds);
-	if (clients_map.size() > 0)
-		max_sd = std::max(clients_map.rbegin()->first, max_sd);
+	
+	int max_fd_in_clients = clientManager->AddClientstToReadFds(&readfds);
+	max_sd = std::max(master_socket, max_fd_in_clients);
 }
 
 void	Server::CreateServer()
@@ -92,42 +90,42 @@ void	Server::StartListening()
 
 void	Server::AddNewSocket(int sockfd)
 {
-	std::pair<int, Client> newClient(sockfd, Client("Client Name"));
-	clients_map.insert(newClient);
-	std::cout << "Adding to list of sockets as "
-		<< clients_map.size() << std::endl;
+	clientManager->AddClient(sockfd);
 }
 
 void	Server::ListenForClientInput()
 {
-	int sd, valread;
-	for (it = clients_map.begin(); it != clients_map.end();)
-	{
-		sd = it->first; 
-		if (FD_ISSET(sd , &readfds))
-		{
-			if ((valread = recv(sd, buffer, 1024, MSG_DONTWAIT)) == 0)
-			{
-				//Somebody disconnected , get his details and print
-				getpeername(sd , (struct sockaddr*)&address , \
-					&addrlen);
-				printf("Host disconnected , ip %s , port %d \n" ,
-					inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
+	clientManager->HandleInput(&readfds);
+	// for (it = clients_map.begin(); it != clients_map.end();)
+	// {
+	// 	sd = it->first; 
+	// 	if (FD_ISSET(sd , &readfds))
+	// 	{
+	// 		if ((valread = recv(sd, buffer, 1024, MSG_DONTWAIT)) == 0)
+	// 		{
+	// 			//Somebody disconnected , get his details and print
+	// 			getpeername(sd , (struct sockaddr*)&address , \
+	// 				&addrlen);
+	// 			printf("Host disconnected , ip %s , port %d \n" ,
+	// 				inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
 					
-				//Close the socket and mark as 0 in list for reuse
-				close( sd );
-				clients_map.erase(it++);
-			}
-			else // in case if client inputed message
-			{
-				buffer[valread] = '\0';
-				// clients_map[sd].SentToServer(this, buffer);
-				++it;
-			}
-		}
-		else
-			++it;
-	}
+	// 			//Close the socket and mark as 0 in list for reuse
+	// 			close( sd );
+	// 			clientManager.RemoveClient(sd);
+	// 			it++;
+	// 		}
+	// 		else // in case if client inputed message
+	// 		{
+	// 			buffer[valread] = '\0';
+	// 			// clients_map[sd].SentToServer(this, buffer);
+	// 			CommandData data = Parse(buffer);
+	// 			PrintData(data);
+	// 			++it;
+	// 		}
+	// 	}
+	// 	else
+	// 		++it;
+	// }
 }
 
 void	Server::SentToClient(int sockfd, const char *message)
@@ -188,4 +186,9 @@ Server	*Server::getServer()
 }
 
 
-int	Server::getMaster() { return (master_socket); }
+int	Server::getaddrlen() { return (addrlen); }
+
+struct	sockaddr_in	*Server::GetAddress()
+{
+	return (&address);
+}

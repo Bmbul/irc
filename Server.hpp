@@ -14,25 +14,23 @@
 #include <iostream>
 #include "unistd.h"
 
-#include "Client.hpp"
 #include "Channel.hpp"
+#include "ClientManager.hpp"
 #include "MessageController.hpp"
 
+class Channel;
+class ClientManager;
 
-class Server : private MessageController
+class Server
 {
 	private:
 		int	master_socket;
 		int max_sd;
 		int	port;
 		std::string password;
-		char buffer[1025];
 		static Server *instance;
 
-		std::map<int, Client>	clients_map;
 		std::map<std::string, Channel> channels;
-		std::map<int, Client>::iterator it;
-
 		struct sockaddr_in address;
 		socklen_t	addrlen;
 		fd_set readfds;
@@ -41,6 +39,7 @@ class Server : private MessageController
 		Server(int port, std::string password);
 		~Server();
 
+		ClientManager	*clientManager;
 		static Server	*getServer();
 		void	Setup();
 		void	ResetSockets();
@@ -55,7 +54,8 @@ class Server : private MessageController
 		void	WaitForActivity();
 		void	HandleIncomingConnections();
 		bool	TryToAuthenticate(std::string request);
-		int		getMaster();
+		int		getaddrlen();
+		struct	sockaddr_in	*GetAddress();
 
 	private:
 		Server();

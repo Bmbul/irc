@@ -26,7 +26,6 @@ int main(int argc, char **argv)
 
 	server.Setup();
 	CommandHandler handler;
-
 	while(true)
 	{
 		server.ResetSockets();

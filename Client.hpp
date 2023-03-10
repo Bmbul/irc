@@ -2,7 +2,6 @@
 #define CLIENT_HPP
 
 #include <iostream>
-class Server;
 
 class Client
 {
