@@ -31,7 +31,7 @@ class ClientManager
 		void	RemoveClient(const int socketFd);
 		int		AddClientstToReadFds(fd_set *readfds);
 		void	HandleInput(fd_set *readfds);
-		ClientManager(/* args */);
+		ClientManager();
 		~ClientManager();
 		static ClientManager *getManager();
 

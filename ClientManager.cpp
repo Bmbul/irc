@@ -12,7 +12,7 @@ ClientManager	*ClientManager::getManager()
 }
 
 
-ClientManager::ClientManager(/* args */)
+ClientManager::ClientManager()
 {
 	if (!instance)
 		instance = this;

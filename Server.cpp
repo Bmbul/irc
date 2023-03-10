@@ -88,44 +88,9 @@ void	Server::StartListening()
 	std::cout << "Waiting for connections ..." << std::endl;
 }
 
-void	Server::AddNewSocket(int sockfd)
-{
-	clientManager->AddClient(sockfd);
-}
-
 void	Server::ListenForClientInput()
 {
 	clientManager->HandleInput(&readfds);
-	// for (it = clients_map.begin(); it != clients_map.end();)
-	// {
-	// 	sd = it->first; 
-	// 	if (FD_ISSET(sd , &readfds))
-	// 	{
-	// 		if ((valread = recv(sd, buffer, 1024, MSG_DONTWAIT)) == 0)
-	// 		{
-	// 			//Somebody disconnected , get his details and print
-	// 			getpeername(sd , (struct sockaddr*)&address , \
-	// 				&addrlen);
-	// 			printf("Host disconnected , ip %s , port %d \n" ,
-	// 				inet_ntoa(address.sin_addr) , ntohs(address.sin_port));
-					
-	// 			//Close the socket and mark as 0 in list for reuse
-	// 			close( sd );
-	// 			clientManager.RemoveClient(sd);
-	// 			it++;
-	// 		}
-	// 		else // in case if client inputed message
-	// 		{
-	// 			buffer[valread] = '\0';
-	// 			// clients_map[sd].SentToServer(this, buffer);
-	// 			CommandData data = Parse(buffer);
-	// 			PrintData(data);
-	// 			++it;
-	// 		}
-	// 	}
-	// 	else
-	// 		++it;
-	// }
 }
 
 void	Server::SentToClient(int sockfd, const char *message)
@@ -168,7 +133,7 @@ void	Server::HandleIncomingConnections()
 		
 		SentToClient(new_socket, "First Login\n");
 		
-		AddNewSocket(new_socket);
+		clientManager->AddClient(new_socket);
 	}
 }
 

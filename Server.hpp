@@ -34,12 +34,12 @@ class Server
 		struct sockaddr_in address;
 		socklen_t	addrlen;
 		fd_set readfds;
+		ClientManager	*clientManager;
 
 	public:
 		Server(int port, std::string password);
 		~Server();
 
-		ClientManager	*clientManager;
 		static Server	*getServer();
 		void	Setup();
 		void	ResetSockets();
@@ -48,7 +48,6 @@ class Server
 		void	BindSocket();
 		void	StartListening();
 		int		AcceptNewSocket();
-		void	AddNewSocket(int sockfd);
 		void	ListenForClientInput();
 		void	SentToClient(int sockfd, const char *message);
 		void	WaitForActivity();
