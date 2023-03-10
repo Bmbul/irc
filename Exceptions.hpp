@@ -10,171 +10,172 @@ class IRCException : public std::exception
 		std::string errorMessage;
 		IRCException(const std::string & _message) : errorMessage(_message) { }
 	public:
-		virtual const char* what() const throw()
+		virtual const char* what() const throw ()
 		{
 			return errorMessage.c_str();
 		}
+	virtual ~IRCException() throw() { }
 };
 
-class NeedMoreParams : public IRCException
+struct NeedMoreParams : public IRCException
 {
 	NeedMoreParams(const std::string& command)
 		: IRCException(command + " :Not enough parameters") { }
 };
 
-class AlreadyRegistered : public IRCException
+struct AlreadyRegistered : public IRCException
 {
 	AlreadyRegistered() : IRCException(":You may not reregister") { }
 };
 
-class NoNickNameGiven : public IRCException
+struct NoNickNameGiven : public IRCException
 {
 	NoNickNameGiven() : IRCException(":No nickname given") { }
 };
 
-class ErroneusNickname : public IRCException
+struct ErroneusNickname : public IRCException
 {
 	ErroneusNickname(const std::string& nickname)
 		: IRCException(nickname + " :Erroneus nickname") { }
 };
 
-class NicknameInUse : public IRCException
+struct NicknameInUse : public IRCException
 {
 	NicknameInUse(const std::string& nickname)
 		: IRCException(nickname + " :Nickname is already in use")  { }
 };
 
-class NickColission : public IRCException
+struct NickColission : public IRCException
 {
 	NickColission(const std::string& nickname)
 		: IRCException(nickname + " :Nickname collision KILL") { }
 };
 
-class BannedFromChannel : public IRCException
+struct BannedFromChannel : public IRCException
 {
 	BannedFromChannel(const std::string& channelName)
 		: IRCException(channelName + " :Cannot join channel (+b)") { }
 };
 
-class InviteOnlyChannel : public IRCException
+struct InviteOnlyChannel : public IRCException
 {
 
 	InviteOnlyChannel(const std::string& channelName)
 		: IRCException(channelName + " :Cannot join channel (+i)") { }
 };
 
-class BadChannelKey : public IRCException
+struct BadChannelKey : public IRCException
 {
 	BadChannelKey(const std::string& channelName)
 		: IRCException(channelName + " :Cannot join channel (+k)") { }
 };
 
-class ChannelIsFull : public IRCException
+struct ChannelIsFull : public IRCException
 {
 
 	ChannelIsFull(const std::string& channelName)
 		: IRCException(channelName + " :Cannot join channel (+l)") { }
 };
 
-class BadChannelMask : public IRCException
+struct BadChannelMask : public IRCException
 {
 	BadChannelMask(const std::string& channelName)
 		: IRCException(channelName + " :Cannot join channel (+k)") { }
 };
 
-class NoSuchChannel : public IRCException
+struct NoSuchChannel : public IRCException
 {
 	NoSuchChannel(const std::string& channelName)
 		: IRCException(channelName + " :No such channel") { }
 };
 
-class TooManyChannels : public IRCException
+struct TooManyChannels : public IRCException
 {
 	TooManyChannels(const std::string& channelName)
 		: IRCException(channelName + " :You have joined too many channels") { }
 };
 
-class NotOnChannel : public IRCException
+struct NotOnChannel : public IRCException
 {
 	NotOnChannel(const std::string& channelName)
 		: IRCException(channelName + " :You're not on that channel") { }
 };
 
-class ChannelOpPrivsNeeded : public IRCException
+struct ChannelOpPrivsNeeded : public IRCException
 {
 	ChannelOpPrivsNeeded(const std::string& channelName)
 		: IRCException(channelName + " :You're not channel operator") { }
 };
 
-class NoSuchNick : public IRCException
+struct NoSuchNick : public IRCException
 {
 	NoSuchNick(const std::string& channelName)
 		: IRCException(channelName + " :No such nick/channel") { }
 };
 
-class KeySet : public IRCException
+struct KeySet : public IRCException
 {
 	KeySet(const std::string& channelName)
 		: IRCException(channelName + " :Channel key already set") { }
 };
 
-class UnknownMode : public IRCException
+struct UnknownMode : public IRCException
 {
 	UnknownMode(const std::string& channelName)
 		: IRCException(channelName + " :is unknown mode char to me") { }
 };
 
-class UsersDontMatch : public IRCException
+struct UsersDontMatch : public IRCException
 {
 	UsersDontMatch() : IRCException(":Cant change mode for other users") { }
 };
 
-class UModeUnknownFlag : public IRCException
+struct UModeUnknownFlag : public IRCException
 {
 	UModeUnknownFlag() : IRCException(":Unknown MODE flag") { }
 };
 
-class NoRecipient : public IRCException
+struct NoRecipient : public IRCException
 {
 	NoRecipient(const std::string  &command)
 		: IRCException(":No recipient given " + command) { }
 };
 
-class NoTextToSend : public IRCException
+struct NoTextToSend : public IRCException
 {
 	NoTextToSend() : IRCException(":No text to send") { }
 };
 
-class CannotSendToChannel : public IRCException
+struct CannotSendToChannel : public IRCException
 {
 	CannotSendToChannel(const std::string& channelName)
 		: IRCException(channelName + " :Cannot send to channel") { }
 };
 
-class NoTopLevel : public IRCException
+struct NoTopLevel : public IRCException
 {
 	NoTopLevel(const std::string& mask)
 		: IRCException(mask + " :No toplevel domain specified") { }
 };
 
-class WildTopLevel : public IRCException
+struct WildTopLevel : public IRCException
 {
 	WildTopLevel(const std::string& mask)
 		: IRCException(mask + " :Wildcard in toplevel domain") { }
 };
 
-class WildTopLevel : public IRCException
+struct TooManyTargets : public IRCException
 {
-	WildTopLevel(const std::string& target)
+	TooManyTargets(const std::string& target)
 		: IRCException(target + " :Duplicate recipients. No message delivered") { }
 };
 
-class NoOrigin : public IRCException
+struct NoOrigin : public IRCException
 {
 	NoOrigin() : IRCException(":No origin specified") { }
 };
 
-class NoSuchServer : public IRCException
+struct NoSuchServer : public IRCException
 {
 	NoSuchServer(const std::string& serverName)
 		: IRCException(serverName + " :No such server") { }

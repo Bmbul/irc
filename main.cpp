@@ -1,6 +1,6 @@
 #include "Server.hpp"
 #include "CommandHandler.hpp"
-
+#include "Exceptions.hpp"
 void	ValidateInput(int argc, char **argv)
 {
 	if (argc != 3)
@@ -26,6 +26,17 @@ int main(int argc, char **argv)
 
 	server.Setup();
 	CommandHandler handler;
+
+	//example how to throw exception
+	// try
+	// {
+	// 	throw new NoNickNameGiven();
+	// }
+	// catch (IRCException *exception)
+	// {
+	// 	std::cout << exception->what() << std::endl;
+	// 	delete exception;
+	// }
 	while(true)
 	{
 		server.ResetSockets();
