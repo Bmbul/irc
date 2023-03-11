@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "ClientManager.hpp"
 
 Server *Server::instance = NULL;
 
@@ -8,7 +9,7 @@ Server::Server()
 }
 
 Server::Server(int _port, std::string _password) 
-	: port(_port), password(_password), clientManager(ClientManager::getManager())
+	: port(_port), password(_password)
 {
 	if (!instance)
 		instance = this;
@@ -39,7 +40,7 @@ void	Server::ResetSockets()
 	FD_ZERO(&readfds);
 	FD_SET(master_socket, &readfds);
 	
-	int max_fd_in_clients = clientManager->AddClientstToReadFds(&readfds);
+	int max_fd_in_clients = ClientManager::getManager()->AddClientstToReadFds(&readfds);
 	max_sd = std::max(master_socket, max_fd_in_clients);
 }
 
@@ -89,7 +90,7 @@ void	Server::StartListening()
 
 void	Server::ListenForClientInput()
 {
-	clientManager->HandleInput(&readfds);
+	ClientManager::getManager()->HandleInput(&readfds);
 }
 
 void	Server::SendToClient(int sockfd, const char *message)
@@ -132,7 +133,7 @@ void	Server::HandleIncomingConnections()
 		
 		SendToClient(new_socket, "First Login\n");
 		
-		clientManager->AddClient(new_socket);
+		ClientManager::getManager()->AddClient(new_socket);
 	}
 }
 

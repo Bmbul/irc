@@ -2,7 +2,10 @@ NAME = irc
 
 SRCS = $(wildcard *.cpp)
 
-OBJS = ${SRCS:.cpp=.o}
+OBJS = $(patsubst %.cpp, %.o, $(SRCS))
+
+HEADERS = $(wildcard *.hpp)
+PRE_HEADERS = $(patsubst %.hpp, %.hpp.gch, $(HEADERS))
 
 CFLAGS = -Wall -Wextra -Werror -std=c++98
 
@@ -10,20 +13,29 @@ CC = c++
 
 RM = rm -rf
 
-all: $(NAME)
+all: $(PRE_HEADERS) $(NAME)
 
-.cpp.o:
-	$(CC) $(CFLAGS) -c $< -o $(<:.cpp=.o)
+%.hpp.gch: %.hpp
+	@$(CC) $(CFLAGS) $< -o $@
+
+%.o: %.cpp $(PRE_HEADERS)
+	@$(CC) $(CFLAGS) -c $< -o $@
 
 $(NAME): $(OBJS)
-	$(CC) $(OBJS) $(CFLAGS) -o $(NAME)
+	@$(CC) $(CFLAGS) $? -o $(NAME)
 
 clean:
 	@$(RM) $(OBJS)
+	@$(RM) $(PRE_HEADERS)
 
 fclean: clean
 	@$(RM) $(NAME)
 
 re: fclean all
+
+
+test:
+	@echo $(OBJS)
+	@echo $(PRE_HEADERS)
 
 .PHONY: all clean fclean re

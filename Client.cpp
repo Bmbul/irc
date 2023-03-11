@@ -1,5 +1,4 @@
 #include "Client.hpp"
-#include "Server.hpp"
 
 Client::Client()
     : name("default name")

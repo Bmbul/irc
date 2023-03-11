@@ -1,39 +1,27 @@
-#if !defined(SERVER)
-#define SERVER
+#if !defined(SERVER_HPP)
+#define SERVER_HPP
 
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <arpa/inet.h> //close
-
-#include <map>
-#include <cerrno>
-#include <stdio.h>
-#include <stdlib.h>
-#include <cstring>
-#include <iostream>
-#include "unistd.h"
-
-#include "Channel.hpp"
+#include "irc.hpp"
 #include "ClientManager.hpp"
+#include "Channel.hpp"
 
 class Channel;
-class ClientManager;
 
 class Server
 {
+	private: // for singleton
+		static Server *instance;
+	
 	private:
 		int	master_socket;
 		int max_sd;
 		int	port;
 		std::string password;
-		static Server *instance;
 
 		std::map<std::string, Channel> channels;
 		struct sockaddr_in address;
 		socklen_t	addrlen;
 		fd_set readfds;
-		ClientManager	*clientManager;
 
 	public:
 		Server(int port, std::string password);
@@ -59,7 +47,7 @@ class Server
 		Server();
 };
 
-#endif // SERVER
+#endif // SERVER_HPP
 
 
 

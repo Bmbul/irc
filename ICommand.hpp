@@ -18,19 +18,17 @@ struct ArgumentType
 		password
 	};
 };
-
+      
 class ICommand
 {
 	public:
-		ICommand();
-		virtual ~ICommand();
-
+		virtual ~ICommand() {}
 		virtual void	execute(Client &sender,const std::vector<std::string> &arguments) = 0;
 };
 
-ICommand::ICommand() { }
+// ICommand::ICommand() { }
 
-ICommand::~ICommand() { }
+// ICommand::~ICommand() { }
 
 
 #endif // ICOMMAND_HPP

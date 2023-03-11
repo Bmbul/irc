@@ -18,6 +18,6 @@ class MessageController
 	private:
 		static MessageController *instance;
 };
-
+     
 
 #endif // MESSAGE_CONTROLLER_HPP

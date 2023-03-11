@@ -1,6 +1,5 @@
 #include "Server.hpp"
-#include "CommandHandler.hpp"
-#include "Exceptions.hpp"
+
 void	ValidateInput(int argc, char **argv)
 {
 	if (argc != 3)
@@ -25,7 +24,6 @@ int main(int argc, char **argv)
 	Server	server(atoi(argv[1]), argv[2]);
 
 	server.Setup();
-	CommandHandler handler;
 
 	//example how to throw exception
 	// try

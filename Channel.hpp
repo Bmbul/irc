@@ -2,9 +2,8 @@
 #define CHANNEL_HPP
 
 #include "Client.hpp"
-#include "Server.hpp"
-#include <map>
 #include <vector>
+#include <map>
 
 class Channel
 {

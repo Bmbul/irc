@@ -2,19 +2,9 @@
 #define CLIENT_MANAGER_HPP
 
 
-#include <iostream>
-#include <map>
-#include "unistd.h"
-#include <netinet/in.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <arpa/inet.h> //clo
-
 #include "Client.hpp"
-#include "Server.hpp"
 #include "MessageController.hpp"
-
-class Server;
+#include "CommandHandler.hpp"
 
 class ClientManager
 {

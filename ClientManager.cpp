@@ -1,4 +1,7 @@
 #include "ClientManager.hpp"
+#include "Server.hpp"
+
+
 
 ClientManager	*ClientManager::instance = NULL;
 
@@ -104,6 +107,7 @@ void	ClientManager::HandleInput(fd_set *readfds)
 				// clients_map[sd].SentToServer(this, buffer);
 				CommandData data = MessageController::getController()->Parse(buffer);
 				MessageController::getController()->PrintData(data);
+				CommandHandler::getHandler()->ExecuteCommand(it->second, data);
 				++it;
 			}
 		}

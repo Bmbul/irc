@@ -24,6 +24,8 @@ struct CommandType
 };
 
 
+// class ICommand;
+
 template <CommandType::Type type>
 class Command : public ICommand
 {
