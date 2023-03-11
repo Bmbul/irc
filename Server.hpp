@@ -16,7 +16,6 @@
 
 #include "Channel.hpp"
 #include "ClientManager.hpp"
-#include "MessageController.hpp"
 
 class Channel;
 class ClientManager;
@@ -49,7 +48,7 @@ class Server
 		void	StartListening();
 		int		AcceptNewSocket();
 		void	ListenForClientInput();
-		void	SentToClient(int sockfd, const char *message);
+		void	SendToClient(int sockfd, const char *message);
 		void	WaitForActivity();
 		void	HandleIncomingConnections();
 		bool	TryToAuthenticate(std::string request);

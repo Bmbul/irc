@@ -15,8 +15,7 @@ class CommandHandler
 		void	ClearCommands();
 
 	public:
-		void	ExecuteCommand(Client &client, 
-			std::string command, std::vector<std::string> &args);
+		void	ExecuteCommand(Client &client, const CommandData &data);
 		CommandHandler();
 		~CommandHandler();
 };
@@ -54,12 +53,11 @@ void	CommandHandler::ClearCommands()
 }
 
 
-void	CommandHandler::ExecuteCommand(Client &sender,
-	std::string command, std::vector<std::string> &args)
+void	CommandHandler::ExecuteCommand(Client &sender, const CommandData &data)
 {
-	it = commands.find(command);
+	it = commands.find(data.command);
 	if (it != commands.end())
-		it->second->execute(sender, args);
+		it->second->execute(sender, data.args);
 	else
 		std::cout << "Command does not exist" << std::endl;
 }

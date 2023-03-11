@@ -34,7 +34,6 @@ void	Server::Setup()
 	StartListening();
 }
 
-
 void	Server::ResetSockets()
 {
 	FD_ZERO(&readfds);
@@ -93,7 +92,7 @@ void	Server::ListenForClientInput()
 	clientManager->HandleInput(&readfds);
 }
 
-void	Server::SentToClient(int sockfd, const char *message)
+void	Server::SendToClient(int sockfd, const char *message)
 {
 	if (send(sockfd, message, strlen(message), 0) < 0)
 		perror("send");
@@ -125,14 +124,13 @@ void	Server::HandleIncomingConnections()
 	int new_socket;
 	if (FD_ISSET(master_socket, &readfds))
 	{
-		std::cout << "havayi ban" << std::endl;
 		new_socket = AcceptNewSocket();
 		//inform user of socket number - used in send and receive commands
 		std::cout << "New connection , socket fd is " << new_socket
 			<< ", ip is : " << inet_ntoa(address.sin_addr) << ", port : "
 			<< ntohs(address.sin_port) << std::endl;
 		
-		SentToClient(new_socket, "First Login\n");
+		SendToClient(new_socket, "First Login\n");
 		
 		clientManager->AddClient(new_socket);
 	}

@@ -27,18 +27,18 @@ struct CommandType
 template <CommandType::Type type>
 class Command : public ICommand
 {
-	virtual void	execute(Client &sender, std::vector<std::string> arguments);
+	virtual void	execute(Client &sender, const std::vector<std::string> &arguments);
 };
 
 template <CommandType::Type type>
-void	Command<type>::execute(Client &sender, std::vector<std::string> arguments)
+void	Command<type>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	(void) sender;
 	(void) arguments;
 }
 
 template<>
-void	Command<CommandType::pass>::execute(Client &sender, std::vector<std::string> arguments)
+void	Command<CommandType::pass>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	(void) sender;
 	(void) arguments;
@@ -49,7 +49,7 @@ void	Command<CommandType::pass>::execute(Client &sender, std::vector<std::string
 }
 
 template<>
-void	Command<CommandType::kick>::execute(Client &sender, std::vector<std::string> arguments)
+void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	(void) sender;
 	(void) arguments;

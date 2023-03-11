@@ -25,7 +25,7 @@ class ICommand
 		ICommand();
 		virtual ~ICommand();
 
-		virtual void	execute(Client &sender, std::vector<std::string> arguments) = 0;
+		virtual void	execute(Client &sender,const std::vector<std::string> &arguments) = 0;
 };
 
 ICommand::ICommand() { }
