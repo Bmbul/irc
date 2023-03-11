@@ -6,20 +6,24 @@
 class Client
 {
 	private:
-		bool isPassed;
-		bool isUsered;
-		bool isNicked;
+		// bool isPassed;
+		// bool isUsered;
+		// bool isNicked;
 		std::string name;
 		std::string nick;
+		int	fd;
 
 	public:
 		Client();
-		Client(std::string _name);
+		Client(std::string _name, int _fd);
 		~Client();
 		
-		int	getSock();
-		std::string getName();
-		std::string getNick();
+		std::string getName() const ;
+		std::string getNick() const ;
+		int getSocket() const ;
+
+		void setNick(const std::string &newNick);
+
 };
 
 

@@ -31,7 +31,7 @@ ClientManager::~ClientManager()
 
 void	ClientManager::AddClient(const int socketFd)
 {
-	std::pair<int, Client> newClient(socketFd, Client("Client Name"));
+	std::pair<int, Client> newClient(socketFd, Client("Client Name", socketFd));
 	clientMap.insert(newClient);
 	std::cout << "Adding to list of sockets as "
 		<< clientMap.size() << std::endl;
@@ -40,7 +40,7 @@ void	ClientManager::AddClient(const int socketFd)
 void	ClientManager::RemoveClient(const int socketFd)
 {
 	std::map<int, Client>::iterator it = clientMap.find(socketFd);
-	
+
 	if (it != clientMap.end())
 		clientMap.erase(it);
 	else
