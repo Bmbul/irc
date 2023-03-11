@@ -25,21 +25,28 @@ CommandData	MessageController::Parse(const std::string &input) const
 {
 	CommandData	data;
 	std::string str;
-	// std::string mainPart;
-	// std::string longArg;
+	std::string mainPart;
+	std::string longArg;
 
-	// size_t pos = input.find(':');
-    // mainPart = input.substr(0, pos);
-    // longArg = input.substr(pos +1, std::string::npos);
+	size_t found = input.find(':');
+	if (found != std::string::npos)
+	{
+		mainPart = input.substr(0, found);
+  		longArg = input.substr(found +1, std::string::npos);
+	} else mainPart = input;
 
+	std::stringstream ss(mainPart);
 
-	std::stringstream ss(input);
 	if (std::getline(ss, str, ' '))
 		data.command = str;
 	while (std::getline(ss, str, ' '))
 	{
 		data.args.push_back(str);
 	}
+	
+	if (found != std::string::npos)
+		data.args.push_back(longArg);
+	
 	return (data);
 }
 
