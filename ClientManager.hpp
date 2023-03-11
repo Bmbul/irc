@@ -29,6 +29,8 @@ class ClientManager
 		bool	HasClient(const std::string &clientName);
 		void	AddClient(const int socketFd);
 		void	RemoveClient(const int socketFd);
+		void	RemoveClient(std::map<int, Client>::iterator iter);
+
 		int		AddClientstToReadFds(fd_set *readfds);
 		void	HandleInput(fd_set *readfds);
 		ClientManager();

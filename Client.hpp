@@ -6,7 +6,9 @@
 class Client
 {
 	private:
-		bool isAuthenticated;
+		bool isPassed;
+		bool isUsered;
+		bool isNicked;
 		std::string name;
 		std::string nick;
 

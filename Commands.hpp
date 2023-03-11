@@ -27,7 +27,7 @@ struct CommandType
 template <CommandType::Type type>
 class Command : public ICommand
 {
-	void	execute(Client &sender, std::vector<std::string> arguments);
+	virtual void	execute(Client &sender, std::vector<std::string> arguments);
 };
 
 template <CommandType::Type type>

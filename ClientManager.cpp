@@ -39,14 +39,20 @@ void	ClientManager::AddClient(const int socketFd)
 
 void	ClientManager::RemoveClient(const int socketFd)
 {
-	it = clientMap.find(socketFd);
+	std::map<int, Client>::iterator it = clientMap.find(socketFd);
+	
 	if (it != clientMap.end())
-	{
 		clientMap.erase(it);
-	}
 	else
 		std::cout << "No such Client!!" << std::endl;
 }
+
+void	ClientManager::RemoveClient(std::map<int, Client>::iterator iter)
+{
+	clientMap.erase(iter);
+}
+
+
 
 int		ClientManager::AddClientstToReadFds(fd_set *readfds)
 {
@@ -90,8 +96,7 @@ void	ClientManager::HandleInput(fd_set *readfds)
 					
 				//Close the socket and mark as 0 in list for reuse
 				close( sd );
-				RemoveClient(sd);
-				it++;
+				RemoveClient(it++);
 			}
 			else // in case if client inputed message
 			{
@@ -101,8 +106,8 @@ void	ClientManager::HandleInput(fd_set *readfds)
 				MessageController::getController()->PrintData(data);
 				++it;
 			}
-	}
-	else
-		++it;
+		}
+		else
+			++it;
 	}
 }

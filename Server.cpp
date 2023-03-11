@@ -125,6 +125,7 @@ void	Server::HandleIncomingConnections()
 	int new_socket;
 	if (FD_ISSET(master_socket, &readfds))
 	{
+		std::cout << "havayi ban" << std::endl;
 		new_socket = AcceptNewSocket();
 		//inform user of socket number - used in send and receive commands
 		std::cout << "New connection , socket fd is " << new_socket

@@ -25,6 +25,13 @@ CommandData	MessageController::Parse(const std::string &input) const
 {
 	CommandData	data;
 	std::string str;
+	// std::string mainPart;
+	// std::string longArg;
+
+	// size_t pos = input.find(':');
+    // mainPart = input.substr(0, pos);
+    // longArg = input.substr(pos +1, std::string::npos);
+
 
 	std::stringstream ss(input);
 	if (std::getline(ss, str, ' '))
@@ -59,7 +66,7 @@ bool	MessageController::StringStartsWithFromSet(std::string str, std::string set
 
 bool	MessageController::IsValidChannelName(std::string channelName)
 {
-	return (StringStartsWithFromSet(channelName, "#@"));
+	return (StringStartsWithFromSet(channelName, "#&"));
 }
 
 MessageController *MessageController::getController()

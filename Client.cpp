@@ -2,13 +2,13 @@
 #include "Server.hpp"
 
 Client::Client()
-    : isAuthenticated(false), name("default name")
+    : name("default name")
 {
 
 }
 
 Client::Client(std::string _name)
-    : isAuthenticated(false), name(_name)
+    :  name(_name)
 {
 	
 }
