@@ -4,8 +4,6 @@
 #include "ClientManager.hpp"
 #include "Channel.hpp"
 
-class Channel;
-
 class Server
 {
 	private: // for singleton
@@ -38,7 +36,6 @@ class Server
 		void	SendToClient(int sockfd, const char *message);
 		void	WaitForActivity();
 		void	HandleIncomingConnections();
-		bool	TryToAuthenticate(std::string request);
 		int		getaddrlen();
 		struct	sockaddr_in	*GetAddress();
 

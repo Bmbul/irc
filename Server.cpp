@@ -1,4 +1,5 @@
 #include "Server.hpp"
+#include "MessageController.hpp"
 
 Server *Server::instance = NULL;
 
@@ -130,7 +131,7 @@ void	Server::HandleIncomingConnections()
 			<< ", ip is : " << inet_ntoa(address.sin_addr) << ", port : "
 			<< ntohs(address.sin_port) << std::endl;
 		
-		SendToClient(new_socket, "First Login\n");
+		MessageController::getController()->SendHelloMessage(new_socket);
 		
 		ClientManager::getManager()->AddClient(new_socket);
 	}

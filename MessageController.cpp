@@ -1,6 +1,6 @@
 #include "MessageController.hpp"
-#include <cstring>
-#include <sstream>
+#include <sys/socket.h>
+#include <stdio.h>
 
 MessageController	*MessageController::instance = NULL;
 
@@ -60,7 +60,8 @@ void	MessageController::PrintData(const CommandData &data) const
 	}
 }
 
-bool	MessageController::StringStartsWithFromSet(std::string str, std::string set)
+bool	MessageController::StringStartsWithFromSet
+	(const std::string &str, const std::string &set) const
 {
 	char ch = str[0];
 	for(size_t i = 0; i < set.size(); i++)
@@ -71,7 +72,7 @@ bool	MessageController::StringStartsWithFromSet(std::string str, std::string set
 	return (false);
 }
 
-bool	MessageController::IsValidChannelName(std::string channelName)
+bool	MessageController::IsValidChannelName(std::string channelName) const
 {
 	return (StringStartsWithFromSet(channelName, "#&"));
 }
@@ -81,4 +82,34 @@ MessageController *MessageController::getController()
 	if (!instance)
 		new MessageController();
 	return (instance);
+}
+
+
+void	MessageController::SendMessageWithSocket(int clientSocket,
+	const std::string &message) const
+{
+	if (send(clientSocket, message.c_str(), message.length(), 0) < 0)
+		perror("send");
+}
+
+void	MessageController::SendMessageToClient(const Client &client,
+	const std::string &message) const
+{
+	SendMessageWithSocket(client.getSocket(), message);
+}
+
+
+void	MessageController::SendHelloMessage(const Client &client) const
+{
+	SendHelloMessage(client.getSocket());
+}
+
+void	MessageController::SendHelloMessage(int clientSocket) const
+{
+	SendMessageWithSocket(clientSocket, "Hello to irc world\n");
+}
+
+const std::string	MessageController::GetCommandDoesNotExistMessage(const std::string &command)
+{
+	return (command + " : No such Command!\n");
 }

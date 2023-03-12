@@ -3,7 +3,7 @@
 
 CommandHandler	*CommandHandler::instance = NULL;
 
-CommandHandler::CommandHandler()
+CommandHandler::CommandHandler() : messageController(MessageController::getController())
 {
 	if (instance)
 		this->~CommandHandler();
@@ -56,5 +56,8 @@ void	CommandHandler::ExecuteCommand(Client &sender, const CommandData &data)
 	if (it != commands.end())
 		it->second->execute(sender, data.args);
 	else
-		std::cout << "Command does not exist" << std::endl;
+	{
+		messageController->SendMessageToClient(sender,
+			messageController->GetCommandDoesNotExistMessage(data.command));
+	}
 }
