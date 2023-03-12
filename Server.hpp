@@ -1,7 +1,6 @@
 #if !defined(SERVER_HPP)
 #define SERVER_HPP
 
-#include "irc.hpp"
 #include "ClientManager.hpp"
 #include "Channel.hpp"
 

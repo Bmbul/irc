@@ -19,6 +19,7 @@ class Channel
 		bool	IsAdmin(const std::string &memberNick);
 		bool	HasMember(const std::string &memberName) const;
 		void	Ban(const std::string &memberName);
+		void	Unban(const std::string &memberName);
 	
 	private:
 		std::map<std::string, Client> members;

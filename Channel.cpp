@@ -1,5 +1,7 @@
 #include "Channel.hpp"
 #include "Exceptions.hpp"
+#include "ClientManager.hpp"
+#include <algorithm>
 
 Channel::Channel() { }
 
@@ -47,4 +49,25 @@ void	Channel::Ban(const std::string &memberName)
 	{
 		std::cout << "No such member in the Channel" << std::endl;
 	}
+}
+
+void	Channel::Unban(const std::string &memberName)
+{
+	// should be changed to exceptions
+	if (!ClientManager::getManager()->HasClient(memberName))
+	{
+		std::cout << "No Such Client in the Server" << std::endl;
+		return ;
+	}
+	if (!HasMember(memberName))
+	{
+		std::cout << "No Such Client in the Channel" << std::endl;
+		return ;
+	}
+	int unbanSock = ClientManager::getManager()->GetClientSocket(memberName);
+	std::vector<int>::iterator	memberToUnban = std::find(bannedClients.begin(), bannedClients.end(), unbanSock);
+	if (memberToUnban != bannedClients.end())
+		bannedClients.erase(memberToUnban);
+	else
+		std::cout << "The member was not banned at all" << std::endl;
 }

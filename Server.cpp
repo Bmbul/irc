@@ -1,5 +1,4 @@
 #include "Server.hpp"
-#include "ClientManager.hpp"
 
 Server *Server::instance = NULL;
 
@@ -135,12 +134,6 @@ void	Server::HandleIncomingConnections()
 		
 		ClientManager::getManager()->AddClient(new_socket);
 	}
-}
-
-bool	Server::TryToAuthenticate(std::string request)
-{
-	(void) request;
-	return (true);
 }
 
 Server	*Server::getServer()
