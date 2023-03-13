@@ -1,8 +1,8 @@
 #if !defined(COMMAND_HANDLER_HPP)
 #define COMMAND_HANDLER_HPP
 
-#include "CommandData.hpp"
 #include "ICommand.hpp"
+#include "CommandData.hpp"
 
 // class ICommand;
 
@@ -22,7 +22,6 @@ class CommandHandler
 		~CommandHandler();
 
 		void	ExecuteCommand(Client &client, const CommandData &data);
-
 		static	CommandHandler *getHandler();
 };
 

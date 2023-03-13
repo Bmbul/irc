@@ -3,20 +3,25 @@
 
 
 #include "Client.hpp"
-#include "MessageController.hpp"
 #include "CommandHandler.hpp"
+#include "irc.hpp"
+
+class MessageController;
 
 class ClientManager
 {
 	private:
 		std::map<int, Client>	clientMap;
-		mutable std::map<int, Client>::iterator it;
+		mutable std::map<int, Client>::const_iterator it;
 		char buffer[1025];
+
 	private:
 		static ClientManager *instance;
+		MessageController	*messageController;
 
 	public:
-		bool	HasClient(const std::string &clientName);
+		bool	HasClient(const std::string &clientName) const;
+		int		GetClientSocket(const std::string &clientName) const;
 		void	AddClient(const int socketFd);
 		void	RemoveClient(const int socketFd);
 		void	RemoveClient(std::map<int, Client>::iterator iter);

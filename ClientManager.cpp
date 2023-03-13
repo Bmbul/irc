@@ -1,21 +1,20 @@
 #include "ClientManager.hpp"
 #include "Server.hpp"
-
-
+#include "Exceptions.hpp"
+#include "MessageController.hpp"
 
 ClientManager	*ClientManager::instance = NULL;
 
 
 ClientManager	*ClientManager::getManager()
 {
-	std::cout << "trying to get client Manager" << std::endl;
 	if (!instance)
 		new ClientManager();
 	return (instance);
 }
 
 
-ClientManager::ClientManager()
+ClientManager::ClientManager() : messageController(MessageController::getController())
 {
 	if (!instance)
 		instance = this;
@@ -66,7 +65,7 @@ int		ClientManager::AddClientstToReadFds(fd_set *readfds)
 	return (0);
 }
 
-bool	ClientManager::HasClient(const std::string &clientName)
+bool	ClientManager::HasClient(const std::string &clientName) const
 {
 	for (it = clientMap.begin(); it != clientMap.end(); it++)
 	{
@@ -74,6 +73,16 @@ bool	ClientManager::HasClient(const std::string &clientName)
 			return (true);
 	}
 	return (false);
+}
+
+int	ClientManager::GetClientSocket(const std::string &clientName) const
+{
+	for (it = clientMap.begin(); it != clientMap.end(); it++)
+	{
+		if (it->second.getName() == clientName)
+			return (true);
+	}
+	return (-1);
 }
 
 void	ClientManager::HandleInput(fd_set *readfds)
@@ -84,7 +93,7 @@ void	ClientManager::HandleInput(fd_set *readfds)
 
 	address = Server::getServer()->GetAddress();
 	addrlen = Server::getServer()->getaddrlen();
-	for (it = clientMap.begin(); it != clientMap.end();)
+	for (std::map<int, Client>::iterator it = clientMap.begin(); it != clientMap.end();)
 	{
 		sd = it->first; 
 		if (FD_ISSET(sd , readfds))
@@ -92,10 +101,10 @@ void	ClientManager::HandleInput(fd_set *readfds)
 			if ((valread = recv(sd, buffer, 1024, MSG_DONTWAIT)) == 0)
 			{
 				//Somebody disconnected , get his details and print
-				getpeername(sd , (sockaddr *)address , \
-					&addrlen);
-				printf("Host disconnected , ip %s , port %d \n" ,
-					inet_ntoa(address->sin_addr) , ntohs(address->sin_port));
+				getpeername(sd , (sockaddr *)address , &addrlen);
+				
+				std::cout << "Host disconnected , ip " << inet_ntoa(address->sin_addr)
+					<< " , port " << ntohs(address->sin_port) << std::endl;
 					
 				//Close the socket and mark as 0 in list for reuse
 				close( sd );
@@ -104,10 +113,17 @@ void	ClientManager::HandleInput(fd_set *readfds)
 			else // in case if client inputed message
 			{
 				buffer[valread] = '\0';
-				// clients_map[sd].SentToServer(this, buffer);
 				CommandData data = MessageController::getController()->Parse(buffer);
 				MessageController::getController()->PrintData(data);
-				CommandHandler::getHandler()->ExecuteCommand(it->second, data);
+				try
+				{
+					CommandHandler::getHandler()->ExecuteCommand(it->second, data);
+				}
+				catch(const IRCException& exception)
+				{
+					messageController->SendMessageToClient(it->second,
+						exception.what());
+				}
 				++it;
 			}
 		}

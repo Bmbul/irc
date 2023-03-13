@@ -2,19 +2,33 @@
 #define MESSAGE_CONTROLLER_HPP
 
 #include "CommandData.hpp"
+#include "Client.hpp"
+#include <cstring>
+#include <sstream>
 
 class MessageController
 {
 	public:
 		MessageController();
 		~MessageController();
-		bool StringStartsWithFromSet(std::string str, std::string set);
+		bool StringStartsWithFromSet(const std::string &str, const std::string &set) const;
 	
 	public:
 		CommandData	Parse(const std::string &input) const;
 		void	PrintData(const CommandData &data) const;
-		bool	IsValidChannelName(std::string channelName);
+		bool	IsValidChannelName(std::string channelName) const;
+
+
+		void	SendMessage(const Client &sender, const Client &reciever, const std::string message) const;
+		
+		void	SendMessageWithSocket(int clientSocket, const std::string &message) const;
+		void	SendMessageToClient(const Client &client, const std::string &message) const;
+		void	SendHelloMessage(const Client &client) const;
+		void	SendHelloMessage(int clientSocket) const;
 		static	MessageController	*getController();
+
+
+
 	private:
 		static MessageController *instance;
 };

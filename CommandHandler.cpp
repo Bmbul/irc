@@ -1,4 +1,5 @@
 #include "CommandHandler.hpp"
+#include "Exceptions.hpp"
 #include "Commands.hpp"
 
 CommandHandler	*CommandHandler::instance = NULL;
@@ -56,5 +57,7 @@ void	CommandHandler::ExecuteCommand(Client &sender, const CommandData &data)
 	if (it != commands.end())
 		it->second->execute(sender, data.args);
 	else
-		std::cout << "Command does not exist" << std::endl;
+	{
+		throw UnknownCommand(data.command);
+	}
 }

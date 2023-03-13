@@ -1,11 +1,8 @@
 #if !defined(SERVER_HPP)
 #define SERVER_HPP
 
-#include "irc.hpp"
 #include "ClientManager.hpp"
 #include "Channel.hpp"
-
-class Channel;
 
 class Server
 {
@@ -39,7 +36,6 @@ class Server
 		void	SendToClient(int sockfd, const char *message);
 		void	WaitForActivity();
 		void	HandleIncomingConnections();
-		bool	TryToAuthenticate(std::string request);
 		int		getaddrlen();
 		struct	sockaddr_in	*GetAddress();
 		std::string const &getPass()const;
