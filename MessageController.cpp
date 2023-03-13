@@ -38,7 +38,7 @@ CommandData	MessageController::ParseSingleCommand(const std::string &commandLine
 	// trimming the beginning and the end of the message
 	int  actualStart = mainPart.find_first_not_of(" ");
 	int actualEnd = mainPart.find_last_not_of("\n\r ");
-	mainPart = mainPart.substr(actualStart, actualEnd);
+	mainPart = mainPart.substr(actualStart, actualEnd + 1);
 
 	std::stringstream ss(mainPart);
 	if (std::getline(ss, str, ' '))

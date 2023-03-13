@@ -25,16 +25,6 @@ int main(int argc, char **argv)
 
 	server.Setup();
 
-	//example how to throw exception
-	// try
-	// {
-	// 	throw new NoNickNameGiven();
-	// }
-	// catch (IRCException *exception)
-	// {
-	// 	std::cout << exception->what() << std::endl;
-	// 	delete exception;
-	// }
 	while(true)
 	{
 		server.ResetSockets();
