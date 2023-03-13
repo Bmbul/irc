@@ -42,6 +42,7 @@ class Server
 		bool	TryToAuthenticate(std::string request);
 		int		getaddrlen();
 		struct	sockaddr_in	*GetAddress();
+		std::string const &getPass()const;
 
 	private:
 		Server();

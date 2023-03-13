@@ -181,6 +181,12 @@ struct NoSuchServer : public IRCException
 		: IRCException(serverName + " :No such server") { }
 };
 
+struct NOTAUTHORIZED : public IRCException
+{
+	NOTAUTHORIZED(const std::string& user)
+		: IRCException(user + " :not authorized") { }
+};
+
 // All Possible Exceptions
 /*
 PASS

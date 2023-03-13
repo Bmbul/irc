@@ -157,3 +157,8 @@ struct	sockaddr_in	*Server::GetAddress()
 {
 	return (&address);
 }
+
+std::string const &Server::getPass()const
+{
+	return this->password;
+}
