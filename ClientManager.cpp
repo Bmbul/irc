@@ -1,7 +1,7 @@
 #include "ClientManager.hpp"
 #include "Server.hpp"
-
-
+#include "Exceptions.hpp"
+#include "MessageController.hpp"
 
 ClientManager	*ClientManager::instance = NULL;
 
@@ -14,7 +14,7 @@ ClientManager	*ClientManager::getManager()
 }
 
 
-ClientManager::ClientManager()
+ClientManager::ClientManager() : messageController(MessageController::getController())
 {
 	if (!instance)
 		instance = this;
@@ -115,7 +115,15 @@ void	ClientManager::HandleInput(fd_set *readfds)
 				buffer[valread] = '\0';
 				CommandData data = MessageController::getController()->Parse(buffer);
 				MessageController::getController()->PrintData(data);
-				CommandHandler::getHandler()->ExecuteCommand(it->second, data);
+				try
+				{
+					CommandHandler::getHandler()->ExecuteCommand(it->second, data);
+				}
+				catch(const IRCException& exception)
+				{
+					messageController->SendMessageToClient(it->second,
+						exception.what());
+				}
 				++it;
 			}
 		}

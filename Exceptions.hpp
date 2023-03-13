@@ -181,6 +181,13 @@ struct NoSuchServer : public IRCException
 		: IRCException(serverName + " :No such server") { }
 };
 
+struct UnknownCommand : public IRCException
+{
+	UnknownCommand(const std::string& command)
+		: IRCException(command + " :Unknown command") { }
+};
+
+
 // All Possible Exceptions
 /*
 PASS
@@ -246,6 +253,15 @@ PONG
 	ERR_NOORIGIN+
 	ERR_NOSUCHSERVER
 */
+
+/* 
+	General Errors:
+		421     ERR_UNKNOWNCOMMAND
+					"<command> :Unknown command"
+
+*/
+
+
 
 
 #endif // EXCEPTIONS_HPP

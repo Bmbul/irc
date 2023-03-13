@@ -1,9 +1,10 @@
 #include "CommandHandler.hpp"
+#include "Exceptions.hpp"
 #include "Commands.hpp"
 
 CommandHandler	*CommandHandler::instance = NULL;
 
-CommandHandler::CommandHandler() : messageController(MessageController::getController())
+CommandHandler::CommandHandler()
 {
 	if (instance)
 		this->~CommandHandler();
@@ -57,7 +58,6 @@ void	CommandHandler::ExecuteCommand(Client &sender, const CommandData &data)
 		it->second->execute(sender, data.args);
 	else
 	{
-		messageController->SendMessageToClient(sender,
-			messageController->GetCommandDoesNotExistMessage(data.command));
+		throw UnknownCommand(data.command);
 	}
 }

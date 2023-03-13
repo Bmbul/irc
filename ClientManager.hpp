@@ -3,9 +3,10 @@
 
 
 #include "Client.hpp"
-#include "MessageController.hpp"
 #include "CommandHandler.hpp"
 #include "irc.hpp"
+
+class MessageController;
 
 class ClientManager
 {
@@ -13,8 +14,10 @@ class ClientManager
 		std::map<int, Client>	clientMap;
 		mutable std::map<int, Client>::const_iterator it;
 		char buffer[1025];
+
 	private:
 		static ClientManager *instance;
+		MessageController	*messageController;
 
 	public:
 		bool	HasClient(const std::string &clientName) const;

@@ -1,8 +1,8 @@
 #if !defined(COMMAND_HANDLER_HPP)
 #define COMMAND_HANDLER_HPP
 
-#include "MessageController.hpp"
 #include "ICommand.hpp"
+#include "CommandData.hpp"
 
 // class ICommand;
 
@@ -13,8 +13,6 @@ class CommandHandler
 	private:
 		std::map<std::string, ICommand *> commands;
 		std::map<std::string, ICommand *>::iterator it;
-
-		MessageController	*messageController;
 
 		void	InitilizeCommands();
 		void	ClearCommands();
