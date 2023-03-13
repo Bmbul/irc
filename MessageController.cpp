@@ -88,7 +88,7 @@ MessageController *MessageController::getController()
 void	MessageController::SendMessageWithSocket(int clientSocket,
 	const std::string &message) const
 {
-	if (send(clientSocket, message.c_str(), message.length(), 0) < 0)
+	if (send(clientSocket, (message + "\n").c_str(), message.length() + 1, 0) < 0)
 		perror("send");
 }
 
@@ -106,10 +106,5 @@ void	MessageController::SendHelloMessage(const Client &client) const
 
 void	MessageController::SendHelloMessage(int clientSocket) const
 {
-	SendMessageWithSocket(clientSocket, "Hello to irc world\n");
-}
-
-const std::string	MessageController::GetCommandDoesNotExistMessage(const std::string &command)
-{
-	return (command + " : No such Command!\n");
+	SendMessageWithSocket(clientSocket, "Hello to irc world");
 }

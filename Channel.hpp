@@ -20,7 +20,9 @@ class Channel
 		bool	HasMember(const std::string &memberName) const;
 		void	Ban(const std::string &memberName);
 		void	Unban(const std::string &memberName);
-	
+
+		void	Broadcast(const Client &sender, const std::string &message);
+
 	private:
 		std::map<std::string, Client> members;
 		std::map<std::string, bool> adminsMap;
