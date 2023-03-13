@@ -113,16 +113,26 @@ void	ClientManager::HandleInput(fd_set *readfds)
 			else // in case if client inputed message
 			{
 				buffer[valread] = '\0';
-				CommandData data = MessageController::getController()->Parse(buffer);
-				MessageController::getController()->PrintData(data);
-				try
+				messageController->AddChunk(sd, buffer);
+				if (messageController->GotEndOfMessage(buffer))
 				{
-					CommandHandler::getHandler()->ExecuteCommand(it->second, data);
-				}
-				catch(const IRCException& exception)
-				{
-					messageController->SendMessageToClient(it->second,
-						exception.what());
+					std::string readyMessage = MessageController::getController()->ConstructFullMessage(sd);
+					std::vector<CommandData> commands = MessageController::getController()->Parse(readyMessage);
+					MessageController::getController()->PrintData(commands);
+					for(std::vector<CommandData>::iterator data = commands.begin();
+						data != commands.end(); data++)
+					{
+						try
+						{
+							CommandHandler::getHandler()->ExecuteCommand(it->second, *data);
+						}
+						catch(const IRCException& exception)
+						{
+							messageController->SendMessageToClient(it->second,
+								exception.what());
+						}
+					}
+					messageController->ClearChunk(sd);
 				}
 				++it;
 			}

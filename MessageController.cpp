@@ -21,42 +21,67 @@ MessageController::~MessageController()
 
 }
 
-CommandData	MessageController::Parse(const std::string &input) const
+CommandData	MessageController::ParseSingleCommand(const std::string &commandLine) const
 {
-	CommandData	data;
-	std::string str;
+	CommandData data;
 	std::string mainPart;
 	std::string longArg;
+	std::string str;
 
-	size_t found = input.find(':');
+	size_t found = commandLine.find(':');
 	if (found != std::string::npos)
 	{
-		mainPart = input.substr(0, found);
-  		longArg = input.substr(found +1, std::string::npos);
-	} else mainPart = input;
+		mainPart = commandLine.substr(0, found);
+  		longArg = commandLine.substr(found +1, std::string::npos);
+	} else mainPart = commandLine;
+
+	// trimming the beginning and the end of the message
+	int  actualStart = mainPart.find_first_not_of(" ");
+	int actualEnd = mainPart.find_last_not_of("\n\r ");
+	mainPart = mainPart.substr(actualStart, actualEnd);
 
 	std::stringstream ss(mainPart);
-
 	if (std::getline(ss, str, ' '))
 		data.command = str;
 	while (std::getline(ss, str, ' '))
 	{
-		data.args.push_back(str);
+		if (str[0])
+			data.args.push_back(str);
 	}
-	
 	if (found != std::string::npos)
-		data.args.push_back(longArg);
+		data.args.push_back(commandLine);
 	
-	return (data);
+	return data;
 }
 
-void	MessageController::PrintData(const CommandData &data) const
+std::vector<CommandData>	MessageController::Parse(std::string &input) const
 {
-	if (!data.command.empty())
-		std::cout << "MY: COMMAND: "<< data.command << std::endl;
-	for (size_t i = 0; i < data.args.size(); i++)
+	std::vector<CommandData>	commandDatas;
+
+	std::string singleCommand;
+
+	for(int end = input.find("\n"); end != -1; end = input.find("\n"))
 	{
-		std::cout << "MY: ARG[" << i << "]: " << data.args[i] << std::endl;
+		singleCommand = input.substr(0, end);
+		input.erase(input.begin(), input.begin() + end + 1);
+		commandDatas.push_back(ParseSingleCommand(singleCommand));
+	}
+
+	return (commandDatas);
+}
+
+void	MessageController::PrintData(std::vector<CommandData> &dataVector) const
+{
+	std::vector<CommandData>::iterator	data;
+	for(data = dataVector.begin(); data != dataVector.end(); data++)
+	{
+		if (!data->command.empty())
+			std::cout << "MY: COMMAND: "<< data->command << std::endl;
+		for (size_t i = 0; i < data->args.size(); i++)
+		{
+			std::cout << "MY: ARG[" << i << "]: " << data->args[i] << std::endl;
+		}
+		std::cout << std::endl;
 	}
 }
 
@@ -76,6 +101,20 @@ bool	MessageController::IsValidChannelName(std::string channelName) const
 {
 	return (StringStartsWithFromSet(channelName, "#&"));
 }
+
+bool	MessageController::GotEndOfMessage(const char *messageChunk) const
+{
+	int i = -1;
+	while (messageChunk[++i])
+	{
+		if (strncmp(messageChunk + i, "\n\r", 2))
+		{
+			return (true);
+		}
+	}
+	return (false);
+}
+
 
 MessageController *MessageController::getController()
 {
@@ -107,4 +146,34 @@ void	MessageController::SendHelloMessage(const Client &client) const
 void	MessageController::SendHelloMessage(int clientSocket) const
 {
 	SendMessageWithSocket(clientSocket, "Hello to irc world");
+}
+
+
+bool	MessageController::ContainsChunk(int clientSocket) const
+{
+	return (chunksMap.count(clientSocket));
+}
+
+void	MessageController::AddChunk(int clientSocket, const std::string &messageChunk)
+{
+	if (!ContainsChunk(clientSocket))
+		chunksMap[clientSocket] = std::vector<std::string>();
+	chunksMap[clientSocket].push_back(messageChunk);
+}
+
+void	MessageController::ClearChunk(int clientSocket)
+{
+	chunksMap.erase(clientSocket);
+}
+
+std::string	MessageController::ConstructFullMessage(int clientSocket)
+{
+	std::string joinedString;
+	
+	for (std::vector<std::string>::iterator iter = chunksMap[clientSocket].begin();
+		iter != chunksMap[clientSocket].end(); iter++)
+	{
+		joinedString += *iter;
+	}
+	return (joinedString);
 }
