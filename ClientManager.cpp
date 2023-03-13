@@ -85,6 +85,34 @@ int	ClientManager::GetClientSocket(const std::string &clientName) const
 	return (-1);
 }
 
+void	ClientManager::HandleMessage(Client &client)
+{
+	messageController->AddChunk(client.getSocket(), buffer);
+	std::cout << "ADDING: " << buffer << std::endl;
+	if (!messageController->GotEndOfMessage(buffer))
+		return ;
+		
+	std::cout << "end of message" << std::endl;
+	std::string readyMessage = MessageController::getController()->ConstructFullMessage(client.getSocket());
+	std::vector<CommandData> commands = MessageController::getController()->Parse(readyMessage);
+	MessageController::getController()->PrintData(commands);
+
+	for(std::vector<CommandData>::iterator data = commands.begin();
+		data != commands.end(); data++)
+	{
+		try
+		{
+			CommandHandler::getHandler()->ExecuteCommand(client, *data);
+		}
+		catch(const IRCException& exception)
+		{
+			messageController->SendMessageToClient(client,
+				exception.what());
+		}
+	}
+	messageController->ClearChunk(client.getSocket());
+}
+
 void	ClientManager::HandleInput(fd_set *readfds)
 {
 	int sd, valread;
@@ -109,35 +137,16 @@ void	ClientManager::HandleInput(fd_set *readfds)
 				//Close the socket and mark as 0 in list for reuse
 				close( sd );
 				RemoveClient(it++);
+				messageController->ClearChunk(sd);
+				continue;
 			}
 			else // in case if client inputed message
 			{
 				buffer[valread] = '\0';
-				messageController->AddChunk(sd, buffer);
-				if (messageController->GotEndOfMessage(buffer))
-				{
-					std::string readyMessage = MessageController::getController()->ConstructFullMessage(sd);
-					std::vector<CommandData> commands = MessageController::getController()->Parse(readyMessage);
-					MessageController::getController()->PrintData(commands);
-					for(std::vector<CommandData>::iterator data = commands.begin();
-						data != commands.end(); data++)
-					{
-						try
-						{
-							CommandHandler::getHandler()->ExecuteCommand(it->second, *data);
-						}
-						catch(const IRCException& exception)
-						{
-							messageController->SendMessageToClient(it->second,
-								exception.what());
-						}
-					}
-					messageController->ClearChunk(sd);
-				}
-				++it;
+				if (buffer[0] && !(buffer[0] == '\n' && !messageController->ContainsChunk(sd)))
+					HandleMessage(it->second);
 			}
 		}
-		else
-			++it;
+		++it;
 	}
 }

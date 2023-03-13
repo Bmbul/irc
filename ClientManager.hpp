@@ -28,6 +28,8 @@ class ClientManager
 
 		int		AddClientstToReadFds(fd_set *readfds);
 		void	HandleInput(fd_set *readfds);
+		void	HandleMessage(Client &client);
+
 		ClientManager();
 		~ClientManager();
 		static ClientManager *getManager();

@@ -107,7 +107,7 @@ bool	MessageController::GotEndOfMessage(const char *messageChunk) const
 	int i = -1;
 	while (messageChunk[++i])
 	{
-		if (strncmp(messageChunk + i, "\n\r", 2))
+		if (!strncmp(messageChunk + i, "\n", 1))
 		{
 			return (true);
 		}
@@ -163,7 +163,8 @@ void	MessageController::AddChunk(int clientSocket, const std::string &messageChu
 
 void	MessageController::ClearChunk(int clientSocket)
 {
-	chunksMap.erase(clientSocket);
+	if (ContainsChunk(clientSocket))
+		chunksMap.erase(clientSocket);
 }
 
 std::string	MessageController::ConstructFullMessage(int clientSocket)
