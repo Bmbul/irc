@@ -80,7 +80,7 @@ int	ClientManager::GetClientSocket(const std::string &clientName) const
 	for (it = clientMap.begin(); it != clientMap.end(); it++)
 	{
 		if (it->second.getName() == clientName)
-			return (true);
+			return (it->first);
 	}
 	return (-1);
 }
@@ -93,9 +93,9 @@ void	ClientManager::HandleMessage(Client &client)
 		return ;
 		
 	std::cout << "end of message" << std::endl;
-	std::string readyMessage = MessageController::getController()->ConstructFullMessage(client.getSocket());
-	std::vector<CommandData> commands = MessageController::getController()->Parse(readyMessage);
-	MessageController::getController()->PrintData(commands);
+	std::string readyMessage = messageController->ConstructFullMessage(client.getSocket());
+	std::vector<CommandData> commands = messageController->Parse(readyMessage);
+	messageController->PrintData(commands);
 
 	for(std::vector<CommandData>::iterator data = commands.begin();
 		data != commands.end(); data++)

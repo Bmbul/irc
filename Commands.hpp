@@ -3,10 +3,10 @@
 
 #include "ICommand.hpp"
 #include <iostream>
-#include "./Exceptions.hpp"
-#include "./Server.hpp"
-#include "./MessageController.hpp"
-#include "./ClientManager.hpp"
+#include "Exceptions.hpp"
+#include "Server.hpp"
+#include "MessageController.hpp"
+#include "ClientManager.hpp"
 
 struct CommandType
 {
@@ -62,10 +62,6 @@ void	Command<CommandType::pass>::execute(Client &sender, const std::vector<std::
 	{
 		sender.setIsPassed(true);
 	}
-	// if (arguments.find(ArgumentType::password) != arguments.end())
-	// 	std::cout << "Argument PASSWORD given" << std::endl;
-	// else
-	// 	std::cout << "No argument PASSWORD specified" << std::endl;
 }
 
 template<>
@@ -120,12 +116,6 @@ void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::
 	/****************************************************************************************************/
 	//need to implement send ping message to send ping message to the client like a SendHelloMessage();
 	/****************************************************************************************************/
-
-	// if (arguments.find(ArgumentType::user) != arguments.end())
-	// 	std::cout << "User is specified" << std::endl;
-	// else
-	// 	std::cout << "User not specified" << std::endl;
-	
 }
 
 
@@ -174,11 +164,7 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 					std::cerr << "no such a channel/client" <<std::endl;
 		}
 	}
-	
-	// if (arguments.find(ArgumentType::user) != arguments.end())
-	// 	std::cout << "User is specified" << std::endl;
-	// else
-	// 	std::cout << "User not specified" << std::endl;
+
 }
 
 
@@ -187,10 +173,6 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 {
 	(void) sender;
 	(void) arguments;
-	// if (arguments.find(ArgumentType::user) != arguments.end())
-	// 	std::cout << "User is specified" << std::endl;
-	// else
-	// 	std::cout << "User not specified" << std::endl;
 }
 
 
@@ -199,10 +181,6 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
-	// if (arguments.find(ArgumentType::user) != arguments.end())
-	// 	std::cout << "User is specified" << std::endl;
-	// else
-	// 	std::cout << "User not specified" << std::endl;
 }
 
 
@@ -211,10 +189,6 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
-	// if (arguments.find(ArgumentType::user) != arguments.end())
-	// 	std::cout << "User is specified" << std::endl;
-	// else
-	// 	std::cout << "User not specified" << std::endl;
 }
 
 
@@ -223,10 +197,6 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
-	// if (arguments.find(ArgumentType::user) != arguments.end())
-	// 	std::cout << "User is specified" << std::endl;
-	// else
-	// 	std::cout << "User not specified" << std::endl;
 }
 
 
@@ -235,10 +205,6 @@ void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
-	// if (arguments.find(ArgumentType::user) != arguments.end())
-	// 	std::cout << "User is specified" << std::endl;
-	// else
-	// 	std::cout << "User not specified" << std::endl;
 }
 
 
@@ -247,10 +213,6 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
-	// if (arguments.find(ArgumentType::user) != arguments.end())
-	// 	std::cout << "User is specified" << std::endl;
-	// else
-	// 	std::cout << "User not specified" << std::endl;
 }
 
 #endif // COMMANDS_HPP

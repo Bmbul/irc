@@ -2,34 +2,81 @@
 #include "Exceptions.hpp"
 #include "ClientManager.hpp"
 #include <algorithm>
+#include "MessageController.hpp"
+#include "Server.hpp"
 
 Channel::Channel() { }
 
 Channel::~Channel() { }
 
-void	Channel::AddMember(std::string memberNick)
-{
-	(void) memberNick;
-	// Change this to exception
 
-	// ERR_NEEDMOREPARAMS+
-	// ERR_BANNEDFROMCHAN+
-	// ERR_INVITEONLYCHAN+
-	// ERR_BADCHANNELKEY+
-	// ERR_CHANNELISFULL+
-	// ERR_BADCHANMASK+
-	// ERR_NOSUCHCHANNEL+
-	// ERR_TOOMANYCHANNELS+
-	// RPL_TOPIC (not error)
+// Change this to exception
+// ERR_NEEDMOREPARAMS+
+// ERR_BANNEDFROMCHAN+
+// ERR_INVITEONLYCHAN+
+// ERR_BADCHANNELKEY+
+// ERR_CHANNELISFULL+
+// ERR_BADCHANMASK+
+// ERR_NOSUCHCHANNEL+
+// ERR_TOOMANYCHANNELS+
+// RPL_TOPIC (not error)
+
+void	Channel::AddMember(const std::string &admin, const std::string &memberNick)
+{
+	ValidateCanAdd(admin, memberNick);
+	Client	addingClient =  ClientManager::getManager()->getClient(memberNick);
+	members.insert(std::pair<std::string, Client>(memberNick, addingClient));
 }
 
-void	RemoveMember(const std::string &memberNick, const std::string &reason = NULL)
+void	Channel::RemoveMember(const std::string &admin, const std::string &memberNick)
 {
-	(void) memberNick;
-	(void) reason;
+	ValidateCanRemove(admin, memberNick);
+	members.erase(memberNick);
 }
 
-bool	Channel::IsAdmin(const std::string &memberNick)
+void	Channel::ValidateCanAdd(const std::string &admin, const std::string &newMember) const
+{
+	ValidateAdmin(admin);
+	ValidateClientIsInServer(newMember);
+
+	if (HasMember(newMember))
+	{
+		std::cout << "Some (other x 3) kind of error!!" << std::endl;
+	}
+}
+
+
+void	Channel::ValidateCanRemove(const std::string &admin, const std::string &removingMember) const
+{
+	ValidateClientIsInServer(removingMember);
+	if (!HasMember(removingMember))
+	{
+		std::cout << "Some (other x 3) kind of error!!" << std::endl;
+	}
+}
+
+void	Channel::ValidateAdmin(const std::string &admin) const
+{
+	if (!HasMember(admin))
+	{
+		std::cout << "Some other kind of error!!" << std::endl;
+	}
+	if (!IsAdmin(admin))
+	{
+		std::cout << "Some kind of error!!" << std::endl;
+	}
+}
+
+void	Channel::ValidateClientIsInServer(const std::string &client) const
+{
+	if (!ClientManager::getManager()->HasClient(client))
+	{
+		std::cout << "Some other other kind of error!!" << std::endl;
+	}
+}
+
+
+bool	Channel::IsAdmin(const std::string &memberNick) const
 {
 	return (adminsMap[memberNick]);
 }
@@ -70,4 +117,12 @@ void	Channel::Unban(const std::string &memberName)
 		bannedClients.erase(memberToUnban);
 	else
 		std::cout << "The member was not banned at all" << std::endl;
+}
+
+void	Channel::Broadcast(const Client &sender, const std::string &message)
+{
+	for(std::map<std::string, Client>::iterator it; it != members.end(); it++)
+	{
+		MessageController::getController()->SendMessage(sender, it->second, message);
+	}
 }
