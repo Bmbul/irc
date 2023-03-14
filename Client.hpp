@@ -6,9 +6,9 @@
 class Client
 {
 	private:
-		 bool isPassed;
-		 bool isUsered;
-		 bool isNicked;
+		bool isPassed;
+		bool isUsered;
+		bool isNicked;
 		std::string name;
 		std::string nick;
 		int	fd;
@@ -22,9 +22,9 @@ class Client
 		std::string getNick() const ;
 		int getSocket() const ;
 
-		bool get_isPassed()const;
-		bool get_isUsered()const;
-		bool get_isNicked()const;
+		bool getIsPassed()const;
+		bool getIsUsered()const;
+		bool getIsNicked()const;
 
 		void setIsPassed(bool is_passed);
 		void setIsUsered(bool is_usered);

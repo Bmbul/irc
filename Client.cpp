@@ -26,17 +26,17 @@ std::string	Client::getNick() const { return (nick); }
 int Client::getSocket() const { return (fd); }
 
 
-bool Client::get_isPassed()const 
+bool Client::getIsPassed()const 
 {
 	return this->isPassed;
 }
 
-bool Client::get_isNicked()const 
+bool Client::getIsNicked()const 
 {
 	return this-> isNicked;
 }
 
-bool Client::get_isUsered()const 
+bool Client::getIsUsered()const 
 {
 	return this->isUsered;
 }

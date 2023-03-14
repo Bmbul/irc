@@ -1,4 +1,4 @@
-:NickName!name@host ERR_CODE NickName:message
+:senderNickname!name@host ERR_CODE recieverNickname:message
 
 if nick is NULL => :name@host ERR_CODE name:reason
 

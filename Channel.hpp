@@ -16,7 +16,9 @@ class Channel
 		void	AddMember(const std::string &admin, const std::string &newMember);
 		void	RemoveMember(const std::string &admin, const std::string &removingMember);
 
-		void	MakeAdmin(const std::string &maker, const std::string &newAdmin);
+		void	MakeAdmin(const std::string &admin, const std::string &newAdmin);
+		void	RemoveFromAdmins(const std::string &admin, const std::string &oldAdmin);
+
 		bool	IsAdmin(const std::string &memberNick) const;
 		bool	HasMember(const std::string &memberName) const;
 		void	Ban(const std::string &memberName);
@@ -27,14 +29,16 @@ class Channel
 	private:
 		void	ValidateAdmin(const std::string &admin) const;
 		void	ValidateClientIsInServer(const std::string &client) const;
+
 		void	ValidateCanAdd(const std::string &admin, const std::string &newMember) const;
 		void	ValidateCanRemove(const std::string &admin, const std::string &removingMember) const;
+		void	ValidateCanModifyAdmin(const std::string &admin, const std::string &newAdmin) const;
 
 
 
 	private:
 		std::map<std::string, Client> members;
-		mutable std::map<std::string, bool> adminsMap;
+		mutable std::vector<std::string> admins;
 		std::vector<int> bannedClients;
 };
 

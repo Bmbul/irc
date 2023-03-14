@@ -67,7 +67,7 @@ void	Command<CommandType::pass>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
-	if (sender.get_isPassed() == false)
+	if (sender.getIsPassed() == false)
 	{
 		throw NOTAUTHORIZED(sender.getName());
 	}
@@ -84,7 +84,7 @@ void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::s
 template<>
 void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
-	if (sender.get_isPassed() == false)
+	if (sender.getIsPassed() == false)
 	{
 		//throw NOTAUTHORIZED(sender.getName());
 		std::cerr << "NOT AUTHORIZED" << std::endl;
