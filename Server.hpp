@@ -40,9 +40,14 @@ class Server
 		struct	sockaddr_in	*GetAddress();
 		std::string const &getPass()const;
 
+		bool HasChannel(std::string const &name);
+		const Channel &getChannel(std::string const &name)const;
+
 	private:
 		Server();
 };
+
+
 
 #endif // SERVER_HPP
 

@@ -5,6 +5,8 @@
 #include <iostream>
 #include "./Exceptions.hpp"
 #include "./Server.hpp"
+#include "./MessageController.hpp"
+#include "./ClientManager.hpp"
 
 struct CommandType
 {
@@ -27,7 +29,6 @@ struct CommandType
 
 
 // class ICommand;
-
 template <CommandType::Type type>
 class Command : public ICommand
 {
@@ -52,7 +53,8 @@ void	Command<CommandType::pass>::execute(Client &sender, const std::vector<std::
 		std::cerr << "need more param()"<<std::endl;
 		throw NeedMoreParams("PASS");
 	}
-	if (Server::getServer()->getPass() != arguments[0].substr(arguments[0][0] == ':' ? 1 : 0) )
+	std::cout << "[" << arguments[0] << "]" << "=" << "[" << Server::getServer()->getPass() << "]" << std::endl;
+	if (Server::getServer()->getPass() != arguments[0])
 	{
 		std::cerr << "WRONG PASSWORD" << std::endl;
 	}
@@ -110,6 +112,15 @@ void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
+	if(arguments.size() == 0)
+		throw NeedMoreParams("too few params");
+	//ClientManager *Client = ClientManager::getManager();
+	MessageController *message = MessageController::getController();
+	message->SendHelloMessage(sender);
+	/****************************************************************************************************/
+	//need to implement send ping message to send ping message to the client like a SendHelloMessage();
+	/****************************************************************************************************/
+
 	// if (arguments.find(ArgumentType::user) != arguments.end())
 	// 	std::cout << "User is specified" << std::endl;
 	// else
@@ -123,10 +134,14 @@ void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
-	// if (arguments.find(ArgumentType::user) != arguments.end())
-	// 	std::cout << "User is specified" << std::endl;
-	// else
-	// 	std::cout << "User not specified" << std::endl;
+	if(arguments.size() == 0)
+		throw NeedMoreParams("too few params");
+	//ClientManager *Client = ClientManager::getManager();
+	MessageController *message = MessageController::getController();
+	message->SendHelloMessage(sender);
+	/****************************************************************************************************/
+	//need to implement send ping message to send ping message to the client like a SendHelloMessage();
+	/****************************************************************************************************/
 }
 
 
@@ -135,6 +150,31 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 {
 	(void) sender;
 	(void) arguments;
+	MessageController *message_controller = MessageController::getController();
+	ClientManager *client_managar = ClientManager::getManager();
+	Server *server = Server::getServer();
+	if(arguments.size() <= 1)
+		throw NeedMoreParams("PRIVMSG");
+	for (size_t i = 0; i < arguments.size() - 1; i++)
+	{
+		if(message_controller->IsValidChannelName(arguments[i]))
+		{
+			if(server->HasChannel(arguments[i]))
+			{
+				Channel channel = server->getChannel(arguments[i]);
+				channel.Broadcast(sender,arguments.back());
+			}
+		}
+		else if(client_managar->HasClient(arguments[i]))
+		{
+			message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),arguments.back());
+		}
+		else
+		{
+					std::cerr << "no such a channel/client" <<std::endl;
+		}
+	}
+	
 	// if (arguments.find(ArgumentType::user) != arguments.end())
 	// 	std::cout << "User is specified" << std::endl;
 	// else

@@ -33,7 +33,7 @@ class ClientManager
 		ClientManager();
 		~ClientManager();
 		static ClientManager *getManager();
-		Client *getClient(std::string const &NickName);
+		const Client &getClient(std::string const &NickName)const;
 
 };
 

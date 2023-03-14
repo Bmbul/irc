@@ -150,3 +150,13 @@ void	ClientManager::HandleInput(fd_set *readfds)
 		++it;
 	}
 }
+
+const Client &ClientManager::getClient(std::string const &NickName)const
+{
+	for (it = clientMap.begin(); it != clientMap.end(); it++)
+	{
+		if (it->second.getName() == NickName)
+			break;
+	}
+	return it->second;
+}
