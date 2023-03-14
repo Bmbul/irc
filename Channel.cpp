@@ -48,6 +48,7 @@ void	Channel::ValidateCanAdd(const std::string &admin, const std::string &newMem
 
 void	Channel::ValidateCanRemove(const std::string &admin, const std::string &removingMember) const
 {
+	ValidateAdmin(admin);
 	ValidateClientIsInServer(removingMember);
 	if (!HasMember(removingMember))
 	{
