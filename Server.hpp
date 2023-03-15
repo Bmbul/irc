@@ -41,13 +41,15 @@ class Server
 		std::string const &getPass()const;
 
 		bool HasChannel(std::string const &name);
-		const Channel &getChannel(std::string const &name)const;
+		//const Channel &getChannel(std::string const &name)const;
+		Channel &getChannel(std::string const &name);
+		//void AddChannel(std::string const &name);
 
 	private:
 		Server();
 };
 
-
+//void Server::AddChannel(std::string const &name);//der chem grel!!
 
 #endif // SERVER_HPP
 

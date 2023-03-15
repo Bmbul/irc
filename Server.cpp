@@ -160,14 +160,19 @@ std::string const &Server::getPass()const
 
 bool Server::HasChannel(std::string const &name)
 {
-	std::map<std::string,Channel>::iterator it = channels.find(name);
+	std::map<std::string,Channel >::iterator it = channels.find(name);
 	if(it != channels.end())
 		return true;
 	return false;
 }
 
-const Channel &Server::getChannel(std::string const &name)const
+Channel &Server::getChannel(std::string const &name)
 {
-	std::map<std::string,Channel>::const_iterator it = channels.find(name);
-	return it->second;
+		return channels[name];
 }
+
+/* const Channel &Server::getChannel(std::string const &name)const
+{
+	std::map<std::string,Channel>::const_iterator *it = channels.find(name);
+	return *it->second;
+} */

@@ -173,6 +173,28 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 {
 	(void) sender;
 	(void) arguments;
+	MessageController *message_controller = MessageController::getController();
+	ClientManager *client_managar = ClientManager::getManager();
+	Server *server = Server::getServer();
+	if(arguments.size() <= 1)
+		throw NeedMoreParams("PRIVMSG");
+	for (size_t i = 0; i < arguments.size() - 1; i++)
+	{
+		if(message_controller->IsValidChannelName(arguments[i]))
+		{
+			if(server->HasChannel(arguments[i]))
+			{
+				Channel channel = server->getChannel(arguments[i]);
+				channel.Broadcast(sender,arguments.back());
+			}
+		}
+		else if(client_managar->HasClient(arguments[i]))
+		{
+			message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),arguments.back());
+		}
+		else
+			return ;
+	}
 }
 
 
@@ -181,6 +203,19 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
+	Server *server = Server::getServer();
+	if(arguments.size() == 0)
+		throw NeedMoreParams("JOIN");
+	if (server->HasChannel(arguments[0]))
+	{
+		Channel channel = server->getChannel(arguments[0]);
+		channel.AddMember("",sender.getNick());
+	}
+	else
+	{
+		return ;
+	}
+
 }
 
 
