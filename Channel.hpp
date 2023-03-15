@@ -25,6 +25,8 @@ class Channel
 		void	Unban(const std::string &memberName);
 
 		void	Broadcast(const Client &sender, const std::string &message);
+		Client &getNextMember();
+		int getMemberCount(std::string const &type);
 
 	private:
 		void	ValidateAdmin(const std::string &admin) const;
@@ -41,6 +43,7 @@ class Channel
 		mutable std::vector<std::string> admins;
 		std::vector<int> bannedClients;
 };
+
 
 
 #endif // CHANNEL_HPP

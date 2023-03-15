@@ -176,3 +176,9 @@ Channel &Server::getChannel(std::string const &name)
 	std::map<std::string,Channel>::const_iterator *it = channels.find(name);
 	return *it->second;
 } */
+
+
+void Server::removeChannel(std::string const &name)
+{
+	channels.erase(name);
+}
