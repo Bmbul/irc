@@ -1,6 +1,7 @@
 #include "MessageController.hpp"
 #include <sys/socket.h>
 #include <stdio.h>
+#include "Server.hpp"
 
 MessageController	*MessageController::instance = NULL;
 
@@ -126,9 +127,9 @@ MessageController *MessageController::getController()
 void	MessageController::SendMessage(const Client &sender,
 	const Client &reciever, const std::string &commmand, const std::string message) const
 {
-	(void) sender;
-	(void) reciever;
-	(void) message;
+	//:senderNickname!name@host ERR_CODE recieverNickname:message
+	std::string finalizedMessage = ":" + GetClientFormatedName(sender) + " " + reciever.getNick() + ":" + message;
+	SendMessageToClient(reciever, finalizedMessage);
 }
 
 void	MessageController::SendMessageWithSocket(int clientSocket,
@@ -144,10 +145,21 @@ void	MessageController::SendMessageToClient(const Client &client,
 	SendMessageWithSocket(client.getSocket(), message);
 }
 
+std::string	MessageController::GetClientFormatedName(const Client &client) const
+{
+	std::string formatted;
+
+	formatted += client.getNick();
+	if (client.getIsUsered())
+		formatted += "!" + client.getName();
+	formatted += "@" + Server::getServer()->getHost();
+	return (formatted);
+}
+
 
 void	MessageController::SendHelloMessage(const Client &client) const
 {
-	SendHelloMessage(client.getSocket());
+	SendMessageToClient(client, "Welcome to the Internet Relay Network " + GetClientFormatedName(client));
 }
 
 void	MessageController::SendHelloMessage(int clientSocket) const

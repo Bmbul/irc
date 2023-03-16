@@ -94,7 +94,7 @@ void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::s
 	{
 		//std::cerr << "nick name already exist" << std::endl;
 		//return;
-		 throw NicknameInUse(arguments[0]); 
+		 throw NicknameInUse(arguments[0]);
 	}
 	else
 	{

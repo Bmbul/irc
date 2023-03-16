@@ -27,6 +27,8 @@ class MessageController
 		void	SendMessage(const Client &sender, const Client &reciever
 			, const std::string &command, const std::string message) const;
 
+		std::string	GetClientFormatedName(const Client &client) const;
+
 		void	SendMessageWithSocket(int clientSocket, const std::string &message) const;
 		void	SendMessageToClient(const Client &client, const std::string &message) const;
 		void	SendHelloMessage(const Client &client) const;
