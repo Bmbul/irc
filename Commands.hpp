@@ -134,8 +134,6 @@ void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
-	(void) arguments;
 	MessageController *message_controller = MessageController::getController();
 	ClientManager *client_managar = ClientManager::getManager();
 	Server *server = Server::getServer();
@@ -148,16 +146,17 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 			if(server->HasChannel(arguments[i]))
 			{
 				Channel channel = server->getChannel(arguments[i]);
-				channel.Broadcast(sender,arguments.back());
+				channel.Broadcast(sender, arguments.back(), "PRIVMSG");
 			}
 		}
 		else if(client_managar->HasClient(arguments[i]))
 		{
-			//message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),arguments.back());
+			message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),
+				"PRIVMSG", arguments.back());
 		}
 		else
 		{
-					throw NoSuchChannel(sender.getNick(),arguments[i]);
+			throw NoSuchChannel(sender.getNick(),arguments[i]);
 		}
 	}
 
@@ -167,13 +166,11 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 template<>
 void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
-	(void) arguments;
 	MessageController *message_controller = MessageController::getController();
 	ClientManager *client_managar = ClientManager::getManager();
 	Server *server = Server::getServer();
 	if(arguments.size() <= 1)
-		throw NeedMoreParams(sender.getNick(),"PRIVMSG");
+		throw NeedMoreParams(sender.getNick(),"NOTICE");
 	for (size_t i = 0; i < arguments.size() - 1; i++)
 	{
 		if(message_controller->IsValidChannelName(arguments[i]))
@@ -181,12 +178,13 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 			if(server->HasChannel(arguments[i]))
 			{
 				Channel channel = server->getChannel(arguments[i]);
-				channel.Broadcast(sender,arguments.back());
+				channel.Broadcast(sender,arguments.back(), "NOTICE");
 			}
 		}
 		else if(client_managar->HasClient(arguments[i]))
 		{
-			//message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),arguments.back(),"COMMAND",arguments.);
+			message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),
+				"NOTICE", arguments.back());
 		}
 		else
 			return ;
@@ -274,11 +272,13 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
 	(void) arguments;
 	//validation !!!
-	ClientManager *managar = ClientManager::getManager();
-	managar->RemoveClient(managar->GetClientSocket(sender.getName()));
+	ClientManager *manager = ClientManager::getManager();
+	int socket = sender.getSocket();
+	std::cout << socket << std::endl;
+	manager->CloseClient(socket);
+	manager->RemoveClient(socket);
 }
 
 

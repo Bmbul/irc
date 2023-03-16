@@ -24,7 +24,7 @@ class Channel
 		void	Ban(const std::string &memberName);
 		void	Unban(const std::string &memberName);
 
-		void	Broadcast(const Client &sender, const std::string &message);
+		void	Broadcast(const Client &sender, const std::string &message, const std::string &command);
 		Client &getNextMember();
 		int getMemberCount(std::string const &type);
 

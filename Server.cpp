@@ -131,7 +131,7 @@ void	Server::HandleIncomingConnections()
 			<< ", ip is : " << getHost() << ", port : "
 			<< ntohs(address.sin_port) << std::endl;
 		
-		MessageController::getController()->SendHelloMessage(new_socket);
+		// MessageController::getController()->SendHelloMessage(new_socket);
 		
 		ClientManager::getManager()->AddClient(new_socket);
 	}
@@ -171,7 +171,7 @@ Channel &Server::getChannel(std::string const &name)
 	return channels[name];
 }
 
-std::string	const &Server::getHost() const
+std::string	const Server::getHost() const
 {
 	return (inet_ntoa(address.sin_addr));
 }

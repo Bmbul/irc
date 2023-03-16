@@ -127,14 +127,16 @@ MessageController *MessageController::getController()
 void	MessageController::SendMessage(const Client &sender,
 	const Client &reciever, const std::string &commmand, const std::string message) const
 {
-	//:senderNickname!name@host ERR_CODE recieverNickname:message
-	std::string finalizedMessage = ":" + GetClientFormatedName(sender) + " " + reciever.getNick() + ":" + message;
+	//:senderNickname!name@host COMMAND recieverNickname:message
+	std::string finalizedMessage = ":" + GetClientFormatedName(sender) + " "
+		+ commmand + " " + reciever.getNick() + ":" + message;
 	SendMessageToClient(reciever, finalizedMessage);
 }
 
 void	MessageController::SendMessageWithSocket(int clientSocket,
 	const std::string &message) const
 {
+	std::cout << "SOCKET: " << clientSocket << std::endl;
 	if (send(clientSocket, (message + "\n").c_str(), message.length() + 1, 0) < 0)
 		perror("send");
 }
@@ -149,7 +151,8 @@ std::string	MessageController::GetClientFormatedName(const Client &client) const
 {
 	std::string formatted;
 
-	formatted += client.getNick();
+	if (client.getIsNicked())
+		formatted += client.getNick();
 	if (client.getIsUsered())
 		formatted += "!" + client.getName();
 	formatted += "@" + Server::getServer()->getHost();

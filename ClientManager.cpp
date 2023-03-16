@@ -49,7 +49,7 @@ void	ClientManager::RemoveClient(const int socketFd)
 		std::cout << "No such Client!!" << std::endl;
 }
 
-void	ClientManager::RemoveClient(std::map<int, Client>::iterator iter)
+void	ClientManager::RemoveClient(std::map<int, Client>::iterator &iter)
 {
 	clientMap.erase(iter);
 }
@@ -69,7 +69,7 @@ bool	ClientManager::HasClient(const std::string &clientName) const
 {
 	for (it = clientMap.begin(); it != clientMap.end(); it++)
 	{
-		if (it->second.getName() == clientName)
+		if (it->second.getNick() == clientName)
 			return (true);
 	}
 	return (false);
@@ -79,7 +79,7 @@ int	ClientManager::GetClientSocket(const std::string &clientName) const
 {
 	for (it = clientMap.begin(); it != clientMap.end(); it++)
 	{
-		if (it->second.getName() == clientName)
+		if (it->second.getNick() == clientName)
 			return (it->first);
 	}
 	return (-1);
@@ -113,49 +113,60 @@ void	ClientManager::HandleMessage(Client &client)
 	messageController->ClearChunk(client.getSocket());
 }
 
-void	ClientManager::HandleInput(fd_set *readfds)
+void	ClientManager::CloseClient(int	clientSocket)
 {
-	int sd, valread;
 	struct sockaddr_in *address;
 	socklen_t	addrlen;
 
 	address = Server::getServer()->GetAddress();
 	addrlen = Server::getServer()->getaddrlen();
+	//Somebody disconnected , get his details and print
+	getpeername(clientSocket , (sockaddr *)address , &addrlen);
+	
+	std::cout << "Host disconnected , ip " << inet_ntoa(address->sin_addr)
+		<< " , port " << ntohs(address->sin_port) << std::endl;
+	//Close the socket and mark as 0 in list for reuse
+	close(clientSocket);
+}
+
+void	ClientManager::HandleInput(fd_set *readfds)
+{
+	int sd, valread;
+
+
 	for (std::map<int, Client>::iterator it = clientMap.begin(); it != clientMap.end();)
 	{
-		sd = it->first; 
+		sd = it->first;
 		if (FD_ISSET(sd , readfds))
 		{
 			if ((valread = recv(sd, buffer, 1024, MSG_DONTWAIT)) == 0)
 			{
-				//Somebody disconnected , get his details and print
-				getpeername(sd , (sockaddr *)address , &addrlen);
-				
-				std::cout << "Host disconnected , ip " << inet_ntoa(address->sin_addr)
-					<< " , port " << ntohs(address->sin_port) << std::endl;
-					
-				//Close the socket and mark as 0 in list for reuse
-				close( sd );
-				RemoveClient(it++);
-				messageController->ClearChunk(sd);
-				continue;
+				++it;
+				CloseClient(sd);
+				RemoveClient(sd);
 			}
 			else // in case if client inputed message
 			{
 				buffer[valread] = '\0';
 				if (buffer[0] && !(buffer[0] == '\n' && !messageController->ContainsChunk(sd)))
 					HandleMessage(it->second);
+
+				if (clientMap.size() == 0)
+					return ;
+				it++;
 			}
 		}
-		++it;
+		else
+			++it;
 	}
 }
 
-const Client &ClientManager::getClient(std::string const &NickName)const
+const Client &ClientManager::getClient(std::string const &nickName) const
 {
+	std::map<int, Client>::const_iterator it;
 	for (it = clientMap.begin(); it != clientMap.end(); it++)
 	{
-		if (it->second.getName() == NickName)
+		if (it->second.getNick() == nickName)
 			break;
 	}
 	return it->second;

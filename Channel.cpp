@@ -41,6 +41,8 @@ void	Channel::RemoveMember(const std::string &admin, const std::string &memberNi
 	members.erase(memberNick);
 }
 
+// Become Admin
+
 void	Channel::MakeAdmin(const std::string &admin, const std::string &newAdmin)
 {
 	ValidateCanModifyAdmin(admin, newAdmin);
@@ -137,11 +139,12 @@ void	Channel::Unban(const std::string &memberName)
 		std::cout << "The member was not banned at all" << std::endl;
 }
 
-void	Channel::Broadcast(const Client &sender, const std::string &message)
+void	Channel::Broadcast(const Client &sender,
+	const std::string &message, const std::string &command)
 {
 	for(std::map<std::string, Client>::iterator it; it != members.end(); it++)
 	{
-		MessageController::getController()->SendMessage(sender, it->second, message);
+		MessageController::getController()->SendMessage(sender, it->second, command, message);
 	}
 }
 
