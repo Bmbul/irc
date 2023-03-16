@@ -24,7 +24,8 @@ class MessageController
 		bool	StringStartsWithFromSet(const std::string &str, const std::string &set) const;
 		bool	GotEndOfMessage(const char *messageChunk) const;
 
-		void	SendMessage(const Client &sender, const Client &reciever, const std::string message) const;
+		void	SendMessage(const Client &sender, const Client &reciever
+			, const std::string &command, const std::string message) const;
 
 		void	SendMessageWithSocket(int clientSocket, const std::string &message) const;
 		void	SendMessageToClient(const Client &client, const std::string &message) const;

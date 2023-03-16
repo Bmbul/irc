@@ -21,8 +21,6 @@ std::string	Client::getName() const { return (name); }
 
 std::string	Client::getNick() const { return (nick); }
 
-
-
 int Client::getSocket() const { return (fd); }
 
 

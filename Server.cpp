@@ -128,7 +128,7 @@ void	Server::HandleIncomingConnections()
 		new_socket = AcceptNewSocket();
 		//inform user of socket number - used in send and receive commands
 		std::cout << "New connection , socket fd is " << new_socket
-			<< ", ip is : " << inet_ntoa(address.sin_addr) << ", port : "
+			<< ", ip is : " << getHost() << ", port : "
 			<< ntohs(address.sin_port) << std::endl;
 		
 		MessageController::getController()->SendHelloMessage(new_socket);
@@ -170,4 +170,9 @@ const Channel &Server::getChannel(std::string const &name)const
 {
 	std::map<std::string,Channel>::const_iterator it = channels.find(name);
 	return it->second;
+}
+
+std::string	const &Server::getHost() const
+{
+	return (inet_ntoa(address.sin_addr));
 }

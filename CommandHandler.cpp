@@ -58,6 +58,6 @@ void	CommandHandler::ExecuteCommand(Client &sender, const CommandData &data)
 		it->second->execute(sender, data.args);
 	else
 	{
-		throw UnknownCommand(data.command);
+		throw UnknownCommand(sender.getNick(), data.command);
 	}
 }

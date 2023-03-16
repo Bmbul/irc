@@ -124,14 +124,12 @@ MessageController *MessageController::getController()
 }
 
 void	MessageController::SendMessage(const Client &sender,
-	const Client &reciever, const std::string message) const
+	const Client &reciever, const std::string &commmand, const std::string message) const
 {
 	(void) sender;
 	(void) reciever;
 	(void) message;
 }
-
-
 
 void	MessageController::SendMessageWithSocket(int clientSocket,
 	const std::string &message) const

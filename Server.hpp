@@ -39,6 +39,8 @@ class Server
 		int		getaddrlen();
 		struct	sockaddr_in	*GetAddress();
 		std::string const &getPass()const;
+		std::string	const &Server::getHost() const;
+
 
 		bool HasChannel(std::string const &name);
 		const Channel &getChannel(std::string const &name)const;
