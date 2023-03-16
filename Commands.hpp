@@ -51,12 +51,12 @@ void	Command<CommandType::pass>::execute(Client &sender, const std::vector<std::
 	if(arguments.size() == 0)
 	{
 		std::cerr << "need more param()"<<std::endl;
-		throw NeedMoreParams("PASS");
+		throw NeedMoreParams(sender.getNick(),"PASS");
 	}
 	std::cout << "[" << arguments[0] << "]" << "=" << "[" << Server::getServer()->getPass() << "]" << std::endl;
 	if (Server::getServer()->getPass() != arguments[0])
 	{
-		std::cerr << "WRONG PASSWORD" << std::endl;
+		throw PasswordMissmatch(sender.getNick());
 	}
 	else
 	{
@@ -69,11 +69,11 @@ void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::s
 {
 	if (sender.getIsPassed() == false)
 	{
-		throw NOTAUTHORIZED(sender.getName());
+		throw NOTAUTHORIZED(sender.getNick(),sender.getName());
 	}
 	else if(sender.isDone())
 	{
-		throw AlreadyRegistered();
+		throw AlreadyRegistered(sender.getNick());
 	}
 	else
 	{
@@ -86,15 +86,11 @@ void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::s
 {
 	if (sender.getIsPassed() == false)
 	{
-		//throw NOTAUTHORIZED(sender.getName());
-		std::cerr << "NOT AUTHORIZED" << std::endl;
-		return;
+		throw NOTAUTHORIZED(sender.getName(),sender.getNick());
 	}
 	else if (ClientManager::getManager()->HasClient(arguments[0]))
 	{
-		//std::cerr << "nick name already exist" << std::endl;
-		//return;
-		 throw NicknameInUse(arguments[0]);
+		 throw NicknameInUse(arguments[0],sender.getNick());
 	}
 	else
 	{
@@ -109,7 +105,7 @@ void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::
 	(void) sender;
 	(void) arguments;
 	if(arguments.size() == 0)
-		throw NeedMoreParams("too few params");
+		throw NeedMoreParams(sender.getNick(),"PING");
 	//ClientManager *Client = ClientManager::getManager();
 	MessageController *message = MessageController::getController();
 	message->SendHelloMessage(sender);
@@ -125,7 +121,7 @@ void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::
 	(void) sender;
 	(void) arguments;
 	if(arguments.size() == 0)
-		throw NeedMoreParams("too few params");
+		throw NeedMoreParams(sender.getNick(),"PONG");
 	//ClientManager *Client = ClientManager::getManager();
 	MessageController *message = MessageController::getController();
 	message->SendHelloMessage(sender);
@@ -144,7 +140,7 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 	ClientManager *client_managar = ClientManager::getManager();
 	Server *server = Server::getServer();
 	if(arguments.size() <= 1)
-		throw NeedMoreParams("PRIVMSG");
+		throw NeedMoreParams(sender.getNick(),"PRIVMSG");
 	for (size_t i = 0; i < arguments.size() - 1; i++)
 	{
 		if(message_controller->IsValidChannelName(arguments[i]))
@@ -157,11 +153,11 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 		}
 		else if(client_managar->HasClient(arguments[i]))
 		{
-			message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),arguments.back());
+			//message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),arguments.back());
 		}
 		else
 		{
-					throw NoSuchChannel("PRIVMSG");
+					throw NoSuchChannel(sender.getNick(),arguments[i]);
 		}
 	}
 
@@ -177,7 +173,7 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 	ClientManager *client_managar = ClientManager::getManager();
 	Server *server = Server::getServer();
 	if(arguments.size() <= 1)
-		throw NeedMoreParams("PRIVMSG");
+		throw NeedMoreParams(sender.getNick(),"PRIVMSG");
 	for (size_t i = 0; i < arguments.size() - 1; i++)
 	{
 		if(message_controller->IsValidChannelName(arguments[i]))
@@ -190,7 +186,7 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 		}
 		else if(client_managar->HasClient(arguments[i]))
 		{
-			message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),arguments.back());
+			//message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),arguments.back(),"COMMAND",arguments.);
 		}
 		else
 			return ;
@@ -205,7 +201,7 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 	(void) arguments;
 	Server *server = Server::getServer();
 	if(arguments.size() == 0)
-		throw NeedMoreParams("JOIN");
+		throw NeedMoreParams(sender.getNick(),"JOIN");
 	if (server->HasChannel(arguments[0]))
 	{
 		Channel channel = server->getChannel(arguments[0]);
@@ -227,7 +223,7 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 	(void) arguments;
 	Server *server = Server::getServer();
 	if(server->HasChannel(arguments[0]) == false)
-		throw NoSuchChannel("PART");
+		throw NoSuchChannel(sender.getNick(),arguments[0]);
 	Channel channel = server->getChannel(arguments[0]);
 	if (channel.IsAdmin(sender.getNick()))
 	{
@@ -255,13 +251,13 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 	(void) sender;
 	(void) arguments;
 	if(arguments.size() != 2)
-		throw NeedMoreParams("KICK");
+		throw NeedMoreParams(sender.getNick(),"KICK");
 	Server *server = Server::getServer();
 	ClientManager *manager = ClientManager::getManager();
 	if(server->HasChannel(arguments[1]) == false)
-		throw NoSuchChannel("KICK");
+		throw NoSuchChannel(sender.getNick(),arguments[1]);
 	if(manager->HasClient(arguments[0]) == false)
-		throw NoSuchNick("KICK");
+		throw NoSuchNick(sender.getNick(),arguments[0]);
 	Channel channel = server->getChannel(arguments[1]);
 	if(channel.IsAdmin(sender.getNick()))
 		channel.RemoveMember("ADMIN",arguments[0]);
