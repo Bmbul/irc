@@ -160,19 +160,23 @@ std::string const &Server::getPass()const
 
 bool Server::HasChannel(std::string const &name)
 {
-	std::map<std::string,Channel>::iterator it = channels.find(name);
+	std::map<std::string,Channel >::iterator it = channels.find(name);
 	if(it != channels.end())
 		return true;
 	return false;
 }
 
-const Channel &Server::getChannel(std::string const &name)const
+Channel &Server::getChannel(std::string const &name)
 {
-	std::map<std::string,Channel>::const_iterator it = channels.find(name);
-	return it->second;
+	return channels[name];
 }
 
 std::string	const &Server::getHost() const
 {
 	return (inet_ntoa(address.sin_addr));
+}
+
+void Server::removeChannel(std::string const &name)
+{
+	channels.erase(name);
 }

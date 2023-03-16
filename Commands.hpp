@@ -92,9 +92,9 @@ void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::s
 	}
 	else if (ClientManager::getManager()->HasClient(arguments[0]))
 	{
-		std::cerr << "nick name already exist" << std::endl;
-		return;
-		/* throw NicknameInUse(arguments[0]); */
+		//std::cerr << "nick name already exist" << std::endl;
+		//return;
+		 throw NicknameInUse(arguments[0]); 
 	}
 	else
 	{
@@ -161,7 +161,7 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 		}
 		else
 		{
-					std::cerr << "no such a channel/client" <<std::endl;
+					throw NoSuchChannel("PRIVMSG");
 		}
 	}
 
@@ -173,6 +173,28 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 {
 	(void) sender;
 	(void) arguments;
+	MessageController *message_controller = MessageController::getController();
+	ClientManager *client_managar = ClientManager::getManager();
+	Server *server = Server::getServer();
+	if(arguments.size() <= 1)
+		throw NeedMoreParams("PRIVMSG");
+	for (size_t i = 0; i < arguments.size() - 1; i++)
+	{
+		if(message_controller->IsValidChannelName(arguments[i]))
+		{
+			if(server->HasChannel(arguments[i]))
+			{
+				Channel channel = server->getChannel(arguments[i]);
+				channel.Broadcast(sender,arguments.back());
+			}
+		}
+		else if(client_managar->HasClient(arguments[i]))
+		{
+			message_controller->SendMessage(sender,client_managar->getClient(arguments[i]),arguments.back());
+		}
+		else
+			return ;
+	}
 }
 
 
@@ -181,6 +203,20 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
+	Server *server = Server::getServer();
+	if(arguments.size() == 0)
+		throw NeedMoreParams("JOIN");
+	if (server->HasChannel(arguments[0]))
+	{
+		Channel channel = server->getChannel(arguments[0]);
+		channel.AddMember("",sender.getNick());
+	}
+	else
+	{
+		Channel Channel = server->getChannel(arguments[0]);
+		Channel.MakeAdmin("ADMIN",sender.getNick());//what should i pass in 1st arguments?
+	}
+
 }
 
 
@@ -189,6 +225,27 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
+	Server *server = Server::getServer();
+	if(server->HasChannel(arguments[0]) == false)
+		throw NoSuchChannel("PART");
+	Channel channel = server->getChannel(arguments[0]);
+	if (channel.IsAdmin(sender.getNick()))
+	{
+		if(channel.getMemberCount("member") == 1)
+		{
+			server->removeChannel(arguments[0]);
+			return ;
+		}
+		if(channel.getMemberCount("admin") == 1)
+		{
+			channel.MakeAdmin("ADMIN",channel.getNextMember().getNick());
+			channel.RemoveMember("ADMIN",sender.getNick());
+			return ;
+		}
+	}
+	else
+		channel.RemoveMember("ADMIN",sender.getNick());
+	
 }
 
 
@@ -197,6 +254,24 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
+	if(arguments.size() != 2)
+		throw NeedMoreParams("KICK");
+	Server *server = Server::getServer();
+	ClientManager *manager = ClientManager::getManager();
+	if(server->HasChannel(arguments[1]) == false)
+		throw NoSuchChannel("KICK");
+	if(manager->HasClient(arguments[0]) == false)
+		throw NoSuchNick("KICK");
+	Channel channel = server->getChannel(arguments[1]);
+	if(channel.IsAdmin(sender.getNick()))
+		channel.RemoveMember("ADMIN",arguments[0]);
+	else
+	{
+			//permition denied exeption !
+			return ;
+	}
+	
+
 }
 
 
@@ -205,6 +280,9 @@ void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
+	//validation !!!
+	ClientManager *managar = ClientManager::getManager();
+	managar->RemoveClient(managar->GetClientSocket(sender.getName()));
 }
 
 
@@ -216,3 +294,5 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 }
 
 #endif // COMMANDS_HPP
+
+

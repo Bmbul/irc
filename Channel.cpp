@@ -144,3 +144,18 @@ void	Channel::Broadcast(const Client &sender, const std::string &message)
 		MessageController::getController()->SendMessage(sender, it->second, message);
 	}
 }
+
+Client &Channel::getNextMember()
+{
+	std::map<std::string,Client>::iterator it = members.begin();
+	return (++it)->second;
+}
+
+int Channel::getMemberCount(std::string const &type)
+{
+	if(type == "admin")
+		return admins.size();
+	if(type == "member")
+		return members.size();
+	return -1;
+}
