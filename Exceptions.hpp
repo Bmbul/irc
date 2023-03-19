@@ -22,13 +22,17 @@ class IRCException : public std::exception
 		std::string name;
 		std::string errorMessage;
 
+	private:
+		mutable std::string	fullMessage;
+		
+	protected:
 		IRCException(const std::string &_name, const std::string & _message, int _errorCode)
 			: errorCode(_errorCode), name(_name), errorMessage(_message) { }
 	public:
 		virtual const char* what() const throw ()
 		{
 			//:name@host ERR_CODE name:reason 
-			std::string fullMessage = ":" + name + "@"
+			fullMessage = ":" + name + "@"
 				+ Server::getServer()->getHost() + " " + NumberToString(errorCode) + errorMessage;
 			return fullMessage.c_str();
 		}

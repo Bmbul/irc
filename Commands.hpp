@@ -45,8 +45,6 @@ void	Command<type>::execute(Client &sender, const std::vector<std::string> &argu
 template<>
 void	Command<CommandType::pass>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
-	(void) arguments;
 	std::cout << "pass()" <<std::endl;
 	if(sender.getIsPassed())
 		throw AlreadyRegistered(sender.getNick());
@@ -70,44 +68,31 @@ void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::s
 	if(arguments.size() < 4)
 		throw NeedMoreParams(sender.getNick(),"USER");
 	if (sender.getIsPassed() == false)
-	{
 		throw NOTAUTHORIZED(sender.getNick(),sender.getName());
-	}
-	else if(sender.isDone())
-	{
+	if(sender.isDone())
 		throw AlreadyRegistered(sender.getNick());
-	}
-	else
-	{
-		sender.setName(arguments[0]);
-		sender.setIsUsered(true);
-	}
+
+	sender.setName(arguments[0]);
+	sender.setIsUsered(true);
 }
+
 template<>
 void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
-	if(arguments.size() == 0)
+	if (arguments.size() == 0)
 		throw NoNickNameGiven(sender.getName());
 	if (sender.getIsPassed() == false)
-	{
 		throw NOTAUTHORIZED(sender.getName(),sender.getNick());
-	}
-	else if (ClientManager::getManager()->HasClient(arguments[0]))
-	{
+	if (ClientManager::getManager()->HasClient(arguments[0]))
 		 throw NicknameInUse(arguments[0],sender.getNick());
-	}
-	else
-	{
-		sender.setNick(arguments[0]);
-		sender.setIsNicked(true);
-	}
+	
+	sender.setNick(arguments[0]);
+	sender.setIsNicked(true);
 }
 
 template<>
 void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
-	(void) arguments;
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PING");
 	if(sender.isDone() == 0)
@@ -124,8 +109,6 @@ void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
-	(void) arguments;
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PONG");
 	if(sender.isDone() == 0)
@@ -206,23 +189,26 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 template<>
 void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
-	(void) arguments;
 	Server *server = Server::getServer();
 	MessageController *message = MessageController::getController();
+
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"JOIN");
 	if(message->IsValidChannelName(arguments[0]))
+	{
+
 		throw NoSuchChannel(sender.getNick(),arguments[0]);
+	}
 	if (server->HasChannel(arguments[0]))
 	{
+		std::cout <<  "HAS CHANNEL" << std::endl;
 		Channel channel = server->getChannel(arguments[0]);
-		channel.AddMember(channel.getFirstAdmin(),sender.getNick());
+		channel.AddMember(sender.getNick());
 	}
 	else
 	{
-		Channel Channel = server->getChannel(arguments[0]);
-		Channel.setAdmin(sender.getNick());//what should i pass in 1st arguments?
+		Channel channel = server->getChannel(arguments[0]);
+		channel.AddMember(sender.getNick());
 	}
 
 }
@@ -231,8 +217,6 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
-	(void) arguments;
 	Server *server = Server::getServer();
 	if(server->HasChannel(arguments[0]) == false)
 		throw NoSuchChannel(sender.getNick(),arguments[0]);
@@ -260,8 +244,6 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
-	(void) arguments;
 	if(arguments.size() != 2)
 		throw NeedMoreParams(sender.getNick(),"KICK");
 	Server *server = Server::getServer();
@@ -288,7 +270,7 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) arguments;
+	(void)arguments;
 	//validation !!!
 	ClientManager *manager = ClientManager::getManager();
 	int socket = sender.getSocket();

@@ -20,7 +20,7 @@ class MessageController
 
 		void	PrintData(std::vector<CommandData> &data) const;
 
-		bool	IsValidChannelName(std::string channelName) const;
+		bool	IsValidChannelName(const std::string &channelName) const;
 		bool	StringStartsWithFromSet(const std::string &str, const std::string &set) const;
 		bool	GotEndOfMessage(const char *messageChunk) const;
 

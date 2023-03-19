@@ -98,7 +98,7 @@ bool	MessageController::StringStartsWithFromSet
 	return (false);
 }
 
-bool	MessageController::IsValidChannelName(std::string channelName) const
+bool	MessageController::IsValidChannelName(const std::string &channelName) const
 {
 	return (StringStartsWithFromSet(channelName, "#&"));
 }
@@ -150,9 +150,12 @@ void	MessageController::SendMessageToClient(const Client &client,
 std::string	MessageController::GetClientFormatedName(const Client &client) const
 {
 	std::string formatted;
-
+	std::cout << "Filling the USER NAME" << std::endl;
 	if (client.getIsNicked())
-		formatted += client.getNick();
+	{
+		std::cout << "trying ADDING NICK" << std::endl;
+		formatted = client.getNick();
+	}
 	if (client.getIsUsered())
 		formatted += "!" + client.getName();
 	formatted += "@" + Server::getServer()->getHost();

@@ -9,24 +9,11 @@ Channel::Channel() { }
 
 Channel::~Channel() { }
 
-
-// Change this to exception
-// ERR_NEEDMOREPARAMS+
-// ERR_BANNEDFROMCHAN+
-// ERR_INVITEONLYCHAN+
-// ERR_BADCHANNELKEY+
-// ERR_CHANNELISFULL+
-// ERR_BADCHANMASK+
-// ERR_NOSUCHCHANNEL+
-// ERR_TOOMANYCHANNELS+
-// RPL_TOPIC (not error)
-
-
-// Without implementing exceptions the code can give wrong results
-
-void	Channel::AddMember(const std::string &admin, const std::string &memberNick)
+void	Channel::AddMember(const std::string &memberNick)
 {
-	ValidateCanAdd(admin, memberNick);
+	ValidateCanAdd(memberNick);
+	if (members.size() == 0)
+		SetAdmin(memberNick);
 	Client	addingClient =  ClientManager::getManager()->getClient(memberNick);
 	members.insert(std::pair<std::string, Client>(memberNick, addingClient));
 }
@@ -42,10 +29,14 @@ void	Channel::RemoveMember(const std::string &admin, const std::string &memberNi
 }
 
 // Become Admin
-
 void	Channel::MakeAdmin(const std::string &admin, const std::string &newAdmin)
 {
 	ValidateCanModifyAdmin(admin, newAdmin);
+	SetAdmin(newAdmin);
+}
+
+void	Channel::SetAdmin(const std::string &newAdmin)
+{
 	admins.push_back(newAdmin);
 }
 
@@ -58,6 +49,8 @@ void	Channel::RemoveFromAdmins(const std::string &admin, const std::string &remo
 	
 	std::vector<std::string>::iterator it = std::find(admins.begin(), admins.end(), removingAdmin);
 	admins.erase(it);
+	if (admins.empty() && !members.empty())
+		SetAdmin(members.begin()->first);
 }
 
 void	Channel::ValidateCanModifyAdmin(const std::string &admin, const std::string &newAdmin) const
@@ -65,9 +58,8 @@ void	Channel::ValidateCanModifyAdmin(const std::string &admin, const std::string
 	ValidateCanRemove(admin, newAdmin);
 }
 
-void	Channel::ValidateCanAdd(const std::string &admin, const std::string &newMember) const
+void	Channel::ValidateCanAdd(const std::string &newMember) const
 {
-	ValidateAdmin(admin);
 	ValidateClientIsInServer(newMember);
 
 	if (HasMember(newMember))
@@ -166,9 +158,4 @@ int Channel::getMemberCount(std::string const &type)
 void Channel::setAdmin(std::string const &name)
 {
 	admins.push_back(name);
-}
-
-std::string Channel::getFirstAdmin()const
-{
-	return(admins[0]);
 }

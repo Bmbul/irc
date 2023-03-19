@@ -7,10 +7,8 @@ Client::Client()
 }
 
 Client::Client(std::string _name, int _socketfd)
-    :  name(_name), fd(_socketfd)
-{
-	
-}
+    : isPassed(false), isUsered(false), isNicked(false), name(_name), fd(_socketfd)
+{ }
 
 Client::~Client()
 {
@@ -45,19 +43,20 @@ void Client::setIsPassed(bool isPassed)
 }
 void Client::setIsUsered(bool is_usered)
 {
-	 this->isUsered = is_usered;
+	this->isUsered = is_usered;
 }
 void Client::setIsNicked(bool is_Nicked)
 {
-	 this->isNicked = is_Nicked;
+	this->isNicked = is_Nicked;
 }
 void Client::setName(std::string const &name)
 {
-	 this->name = name;
+	this->name = name;
 }
 void Client::setNick(std::string const &nick)
 {
-	 this->nick = nick;
+	std::cout << "setting nick to " << nick << std::endl;
+	this->nick = nick;
 }
 
 bool Client::isDone()
