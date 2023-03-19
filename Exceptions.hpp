@@ -4,6 +4,16 @@
 #include <exception>
 #include <iostream>
 #include "Server.hpp"
+#include <sstream>
+
+
+template <typename T>
+std::string NumberToString ( T Number )
+{
+	std::ostringstream ss;
+	ss << Number;
+	return ss.str();
+}
 
 class IRCException : public std::exception
 {
@@ -19,7 +29,7 @@ class IRCException : public std::exception
 		{
 			//:name@host ERR_CODE name:reason 
 			std::string fullMessage = ":" + name + "@"
-				+ Server::getServer()->getHost() + " " + std::to_string(errorCode) + errorMessage;
+				+ Server::getServer()->getHost() + " " + NumberToString(errorCode) + errorMessage;
 			return fullMessage.c_str();
 		}
 	virtual ~IRCException() throw() { }

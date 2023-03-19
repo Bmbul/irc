@@ -145,7 +145,7 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 		throw NeedMoreParams(sender.getNick(),"PRIVMSG");
 	if(sender.isDone() == 0)
 		throw NOTAUTHORIZED(sender.getNick(),sender.getName());
-	std::vector<std::string> args = sender.split(arguments[0],",");
+	std::vector<std::string> args = message_controller->Split(arguments[0],",");
 	for (size_t i = 0; i < args.size(); i++)
 	{
 		if(message_controller->IsValidChannelName(args[i]))
@@ -178,7 +178,7 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 	Server *server = Server::getServer();
 	if(arguments.size() <= 1)
 		throw NeedMoreParams(sender.getNick(),"NOTICE");
-	std::vector<std::string> args = sender.split(arguments[0],",");
+	std::vector<std::string> args = message_controller->Split(arguments[0],",");
 	for (size_t i = 0; i < args.size(); i++)
 	{
 		if(message_controller->IsValidChannelName(args[i]))

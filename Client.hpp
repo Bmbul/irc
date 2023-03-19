@@ -33,12 +33,6 @@ class Client
 		void setName(std::string const &name);
 		void setNick(std::string const &nick);
 		bool isDone();
-		std::vector<std::string> split(std::string str, std::string delimiter);
-
 };
-
-
-
-
 
 #endif // CLIENT_HPP
