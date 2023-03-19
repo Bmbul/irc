@@ -66,3 +66,4 @@ bool Client::isDone()
 		return true;
 	return false;
 }
+

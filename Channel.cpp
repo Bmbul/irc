@@ -162,3 +162,13 @@ int Channel::getMemberCount(std::string const &type)
 		return members.size();
 	return -1;
 }
+
+void Channel::setAdmin(std::string const &name)
+{
+	admins.push_back(name);
+}
+
+std::string Channel::getFirstAdmin()const
+{
+	return(admins[0]);
+}

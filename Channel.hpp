@@ -27,6 +27,8 @@ class Channel
 		void	Broadcast(const Client &sender, const std::string &message, const std::string &command);
 		Client &getNextMember();
 		int getMemberCount(std::string const &type);
+		void setAdmin(std::string const &name);
+		std::string getFirstAdmin()const;
 
 	private:
 		void	ValidateAdmin(const std::string &admin) const;
@@ -37,12 +39,12 @@ class Channel
 		void	ValidateCanModifyAdmin(const std::string &admin, const std::string &newAdmin) const;
 
 
-
 	private:
 		std::map<std::string, Client> members;
 		mutable std::vector<std::string> admins;
 		std::vector<int> bannedClients;
 };
+
 
 
 
