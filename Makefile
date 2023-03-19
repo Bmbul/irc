@@ -7,7 +7,7 @@ OBJS = $(patsubst %.cpp, %.o, $(SRCS))
 HEADERS = $(wildcard *.hpp)
 PRE_HEADERS = $(patsubst %.hpp, %.hpp.gch, $(HEADERS))
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98
+CFLAGS = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g
 
 CC = c++
 
