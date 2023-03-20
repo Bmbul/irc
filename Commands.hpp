@@ -3,6 +3,7 @@
 
 #include "ICommand.hpp"
 #include <iostream>
+#include <string>
 #include "Exceptions.hpp"
 #include "Server.hpp"
 #include "MessageController.hpp"
@@ -285,6 +286,22 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
+	if(arguments.size() < 2)
+		throw NeedMoreParams(sender.getNick(),"MODE");
+	std::string channel_name = arguments[0].at(0) == '#' ? arguments[0].substr(1,arguments[0].length() - 1) : arguments[0];
+	Server *server = Server::getServer();
+	if(server->HasChannel(channel_name) == false)
+		throw NoSuchChannel(sender.getNick(),channel_name);//???????????
+	Channel channel = server->getChannel(channel_name);
+	if(channel.IsAdmin(sender.getNick()) == false)
+		throw UsersDontMatch(sender.getNick());
+	//add mode 
+	for (size_t i = 1; i < arguments.size(); i++)
+	{
+		//////////////////////////////////////
+	}
+	
+	//std::cout <<"channel name is ===> " << channel_name << std::endl;
 }
 
 #endif // COMMANDS_HPP
