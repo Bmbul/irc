@@ -21,6 +21,8 @@ void	Command<CommandType::pass>::validate(Client &sender, const std::vector<std:
 template<>
 void	Command<CommandType::user>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	if(sender.getIsPassed() == false)
+		throw NotRegistered(sender.getNick());
 	if(arguments.size() < 4)
 		throw NeedMoreParams(sender.getNick(),"USER");
 	if (sender.getIsPassed() == false)
@@ -32,6 +34,8 @@ void	Command<CommandType::user>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::nick>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	if(sender.getIsPassed() == false)
+		throw NotRegistered(sender.getNick());
 	if (arguments.size() == 0)
 		throw NoNickNameGiven(sender.getName());
 	if (sender.getIsPassed() == false)
@@ -43,6 +47,8 @@ void	Command<CommandType::nick>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::ping>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PING");
 	if(sender.isDone() == 0)
@@ -52,6 +58,8 @@ void	Command<CommandType::ping>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::pong>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PONG");
 	if(sender.isDone() == 0)
@@ -61,6 +69,8 @@ void	Command<CommandType::pong>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	MessageController *message_controller = MessageController::getController();
 	ClientManager *client_managar = ClientManager::getManager();
 	Server *server = Server::getServer();
@@ -97,6 +107,8 @@ void	Command<CommandType::join>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::part>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	Server *server = Server::getServer();
 	if(arguments.size() != 1)
 		throw NeedMoreParams(sender.getNick(),"PART");
@@ -119,6 +131,8 @@ void	Command<CommandType::part>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::kick>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	if(arguments.size() != 2)
 		throw NeedMoreParams(sender.getNick(),"KICK");
 	std::string ChannelName = arguments[1].at(0) == '#' ? arguments[1].substr(1,arguments[1].size() - 1) : arguments[1];
@@ -136,6 +150,8 @@ void	Command<CommandType::quit>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	if(arguments.size() < 2)
 		throw NeedMoreParams(sender.getNick(),"MODE");
 	std::string channel_name = arguments[0].at(0) == '#' ? arguments[0].substr(1,arguments[0].length() - 1) : arguments[0];

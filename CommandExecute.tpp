@@ -20,17 +20,23 @@ template<>
 void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
 	validate(sender, arguments);
+	MessageController *controller = MessageController::getController();
 	sender.setName(arguments[0]);
 	sender.setIsUsered(true);
+	if(sender.isDone())
+		controller->SendHelloMessage(sender);
 }
 
 template<>
 void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
-	
 	validate(sender,arguments);
+	MessageController *controller = MessageController::getController();
 	sender.setNick(arguments[0]);
 	sender.setIsNicked(true);
+	if(sender.isDone())
+		controller->SendHelloMessage(sender);
+
 }
 
 template<>
