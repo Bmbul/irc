@@ -73,7 +73,8 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 	{
 		if(message_controller->IsValidChannelName(args[i]))
 		{
-			if(server->HasChannel(args[i]) == false)
+			std::string channelName = args[i].at(0) == '#' ? args[i].substr(1,args[i].size() - 1) : args[i]; 
+			if(server->HasChannel(channelName) == false)
 				throw NoSuchChannel(sender.getNick(),args[i]);
 		}
 		else if(client_managar->HasClient(args[i]) == false)
@@ -102,14 +103,16 @@ void	Command<CommandType::part>::validate(Client &sender,const std::vector<std::
 	std::vector<std::string> channels = MessageController::getController()->Split(arguments[0],",");
 	for (size_t i = 0; i < channels.size(); i++)
 	{
-		if(server->HasChannel(channels[i]) == false)
+		std::string channelName = channels[i].at(0) == '#' ? channels[i].substr(1,channels[i].size() - 1) : channels[i];
+		if(server->HasChannel(channelName) == false)
 			throw NoSuchChannel(sender.getNick(),channels[i]);
 	}
 	for (size_t i = 0; i < channels.size(); i++)
 	{
-		Channel channel = server->getChannel(channels[i]);
+		std::string channelName = channels[i].at(0) == '#' ? channels[i].substr(1,channels[i].size() - 1) : channels[i];
+		Channel channel = server->getChannel(channelName);
 		if(channel.HasMember(sender.getNick()) == false)
-			throw NotOnChannel(sender.getNick(),channels[i]);
+			throw NotOnChannel(sender.getNick(),channelName);
 	}
 }
  
@@ -118,17 +121,10 @@ void	Command<CommandType::kick>::validate(Client &sender,const std::vector<std::
 {
 	if(arguments.size() != 2)
 		throw NeedMoreParams(sender.getNick(),"KICK");
+	std::string ChannelName = arguments[1].at(0) == '#' ? arguments[1].substr(1,arguments[1].size() - 1) : arguments[1];
 	Server *server = Server::getServer();
-	ClientManager *manager = ClientManager::getManager();
-	if(server->HasChannel(arguments[1]) == false)
-		throw NoSuchChannel(sender.getNick(),arguments[1]);
-	if(manager->HasClient(arguments[0]) == false)
-		throw NoSuchNick(sender.getNick(),arguments[0]);
-	Channel channel = server->getChannel(arguments[1]);
-	if(channel.HasMember(arguments[0]) == false)
-		throw NotOnChannel(sender.getNick(),arguments[1]);
-	if(channel.IsAdmin(sender.getNick()) == false)
-		throw ChannelOpPrivsNeeded(sender.getNick(),arguments[1]);
+	if(server->HasChannel(ChannelName) == false)
+		throw NoSuchChannel(sender.getNick(),ChannelName);
 }
  
 /* template<>

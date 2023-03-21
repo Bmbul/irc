@@ -168,6 +168,8 @@ bool Server::HasChannel(std::string const &name)
 
 Channel &Server::getChannel(std::string const &name)
 {
+	if(!HasChannel(name))
+		channels.insert(std::pair<std::string, Channel>(name, Channel(name)));
 	return channels[name];
 }
 

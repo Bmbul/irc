@@ -23,14 +23,15 @@ void Channel::KickMember(const std::string &admin, const std::string &memberNick
 {
 	ValidateCanModifyAdmin(admin, memberNick);
 	LeaveMember(memberNick);
+	PrintData();
 }
 
 void	Channel::LeaveMember(const std::string &memberNick)
 {
 	ValidateAdminIsInChannel(memberNick);
+	members.erase(memberNick);
 	if (IsAdmin(memberNick))
 		DeleteAdmin(memberNick);
-	members.erase(memberNick);
 	PrintData();
 }
 
@@ -78,7 +79,7 @@ void Channel::ValidateAdmin(const std::string &admin) const
 
 void Channel::ValidateClientIsInChannel(const std::string &admin, const std::string &client) const
 {
-	if (HasMember(client))
+	if (!HasMember(client))
 		throw UserNotInChannel(admin, client, this->name);
 }
 
@@ -160,4 +161,9 @@ int Channel::getMemberCount()
 {
 
 	return members.size();
+}
+
+Channel::Channel(std::string const &name)
+{
+	this->name = name;
 }

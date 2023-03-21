@@ -12,7 +12,7 @@ class Channel
 		
 		Channel();
 		~Channel();
-
+		Channel(std::string const &name);
 		void	AddMember(const std::string &newMember);
 		void	KickMember(const std::string &admin, const std::string &removingMember);
 		void	LeaveMember(const std::string &memberNick);
