@@ -113,17 +113,19 @@ void	ClientManager::HandleMessage(Client &client)
 
 void	ClientManager::CloseClient(int	clientSocket)
 {
+	Server	*server = Server::getServer();
 	struct sockaddr_in *address;
 	socklen_t	addrlen;
 
-	address = Server::getServer()->GetAddress();
-	addrlen = Server::getServer()->getaddrlen();
+	address = server->GetAddress();
+	addrlen = server->getaddrlen();
 	//Somebody disconnected , get his details and print
 	getpeername(clientSocket , (sockaddr *)address , &addrlen);
 	
 	std::cout << "Host disconnected , ip " << inet_ntoa(address->sin_addr)
 		<< " , port " << ntohs(address->sin_port) << std::endl;
 	//Close the socket and mark as 0 in list for reuse
+	server->ClearClientFromChannels(clientMap[clientSocket]);
 	close(clientSocket);
 }
 

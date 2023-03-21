@@ -36,6 +36,7 @@ class Server
 		void	SendToClient(int sockfd, const char *message);
 		void	WaitForActivity();
 		void	HandleIncomingConnections();
+		void	ClearClientFromChannels(const Client &client);
 		int		getaddrlen();
 		struct	sockaddr_in	*GetAddress();
 		std::string const &getPass()const;
