@@ -137,6 +137,17 @@ void	Server::HandleIncomingConnections()
 	}
 }
 
+void	Server::ClearClientFromChannels(const Client &client)
+{
+	std::string nick = client.getNick();
+	for(std::map<std::string, Channel>::iterator it = channels.begin();
+		it != channels.end(); it++)
+	{
+		it->second.LeaveIfMember(nick);
+	}
+}
+
+
 Server	*Server::getServer()
 {
 	if (!instance)

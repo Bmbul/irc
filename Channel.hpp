@@ -16,6 +16,8 @@ class Channel
 		void	AddMember(const std::string &newMember);
 		void	KickMember(const std::string &admin, const std::string &removingMember);
 		void	LeaveMember(const std::string &memberNick);
+		void	LeaveIfMember(const std::string &memberNick);
+
 
 		void	MakeAdmin(const std::string &admin, const std::string &newAdmin);
 		void	RemoveFromAdmins(const std::string &admin, const std::string &oldAdmin);

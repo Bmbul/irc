@@ -35,6 +35,12 @@ void	Channel::LeaveMember(const std::string &memberNick)
 	PrintData();
 }
 
+void	Channel::LeaveIfMember(const std::string &memberNick)
+{
+	if (members.count(memberNick) != 0)
+		LeaveMember(memberNick);
+}
+
 void Channel::MakeAdmin(const std::string &admin, const std::string &newAdmin)
 {
 	ValidateCanModifyAdmin(admin, newAdmin);
