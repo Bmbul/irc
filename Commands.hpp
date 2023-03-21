@@ -33,6 +33,7 @@ template <CommandType::Type type>
 class Command : public ICommand
 {
 	virtual void	execute(Client &sender, const std::vector<std::string> &arguments);
+
 	virtual void	validate(Client &sender,const std::vector<std::string> &arguments);
 
 };
