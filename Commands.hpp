@@ -34,6 +34,7 @@ template <CommandType::Type type>
 class Command : public ICommand
 {
 	virtual void	execute(Client &sender, const std::vector<std::string> &arguments);
+
 };
 
 template <CommandType::Type type>
@@ -129,7 +130,12 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 		throw NeedMoreParams(sender.getNick(),"PRIVMSG");
 	if(sender.isDone() == 0)
 		throw NOTAUTHORIZED(sender.getNick(),sender.getName());
+	std::string MessageBody = "";
+	for (size_t i = 1; i < arguments.size(); i++)
+		MessageBody = MessageBody + arguments[i] + " ";
+	
 	std::vector<std::string> args = message_controller->Split(arguments[0],",");
+
 	for (size_t i = 0; i < args.size(); i++)
 	{
 		if(message_controller->IsValidChannelName(args[i]))
@@ -137,13 +143,13 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 			if(server->HasChannel(args[i]))
 			{
 				Channel channel = server->getChannel(args[i]);
-				channel.Broadcast(sender, arguments.back(), "PRIVMSG");
+				channel.Broadcast(sender, MessageBody, "PRIVMSG");
 			}
 		}
 		else if(client_managar->HasClient(args[i]))
 		{
 			message_controller->SendMessage(sender,client_managar->getClient(args[i]),
-				"PRIVMSG", arguments.back());
+				"PRIVMSG", MessageBody);
 		}
 		else
 		{
