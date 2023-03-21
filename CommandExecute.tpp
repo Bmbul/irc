@@ -203,11 +203,13 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
-	
+	std::string channel_name = arguments[0].at(0) == '#' ? arguments[0].substr(1,arguments[0].length() - 1) : arguments[0];
+	Server *server =  Server::getServer();
+	Channel &channel = server->getChannel(channel_name);
 	//add mode 
 	for (size_t i = 1; i < arguments.size(); i++)
 	{
-		//////////////////////////////////////
+		
 	}
 	
 	//std::cout <<"channel name is ===> " << channel_name << std::endl;
