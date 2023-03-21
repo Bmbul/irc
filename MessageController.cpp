@@ -50,7 +50,7 @@ CommandData	MessageController::ParseSingleCommand(const std::string &commandLine
 			data.args.push_back(str);
 	}
 	if (found != std::string::npos)
-		data.args.push_back(commandLine);
+		data.args.push_back(longArg);
 	
 	return data;
 }

@@ -88,11 +88,9 @@ int	ClientManager::GetClientSocket(const std::string &clientName) const
 void	ClientManager::HandleMessage(Client &client)
 {
 	messageController->AddChunk(client.getSocket(), buffer);
-	std::cout << "ADDING: " << buffer << std::endl;
+	
 	if (!messageController->GotEndOfMessage(buffer))
 		return ;
-		
-	std::cout << "end of message" << std::endl;
 	std::string readyMessage = messageController->ConstructFullMessage(client.getSocket());
 	std::vector<CommandData> commands = messageController->Parse(readyMessage);
 	messageController->PrintData(commands);

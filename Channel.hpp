@@ -21,20 +21,21 @@ class Channel
 
 		bool	IsAdmin(const std::string &memberNick) const;
 		bool	HasMember(const std::string &memberName) const;
-		void	Ban(const std::string &memberName);
-		void	Unban(const std::string &memberName);
+		void	Ban(const std::string &admin, const std::string &memberName);
+		void	Unban(const std::string &admin, const std::string &memberName);
 
 		void	Broadcast(const Client &sender, const std::string &message, const std::string &command);
 		Client &getNextMember();
-		int getMemberCount(std::string const &type);
-		void setAdmin(std::string const &name);
+		int		getMemberCount();
+		void	setAdmin(std::string const &name);
 
 	private:
 		void	ValidateAdmin(const std::string &admin) const;
-		void	ValidateClientIsInServer(const std::string &client) const;
+		void	ValidateAdminIsInChannel(const std::string &admin) const;
 
-		void	ValidateCanAdd(const std::string &newMember) const;
-		void	ValidateCanRemove(const std::string &admin, const std::string &removingMember) const;
+		void	ValidateClientIsInServer(const std::string &client) const;
+		void	ValidateClientIsInChannel(const std::string &admin, const std::string &client) const;
+
 		void	ValidateCanModifyAdmin(const std::string &admin, const std::string &newAdmin) const;
 
 
