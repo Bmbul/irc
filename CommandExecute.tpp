@@ -216,6 +216,24 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 	//add mode 
 	for (size_t i = 1; i < arguments.size(); i++)
 	{
+		if(arguments[i].at(0) == '+')
+		{
+			if(arguments[i].at(1) == 'W')
+				channel.AddMode(ModeType::write_);
+			else if(arguments[i].at(1) == 'R')
+				channel.AddMode(ModeType::read);
+			else if(arguments[i].at(1) == 'I')
+				channel.AddMode(ModeType::invite);
+		}
+		else if(arguments[i].at(0) == '-')
+		{
+			if(arguments[i].at(1) == 'W')
+				channel.RemoveMode(ModeType::write_);
+			else if(arguments[i].at(1) == 'R')
+				channel.RemoveMode(ModeType::read);
+			else if(arguments[i].at(1) == 'I')
+				channel.RemoveMode(ModeType::invite);
+		}
 		
 	}
 	
