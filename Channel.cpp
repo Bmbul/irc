@@ -4,94 +4,97 @@
 #include <algorithm>
 #include "MessageController.hpp"
 #include "Server.hpp"
+#include "Exceptions.hpp"
 
-Channel::Channel() { }
+Channel::Channel() {}
 
-Channel::~Channel() { }
+Channel::~Channel() {}
 
-void	Channel::AddMember(const std::string &memberNick)
+void Channel::AddMember(const std::string &memberNick)
 {
-	ValidateCanAdd(memberNick);
 	if (members.size() == 0)
 		SetAdmin(memberNick);
-	Client	addingClient =  ClientManager::getManager()->getClient(memberNick);
+	Client addingClient = ClientManager::getManager()->getClient(memberNick);
 	members.insert(std::pair<std::string, Client>(memberNick, addingClient));
+	PrintData();
 }
 
-void	Channel::RemoveMember(const std::string &admin, const std::string &memberNick)
+void Channel::KickMember(const std::string &admin, const std::string &memberNick)
 {
-	ValidateCanRemove(admin, memberNick);
-
-	if (IsAdmin(memberNick))
-		RemoveFromAdmins(admin, memberNick);
-		
-	members.erase(memberNick);
+	ValidateCanModifyAdmin(admin, memberNick);
+	LeaveMember(memberNick);
 }
 
-// Become Admin
-void	Channel::MakeAdmin(const std::string &admin, const std::string &newAdmin)
+void	Channel::LeaveMember(const std::string &memberNick)
+{
+	ValidateAdminIsInChannel(memberNick);
+	if (IsAdmin(memberNick))
+		DeleteAdmin(memberNick);
+	members.erase(memberNick);
+	PrintData();
+}
+
+void Channel::MakeAdmin(const std::string &admin, const std::string &newAdmin)
 {
 	ValidateCanModifyAdmin(admin, newAdmin);
 	SetAdmin(newAdmin);
 }
 
-void	Channel::SetAdmin(const std::string &newAdmin)
+void Channel::SetAdmin(const std::string &newAdmin)
 {
 	admins.push_back(newAdmin);
 }
 
-void	Channel::RemoveFromAdmins(const std::string &admin, const std::string &removingAdmin)
+void Channel::RemoveFromAdmins(const std::string &admin, const std::string &removingAdmin)
 {
 	ValidateCanModifyAdmin(admin, removingAdmin);
 
-	if (!IsAdmin(removingAdmin))
-		std::cout << "trying to remove from admins a user which is not admin!" << std::endl;
-	
+	DeleteAdmin(removingAdmin);
+}
+
+void	Channel::DeleteAdmin(const std::string &removingAdmin)
+{
 	std::vector<std::string>::iterator it = std::find(admins.begin(), admins.end(), removingAdmin);
 	admins.erase(it);
 	if (admins.empty() && !members.empty())
 		SetAdmin(members.begin()->first);
 }
 
-void	Channel::ValidateCanModifyAdmin(const std::string &admin, const std::string &newAdmin) const
-{
-	ValidateCanRemove(admin, newAdmin);
-}
 
-void	Channel::ValidateCanAdd(const std::string &newMember) const
-{
-	ValidateClientIsInServer(newMember);
-
-	if (HasMember(newMember))
-		std::cout << "Some (other x 3) kind of error!!" << std::endl;
-}
-
-
-void	Channel::ValidateCanRemove(const std::string &admin, const std::string &removingMember) const
+void Channel::ValidateCanModifyAdmin(const std::string &admin, const std::string &modifyingMember) const
 {
 	ValidateAdmin(admin);
-	ValidateClientIsInServer(removingMember);
-
-	if (!HasMember(removingMember))
-		std::cout << "Some (other x 3) kind of error!!" << std::endl;
+	ValidateClientIsInServer(modifyingMember);
+	ValidateClientIsInChannel(admin, modifyingMember);
 }
 
-void	Channel::ValidateAdmin(const std::string &admin) const
+void Channel::ValidateAdmin(const std::string &admin) const
+{
+	ValidateClientIsInServer(admin);
+	ValidateAdminIsInChannel(admin);
+	if (!IsAdmin(admin))
+		throw ChannelOpPrivsNeeded(admin, this->name);
+}
+
+void Channel::ValidateClientIsInChannel(const std::string &admin, const std::string &client) const
+{
+	if (HasMember(client))
+		throw UserNotInChannel(admin, client, this->name);
+}
+
+void Channel::ValidateAdminIsInChannel(const std::string &admin) const
 {
 	if (!HasMember(admin))
-		std::cout << "Some other kind of error!!" << std::endl;
-	if (!IsAdmin(admin))
-		std::cout << "Some kind of error!!" << std::endl;
+		throw NotOnChannel(admin, this->name);
 }
 
-void	Channel::ValidateClientIsInServer(const std::string &client) const
+void Channel::ValidateClientIsInServer(const std::string &client) const
 {
 	if (!ClientManager::getManager()->HasClient(client))
-		std::cout << "Some other other kind of error!!" << std::endl;
+		throw NoSuchNick(client, this->name);
 }
 
-
-bool	Channel::IsAdmin(const std::string &memberNick) const
+bool Channel::IsAdmin(const std::string &memberNick) const
 {
 	std::vector<std::string>::iterator it = std::find(admins.begin(), admins.end(), memberNick);
 	return (it != admins.end());
@@ -102,60 +105,59 @@ bool Channel::HasMember(const std::string &memberName) const
 	return (members.count(memberName));
 }
 
-void	Channel::Ban(const std::string &memberName)
+void Channel::Ban(const std::string &admin, const std::string &memberName)
 {
-	if (members.count(memberName) > 0)
+	ValidateAdmin(admin);
+	ValidateClientIsInServer(memberName);
+	std::vector<int>::const_iterator it = std::find(bannedClients.begin(),
+													bannedClients.end(), members[memberName].getSocket());
+	if (it == bannedClients.end())
 		bannedClients.push_back(members[memberName].getSocket());
-	else 
-		std::cout << "No such member in the Channel" << std::endl;
 }
 
-void	Channel::Unban(const std::string &memberName)
+void Channel::Unban(const std::string &admin, const std::string &memberName)
 {
-	// should be changed to exceptions
-	if (!ClientManager::getManager()->HasClient(memberName))
-	{
-		std::cout << "No Such Client in the Server" << std::endl;
-		return ;
-	}
-	if (!HasMember(memberName))
-	{
-		std::cout << "No Such Client in the Channel" << std::endl;
-		return ;
-	}
+	ValidateAdmin(admin);
+	ValidateClientIsInServer(memberName);
+	ValidateClientIsInChannel(admin, memberName);
+
 	int unbanSock = ClientManager::getManager()->GetClientSocket(memberName);
-	std::vector<int>::iterator	memberToUnban = std::find(bannedClients.begin(), bannedClients.end(), unbanSock);
+	std::vector<int>::iterator memberToUnban = std::find(bannedClients.begin(), bannedClients.end(), unbanSock);
 	if (memberToUnban != bannedClients.end())
 		bannedClients.erase(memberToUnban);
-	else
-		std::cout << "The member was not banned at all" << std::endl;
 }
 
-void	Channel::Broadcast(const Client &sender,
-	const std::string &message, const std::string &command)
+void Channel::Broadcast(const Client &sender,
+						const std::string &message, const std::string &command)
 {
-	for(std::map<std::string, Client>::iterator it; it != members.end(); it++)
+	for (std::map<std::string, Client>::iterator it = members.begin();
+		it != members.end(); it++)
 	{
 		MessageController::getController()->SendMessage(sender, it->second, command, message);
 	}
 }
 
-Client &Channel::getNextMember()
+void Channel::PrintData()
 {
-	std::map<std::string,Client>::iterator it = members.begin();
-	return (++it)->second;
+	std::cout << "CHANNEL: " << name << std::endl;
+	std::cout << "MEMBERS: " << std::endl;
+	for (std::map<std::string, Client>::iterator it = members.begin();
+		it != members.end(); it++)
+	{
+		std::cout << "Nick: " << it->first << ", fd: " << it->second.getSocket() << std::endl;
+	}
+	std::cout << std::endl;
+	std::cout << "ADMINS: " << std::endl;
+	for (std::vector<std::string>::iterator it = admins.begin();
+		it != admins.end(); it++)
+	{
+		std::cout << "Socket: " << *it << std::endl;
+	}
+	std::cout << std::endl;
 }
 
-int Channel::getMemberCount(std::string const &type)
+int Channel::getMemberCount()
 {
-	if(type == "admin")
-		return admins.size();
-	if(type == "member")
-		return members.size();
-	return -1;
-}
 
-void Channel::setAdmin(std::string const &name)
-{
-	admins.push_back(name);
+	return members.size();
 }

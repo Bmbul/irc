@@ -38,20 +38,6 @@ class Command : public ICommand
 
 };
 
-template class Command<CommandType::pass>;
-template class Command<CommandType::nick>;
-template class Command<CommandType::user>;
-template class Command<CommandType::ping>;
-template class Command<CommandType::pong>;
-template class Command<CommandType::privmsg>;
-template class Command<CommandType::notice>;
-template class Command<CommandType::join>;
-template class Command<CommandType::part>;
-template class Command<CommandType::kick>;
-template class Command<CommandType::quit>;
-template class Command<CommandType::mode>;
-
-
 #include "CommandValidate.tpp"
 #include "CommandExecute.tpp"
 

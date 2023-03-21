@@ -6,9 +6,8 @@
 #include "Server.hpp"
 #include <sstream>
 
-
 template <typename T>
-std::string NumberToString ( T Number )
+std::string NumberToString(T Number)
 {
 	std::ostringstream ss;
 	ss << Number;
@@ -17,219 +16,216 @@ std::string NumberToString ( T Number )
 
 class IRCException : public std::exception
 {
-	protected:
-		int	errorCode;
-		std::string name;
-		std::string errorMessage;
+protected:
+	int errorCode;
+	std::string name;
+	std::string errorMessage;
 
-	private:
-		mutable std::string	fullMessage;
-		
-	protected:
-		IRCException(const std::string &_name, const std::string & _message, int _errorCode)
-			: errorCode(_errorCode), name(_name), errorMessage(_message) { }
-	public:
-		virtual const char* what() const throw ()
-		{
-			//:name@host ERR_CODE name:reason 
-			fullMessage = ":" + name + "@"
-				+ Server::getServer()->getHost() + " " + NumberToString(errorCode) + errorMessage;
-			return fullMessage.c_str();
-		}
-	virtual ~IRCException() throw() { }
+private:
+	mutable std::string fullMessage;
+
+protected:
+	IRCException(const std::string &_name, const std::string &_message, int _errorCode)
+		: errorCode(_errorCode), name(_name), errorMessage(_message) {}
+
+public:
+	virtual const char *what() const throw()
+	{
+		//: name@host ERR_CODE name:reason
+		fullMessage = ":" + name + "@" + Server::getServer()->getHost() + " " + NumberToString(errorCode) + errorMessage;
+		return fullMessage.c_str();
+	}
+	virtual ~IRCException() throw() {}
 };
 
 struct NoSuchNick : public IRCException
 {
-	NoSuchNick(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :No such nick/channel", 401) { }
+	NoSuchNick(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :No such nick/channel", 401) {}
 };
 
 struct NoSuchServer : public IRCException
 {
-	NoSuchServer(const std::string &_name, const std::string& serverName)
-		: IRCException(_name, " " + serverName + " :No such server", 402) { }
+	NoSuchServer(const std::string &_name, const std::string &serverName)
+		: IRCException(_name, " " + serverName + " :No such server", 402) {}
 };
 
 struct NoSuchChannel : public IRCException
 {
-	NoSuchChannel(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :No such channel", 403) { }
+	NoSuchChannel(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :No such channel", 403) {}
 };
 
 struct CannotSendToChannel : public IRCException
 {
-	CannotSendToChannel(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :Cannot send to channel", 404) { }
+	CannotSendToChannel(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :Cannot send to channel", 404) {}
 };
 
 struct TooManyChannels : public IRCException
 {
-	TooManyChannels(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :You have joined too many channels", 405) { }
+	TooManyChannels(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :You have joined too many channels", 405) {}
 };
 
 struct TooManyTargets : public IRCException
 {
-	TooManyTargets(const std::string &_name, const std::string& target)
-		: IRCException(_name, " " + target + " :Duplicate recipients. No message delivered", 407) { }
+	TooManyTargets(const std::string &_name, const std::string &target)
+		: IRCException(_name, " " + target + " :Duplicate recipients. No message delivered", 407) {}
 };
 
 struct NoOrigin : public IRCException
 {
-	NoOrigin(const std::string &_name) : IRCException(_name, " :No origin specified", 409) { }
+	NoOrigin(const std::string &_name) : IRCException(_name, " :No origin specified", 409) {}
 };
 
 struct NoRecipient : public IRCException
 {
-	NoRecipient(const std::string &_name, const std::string  &command)
-		: IRCException(_name, " :No recipient given " + command, 411) { }
+	NoRecipient(const std::string &_name, const std::string &command)
+		: IRCException(_name, " :No recipient given " + command, 411) {}
 };
 
 struct NoTextToSend : public IRCException
 {
-	NoTextToSend(const std::string &_name) : IRCException(_name, " :No text to send", 412) { }
+	NoTextToSend(const std::string &_name) : IRCException(_name, " :No text to send", 412) {}
 };
 
 struct NoTopLevel : public IRCException
 {
-	NoTopLevel(const std::string &_name, const std::string& mask)
-		: IRCException(_name, " " + mask + " :No toplevel domain specified", 413) { }
+	NoTopLevel(const std::string &_name, const std::string &mask)
+		: IRCException(_name, " " + mask + " :No toplevel domain specified", 413) {}
 };
 
 struct WildTopLevel : public IRCException
 {
-	WildTopLevel(const std::string &_name, const std::string& mask)
-		: IRCException(_name, " " + mask + " :Wildcard in toplevel domain", 414) { }
+	WildTopLevel(const std::string &_name, const std::string &mask)
+		: IRCException(_name, " " + mask + " :Wildcard in toplevel domain", 414) {}
 };
 
 struct UnknownCommand : public IRCException
 {
-	UnknownCommand(const std::string &_name, const std::string& command)
-		: IRCException(_name, " " + command + " :Unknown command", 421) { }
+	UnknownCommand(const std::string &_name, const std::string &command)
+		: IRCException(_name, " " + command + " :Unknown command", 421) {}
 };
 
 struct NoNickNameGiven : public IRCException
 {
-	NoNickNameGiven(const std::string &_name) : IRCException(_name, " :No nickname given", 431) { }
+	NoNickNameGiven(const std::string &_name) : IRCException(_name, " :No nickname given", 431) {}
 };
 
 struct ErroneusNickname : public IRCException
 {
-	ErroneusNickname(const std::string &_name, const std::string& nickname)
-		: IRCException(_name, " " + nickname + " :Erroneus nickname", 432) { }
+	ErroneusNickname(const std::string &_name, const std::string &nickname)
+		: IRCException(_name, " " + nickname + " :Erroneus nickname", 432) {}
 };
 
 struct NicknameInUse : public IRCException
 {
-	NicknameInUse(const std::string &_name, const std::string& nickname)
-		: IRCException(_name, " " + nickname + " :Nickname is already in use", 433)  { }
+	NicknameInUse(const std::string &_name, const std::string &nickname)
+		: IRCException(_name, " " + nickname + " :Nickname is already in use", 433) {}
 };
 
 struct NickColission : public IRCException
 {
-	NickColission(const std::string &_name, const std::string& nickname)
-		: IRCException(_name, " " + nickname + " :Nickname collision KILL", 436) { }
+	NickColission(const std::string &_name, const std::string &nickname)
+		: IRCException(_name, " " + nickname + " :Nickname collision KILL", 436) {}
 };
 
 struct UserNotInChannel : public IRCException
 {
 	UserNotInChannel(const std::string &_name, const std::string &nick,
-		const std::string& channelName): IRCException
-		(_name, " " + nick + " "  + channelName + " They aren't on that channel", 441) { }
+					 const std::string &channelName) : IRCException(_name, " " + nick + " " + channelName + " They aren't on that channel", 441) {}
 };
 
 struct NotOnChannel : public IRCException
 {
-	NotOnChannel(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :You're not on that channel", 442) { }
+	NotOnChannel(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :You're not on that channel", 442) {}
 };
 
 struct NotRegistered : public IRCException
 {
 	NotRegistered(const std::string &_name)
-		: IRCException(_name, " :You have not registered", 451) { }
+		: IRCException(_name, " :You have not registered", 451) {}
 };
 
 struct NeedMoreParams : public IRCException
 {
-	NeedMoreParams(const std::string &_name, const std::string& command)
-		: IRCException(_name, " " + command + " :Not enough parameters", 461) { }
+	NeedMoreParams(const std::string &_name, const std::string &command)
+		: IRCException(_name, " " + command + " :Not enough parameters", 461) {}
 };
 
 struct AlreadyRegistered : public IRCException
 {
-	AlreadyRegistered(const std::string &_name) : IRCException(_name, " :You may not reregister", 462) { }
+	AlreadyRegistered(const std::string &_name) : IRCException(_name, " :You may not reregister", 462) {}
 };
 
 struct PasswordMissmatch : public IRCException
 {
-	PasswordMissmatch(const std::string &_name) : IRCException(_name, " :Password incorrect", 464) { }
+	PasswordMissmatch(const std::string &_name) : IRCException(_name, " :Password incorrect", 464) {}
 };
 
 struct KeySet : public IRCException
 {
-	KeySet(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :Channel key already set", 467) { }
+	KeySet(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :Channel key already set", 467) {}
 };
 
 struct ChannelIsFull : public IRCException
 {
 
-	ChannelIsFull(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :Cannot join channel (+l)", 471) { }
+	ChannelIsFull(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :Cannot join channel (+l)", 471) {}
 };
 
 struct UnknownMode : public IRCException
 {
-	UnknownMode(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :is unknown mode char to me", 472) { }
+	UnknownMode(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :is unknown mode char to me", 472) {}
 };
 
 struct InviteOnlyChannel : public IRCException
 {
 
-	InviteOnlyChannel(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :Cannot join channel (+i)", 473) { }
+	InviteOnlyChannel(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :Cannot join channel (+i)", 473) {}
 };
 
 struct BannedFromChannel : public IRCException
 {
-	BannedFromChannel(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :Cannot join channel (+b)", 474) { }
+	BannedFromChannel(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :Cannot join channel (+b)", 474) {}
 };
 
 struct BadChannelKey : public IRCException
 {
-	BadChannelKey(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :Cannot join channel (+k)", 475) { }
+	BadChannelKey(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :Cannot join channel (+k)", 475) {}
 };
 
 struct ChannelOpPrivsNeeded : public IRCException
 {
-	ChannelOpPrivsNeeded(const std::string &_name, const std::string& channelName)
-		: IRCException(_name, " " + channelName + " :You're not channel operator", 482) { }
+	ChannelOpPrivsNeeded(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :You're not channel operator", 482) {}
 };
 
 struct UModeUnknownFlag : public IRCException
 {
 	UModeUnknownFlag(const std::string &_name)
-		: IRCException(_name, " :Unknown MODE flag", 501) { }
+		: IRCException(_name, " :Unknown MODE flag", 501) {}
 };
 
 struct UsersDontMatch : public IRCException
 {
 	UsersDontMatch(const std::string &_name)
-		: IRCException(_name, " :Cant change mode for other users", 502) { }
+		: IRCException(_name, " :Cant change mode for other users", 502) {}
 };
 
 struct NOTAUTHORIZED : public IRCException
 {
-	NOTAUTHORIZED(const std::string &_name, const std::string& user)
-		: IRCException(_name, " " + user + " :not authorized", 999) { }
+	NOTAUTHORIZED(const std::string &_name, const std::string &user)
+		: IRCException(_name, " " + user + " :not authorized", 999) {}
 };
-
-
 
 // All Possible Exceptions
 /*
@@ -297,14 +293,11 @@ PONG
 	ERR_NOSUCHSERVER
 */
 
-/* 
+/*
 	General Errors:
 		421     ERR_UNKNOWNCOMMAND
 					"<command> :Unknown command"
 
 */
-
-
-
 
 #endif // EXCEPTIONS_HPP

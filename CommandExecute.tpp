@@ -118,15 +118,15 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 		throw NeedMoreParams(sender.getNick(),"JOIN");
 	if(message->IsValidChannelName(arguments[0]))
 		throw NoSuchChannel(sender.getNick(),arguments[0]);
+        
 	if (server->HasChannel(arguments[0]))
 	{
-		//std::cout <<  "HAS CHANNEL" << std::endl;
-		Channel channel = server->getChannel(arguments[0]);
+		Channel &channel = server->getChannel(arguments[0]);
 		channel.AddMember(sender.getNick());
 	}
 	else
 	{
-		Channel channel = server->getChannel(arguments[0]);
+		Channel &channel = server->getChannel(arguments[0]);
 		channel.AddMember(sender.getNick());
 	}
 
@@ -138,31 +138,15 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 {
 	validate(sender,arguments);
 	Server *server = Server::getServer();
-	std::vector<std::string> channels = MessageController::getController()->Split(arguments[0],",");
-	for (size_t i = 0; i < channels.size(); i++)
+	if(server->HasChannel(arguments[0]) == false)
 	{
-		Channel channel = server->getChannel(channels[i]);
-		if (channel.IsAdmin(sender.getNick()))
-		{
-			if(channel.getMemberCount("member") == 1)
-			{
-				server->removeChannel(channels[i]);
-				return ;
-			}
-			if(channel.getMemberCount("admin") == 1)
-			{
-				channel.MakeAdmin(sender.getNick(),channel.getNextMember().getNick());
-				channel.RemoveMember(channel.getNextMember().getNick(),sender.getNick());
-				return ;
-			}
-		}
-		else
-			channel.RemoveMember(sender.getNick(),sender.getNick());
-			//need get_admin function();
-		
+		throw NoSuchChannel(sender.getNick(),arguments[0]);
 	}
-	
-	
+	Channel &channel = server->getChannel(arguments[0]);
+
+    channel.LeaveMember(sender.getNick());
+    if(channel.getMemberCount() == 0)
+        server->removeChannel(arguments[0]);
 }
 
 
@@ -172,7 +156,7 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 	validate(sender,arguments);
 	Server *server = Server::getServer();
 	Channel channel = server->getChannel(arguments[1]);
-		channel.RemoveMember(sender.getNick(),arguments[0]);
+	channel.KickMember(sender.getNick(),arguments[0]);
 }
 
 
