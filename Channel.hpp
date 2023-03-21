@@ -5,6 +5,18 @@
 #include <vector>
 #include <map>
 
+
+struct ModeType
+{
+	enum Mode
+	{
+		read = 1,
+		write_ = 2,
+		invite = 4
+
+	};
+};
+
 class Channel
 {
 	public:
@@ -28,8 +40,12 @@ class Channel
 		void	Broadcast(const Client &sender, const std::string &message, const std::string &command);
 		int		getMemberCount();
 		void	PrintData();
+		int GetMode()const;
+		void AddMode(ModeType::Mode mode);
+		void RemoveMode(ModeType::Mode mode);
 
 	private:
+		int		mode;
 		void	ValidateAdmin(const std::string &admin) const;
 		void	ValidateAdminIsInChannel(const std::string &admin) const;
 
@@ -47,8 +63,5 @@ class Channel
 		mutable std::vector<std::string> admins;
 		std::vector<int> bannedClients;
 };
-
-
-
 
 #endif // CHANNEL_HPP

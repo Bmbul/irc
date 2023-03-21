@@ -167,3 +167,18 @@ Channel::Channel(std::string const &name)
 {
 	this->name = name;
 }
+
+int Channel::GetMode()const
+{
+	return mode;
+}
+
+void Channel::AddMode(ModeType::Mode newMode)
+{
+	mode |= newMode;
+}
+
+void Channel::RemoveMode(ModeType::Mode mode)
+{
+	this->mode ^=mode;
+}
