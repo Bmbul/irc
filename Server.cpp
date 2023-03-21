@@ -131,8 +131,6 @@ void	Server::HandleIncomingConnections()
 			<< ", ip is : " << getHost() << ", port : "
 			<< ntohs(address.sin_port) << std::endl;
 		
-		// MessageController::getController()->SendHelloMessage(new_socket);
-		
 		ClientManager::getManager()->AddClient(new_socket);
 	}
 }
@@ -147,14 +145,12 @@ void	Server::ClearClientFromChannels(const Client &client)
 	}
 }
 
-
 Server	*Server::getServer()
 {
 	if (!instance)
 		instance = new Server();
 	return (instance);
 }
-
 
 int	Server::getaddrlen() { return (addrlen); }
 

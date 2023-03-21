@@ -33,7 +33,6 @@ class MessageController
 		void	SendMessageWithSocket(int clientSocket, const std::string &message) const;
 		void	SendMessageToClient(const Client &client, const std::string &message) const;
 		void	SendHelloMessage(const Client &client) const;
-		void	SendHelloMessage(int clientSocket) const;
 
 		bool	ContainsChunk(int clientSocket) const;
 		void	AddChunk(int clientSocket, const std::string &messageChunk);

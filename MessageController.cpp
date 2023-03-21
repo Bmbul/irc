@@ -165,14 +165,8 @@ std::string	MessageController::GetClientFormatedName(const Client &client) const
 
 void	MessageController::SendHelloMessage(const Client &client) const
 {
-	SendMessageToClient(client, "Welcome to the Internet Relay Network " + GetClientFormatedName(client));
+	SendMessageToClient(client, "Welcome to the Internet Relay Network 001 " + GetClientFormatedName(client));
 }
-
-void	MessageController::SendHelloMessage(int clientSocket) const
-{
-	SendMessageWithSocket(clientSocket, "Hello to irc world");
-}
-
 
 bool	MessageController::ContainsChunk(int clientSocket) const
 {

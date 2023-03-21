@@ -50,7 +50,6 @@ void	CommandHandler::ClearCommands()
 		delete it->second;
 }
 
-
 void	CommandHandler::ExecuteCommand(Client &sender, const CommandData &data)
 {
 	it = commands.find(data.command);

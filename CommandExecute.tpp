@@ -174,7 +174,6 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 	
 }
 
-
 template<>
 void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
