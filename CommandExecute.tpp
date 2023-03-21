@@ -88,6 +88,8 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 template<>
 void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	MessageController *message_controller = MessageController::getController();
 	ClientManager *client_managar = ClientManager::getManager();
 	Server *server = Server::getServer();
@@ -125,6 +127,8 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 template<>
 void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	Server *server = Server::getServer();
 	MessageController *message = MessageController::getController();
 
@@ -190,6 +194,8 @@ template<>
 void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	(void)arguments;
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	//validation !!!
 	ClientManager *manager = ClientManager::getManager();
 	int socket = sender.getSocket();
