@@ -172,7 +172,7 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 	validate(sender,arguments);
 	Server *server = Server::getServer();
 	Channel channel = server->getChannel(arguments[1]);
-	channel.RemoveMember(sender.getNick(),arguments[0]);
+		channel.RemoveMember(sender.getNick(),arguments[0]);
 }
 
 
