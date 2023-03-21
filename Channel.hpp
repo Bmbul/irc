@@ -14,7 +14,8 @@ class Channel
 		~Channel();
 
 		void	AddMember(const std::string &newMember);
-		void	RemoveMember(const std::string &admin, const std::string &removingMember);
+		void	KickMember(const std::string &admin, const std::string &removingMember);
+		void	LeaveMember(const std::string &memberNick);
 
 		void	MakeAdmin(const std::string &admin, const std::string &newAdmin);
 		void	RemoveFromAdmins(const std::string &admin, const std::string &oldAdmin);
@@ -25,9 +26,8 @@ class Channel
 		void	Unban(const std::string &admin, const std::string &memberName);
 
 		void	Broadcast(const Client &sender, const std::string &message, const std::string &command);
-		Client &getNextMember();
 		int		getMemberCount();
-		void	setAdmin(std::string const &name);
+		void	PrintData();
 
 	private:
 		void	ValidateAdmin(const std::string &admin) const;
@@ -41,6 +41,7 @@ class Channel
 
 	private:
 		void	SetAdmin(const std::string &newAdmin);
+		void	DeleteAdmin(const std::string &removingAdmin);
 
 		std::map<std::string, Client> members;
 		mutable std::vector<std::string> admins;

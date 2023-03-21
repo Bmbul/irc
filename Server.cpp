@@ -178,5 +178,6 @@ std::string	const Server::getHost() const
 
 void Server::removeChannel(std::string const &name)
 {
+	std::cout << "Removing Channel" << std::endl << std::endl;
 	channels.erase(name);
 }

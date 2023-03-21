@@ -121,13 +121,12 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
         
 	if (server->HasChannel(arguments[0]))
 	{
-		//std::cout <<  "HAS CHANNEL" << std::endl;
-		Channel channel = server->getChannel(arguments[0]);
+		Channel &channel = server->getChannel(arguments[0]);
 		channel.AddMember(sender.getNick());
 	}
 	else
 	{
-		Channel channel = server->getChannel(arguments[0]);
+		Channel &channel = server->getChannel(arguments[0]);
 		channel.AddMember(sender.getNick());
 	}
 
@@ -140,10 +139,12 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 	validate(sender,arguments);
 	Server *server = Server::getServer();
 	if(server->HasChannel(arguments[0]) == false)
+	{
 		throw NoSuchChannel(sender.getNick(),arguments[0]);
-	Channel channel = server->getChannel(arguments[0]);
+	}
+	Channel &channel = server->getChannel(arguments[0]);
 
-    channel.RemoveMember(sender.getNick(),sender.getNick());
+    channel.LeaveMember(sender.getNick());
     if(channel.getMemberCount() == 0)
         server->removeChannel(arguments[0]);
 }
@@ -155,7 +156,7 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 	validate(sender,arguments);
 	Server *server = Server::getServer();
 	Channel channel = server->getChannel(arguments[1]);
-	channel.RemoveMember(sender.getNick(),arguments[0]);
+	channel.KickMember(sender.getNick(),arguments[0]);
 }
 
 

@@ -109,9 +109,8 @@ void	Command<CommandType::part>::validate(Client &sender,const std::vector<std::
 	{
 		Channel channel = server->getChannel(channels[i]);
 		if(channel.HasMember(sender.getNick()) == false)
-			throw NoSuchNick(sender.getNick(),channels[i]);
+			throw NotOnChannel(sender.getNick(),channels[i]);
 	}
-	
 }
  
 template<>
