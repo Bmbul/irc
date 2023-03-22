@@ -161,4 +161,15 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 	Channel channel = server->getChannel(channel_name);
 	if(channel.IsAdmin(sender.getNick()) == false)
 		throw UsersDontMatch(sender.getNick());
+	for (size_t i = 1; i < arguments.size(); i++)
+	{
+		if(arguments[i].size() != 2)
+			throw UnknownMode(sender.getNick(),channel.name);
+		char set =arguments[i].at(1);
+		 if(arguments[i].at(0) != '+' || arguments[i].at(0) != '-')
+			throw UnknownMode(sender.getNick(),channel.name);
+		if(set != 'W' && set != 'R' && set != 'I')
+			throw UnknownMode(sender.getNick(),channel.name);
+	}
+	
 }
