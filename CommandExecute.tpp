@@ -125,15 +125,9 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 template<>
 void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	if(sender.isDone() == false)
-		throw NotRegistered(sender.getNick());
+	validate(sender,arguments);
 	Server *server = Server::getServer();
 	MessageController *message = MessageController::getController();
-
-	if(arguments.size() == 0)
-		throw NeedMoreParams(sender.getNick(),"JOIN");
-	/* if(message->IsValidChannelName(arguments[0]) == false)
-		throw NoSuchChannel(sender.getNick(),arguments[0]); */
 	std::vector<std::string> args = message->Split(arguments[0],",");
 	for (size_t i = 0; i < args.size(); i++)
 	{
@@ -147,11 +141,10 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 		{
 			Channel &channel = server->getChannel(args[i]);
 			channel.AddMember(sender.getNick());
+			channel.AddMode(ModeType::write_);
 		}
 		 
 	}
-	
-
 }
 
 template<>
@@ -208,8 +201,8 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 	(void) sender;
 	(void) arguments;
 	std::string channel_name = arguments[0].at(0) == '#' ? arguments[0].substr(1,arguments[0].length() - 1) : arguments[0];
-	// Server *server =  Server::getServer();
-	// Channel &channel = server->getChannel(channel_name);
+	 Server *server =  Server::getServer();
+	 Channel &channel = server->getChannel(channel_name);
 	//add mode 
 	for (size_t i = 1; i < arguments.size(); i++)
 	{

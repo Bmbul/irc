@@ -86,6 +86,8 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 			std::string channelName = args[i].at(0) == '#' ? args[i].substr(1,args[i].size() - 1) : args[i]; 
 			if(server->HasChannel(channelName) == false)
 				throw NoSuchChannel(sender.getNick(),args[i]);
+			if((server->getChannel(channelName).GetMode() | ModeType::write_) == false)
+				throw CannotSendToChannel(sender.getNick(),channelName);
 		}
 		else if(client_managar->HasClient(args[i]) == false)
 			throw NoSuchNick(sender.getNick(),args[i]);
@@ -98,11 +100,33 @@ void	Command<CommandType::notice>::validate(Client &sender,const std::vector<std
 	
 }*/
  
-/* template<>
+template<>
 void	Command<CommandType::join>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
+	if(arguments.size() == 0)
+		throw NeedMoreParams(sender.getNick(),"JOIN");
+	Server *server =  Server::getServer();
+	MessageController *message = MessageController::getController();
+	std::vector<std::string> args = message->Split(arguments[0],",");
+	for (size_t i = 0; i < args.size(); i++)
+	{
+		std::string channelName = args[i].at(0) == '#' ? args[i].substr(1,args[i].size() -1 ) : args[i];
+		if (server->HasChannel(channelName))
+		{
+			
+			if (server->getChannel(channelName).GetMode() | ModeType::invite)
+			{
+				throw InviteOnlyChannel(sender.getNick(),channelName);
+			}
+			
+		}
+		 
+	}
 	
-} */
+	
+}
  
 template<>
 void	Command<CommandType::part>::validate(Client &sender,const std::vector<std::string> &arguments)
