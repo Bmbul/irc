@@ -140,7 +140,7 @@ void Channel::Broadcast(const Client &sender,
 	for (std::map<std::string, Client>::iterator it = members.begin();
 		it != members.end(); it++)
 	{
-		MessageController::getController()->SendMessage(sender, it->second, command, message);
+		sender.SendMessageFromChannel(it->second, command, this->name, message);
 	}
 }
 

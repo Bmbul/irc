@@ -124,48 +124,16 @@ MessageController *MessageController::getController()
 	return (instance);
 }
 
-void	MessageController::SendMessage(const Client &sender,
-	const Client &reciever, const std::string &commmand, const std::string message) const
-{
-	//:senderNickname!name@host COMMAND recieverNickname:message
-	std::string finalizedMessage = ":" + GetClientFormatedName(sender) + " "
-		+ commmand + " " + reciever.getNick() + ":" + message;
-	SendMessageToClient(reciever, finalizedMessage);
-}
-
-void	MessageController::SendMessageWithSocket(int clientSocket,
-	const std::string &message) const
-{
-	std::cout << "SOCKET: " << clientSocket << std::endl;
-	if (send(clientSocket, (message + "\n").c_str(), message.length() + 1, 0) < 0)
-		perror("send");
-}
-
-void	MessageController::SendMessageToClient(const Client &client,
-	const std::string &message) const
-{
-	SendMessageWithSocket(client.getSocket(), message);
-}
-
 std::string	MessageController::GetClientFormatedName(const Client &client) const
 {
 	std::string formatted;
-	std::cout << "Filling the USER NAME" << std::endl;
+
 	if (client.getIsNicked())
-	{
-		std::cout << "trying ADDING NICK" << std::endl;
 		formatted = client.getNick();
-	}
 	if (client.getIsUsered())
 		formatted += "!" + client.getName();
 	formatted += "@" + Server::getServer()->getHost();
 	return (formatted);
-}
-
-
-void	MessageController::SendHelloMessage(const Client &client) const
-{
-	SendMessageToClient(client, "Welcome to the Internet Relay Network 001 " + GetClientFormatedName(client));
 }
 
 bool	MessageController::ContainsChunk(int clientSocket) const

@@ -3,8 +3,9 @@
 
 #include <iostream>
 #include <vector>
+#include "IMessenger.hpp"
 
-class Client
+class Client : public IMessenger
 {
 	private:
 		bool isPassed;
@@ -33,6 +34,11 @@ class Client
 		void setName(std::string const &name);
 		void setNick(std::string const &nick);
 		bool isDone();
+
+		void	SendMessage(const Client &reciever, const std::string &commmand,
+			const std::string message) const;
+		void	SendMessageFromChannel(const Client &reciever, const std::string &command,
+			const std::string &channel, const std::string message) const;
 };
 
 #endif // CLIENT_HPP

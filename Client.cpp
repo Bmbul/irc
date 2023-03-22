@@ -1,4 +1,6 @@
 #include "Client.hpp"
+#include <sys/socket.h>
+#include "MessageController.hpp"
 
 Client::Client()
     : name("default name")
@@ -64,4 +66,22 @@ bool Client::isDone()
 	if(isPassed && isUsered && isNicked)
 		return true;
 	return false;
+}
+
+void	Client::SendMessage(const Client &reciever,
+	const std::string &commmand, const std::string message) const
+{
+	//:senderNickname!name@host COMMAND recieverNickname:message
+	std::string finalizedMessage = ":" + MessageController::getController()->GetClientFormatedName(*this) + " "
+		+ commmand + " " + reciever.getNick() + ":" + message;
+	SendMessageToClient(reciever, finalizedMessage);
+}
+
+void	Client::SendMessageFromChannel(const Client &reciever, const std::string &command,
+	const std::string &channel, const std::string message) const 
+{
+	//:senderNickname!name@host COMMAND recieverNickname:message
+	std::string finalizedMessage = ":" + MessageController::getController()->GetClientFormatedName(*this) + " "
+		+ command + " #" + channel  + ":" + message;
+	SendMessageToClient(reciever, finalizedMessage);
 }

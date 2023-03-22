@@ -4,7 +4,7 @@
 #include "ClientManager.hpp"
 #include "Channel.hpp"
 
-class Server
+class Server : public IMessenger
 {
 	private: // for singleton
 		static Server *instance;
@@ -41,7 +41,7 @@ class Server
 		struct	sockaddr_in	*GetAddress();
 		std::string const &getPass()const;
 		std::string	const getHost() const;
-
+		void	SendHelloMessage(const Client &client) const;
 
 		bool HasChannel(std::string const &name);
 		//const Channel &getChannel(std::string const &name)const;

@@ -190,3 +190,8 @@ void Server::removeChannel(std::string const &name)
 	std::cout << "Removing Channel" << std::endl << std::endl;
 	channels.erase(name);
 }
+
+void	Server::SendHelloMessage(const Client &client) const
+{
+	SendMessageToClient(client, "Welcome to the Internet Relay Network 001 " + MessageController::getController()->GetClientFormatedName(client));
+}

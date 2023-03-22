@@ -20,22 +20,22 @@ template<>
 void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
 	validate(sender, arguments);
-	MessageController *controller = MessageController::getController();
+	Server *server = Server::getServer();
 	sender.setName(arguments[0]);
 	sender.setIsUsered(true);
 	if(sender.isDone())
-		controller->SendHelloMessage(sender);
+		server->SendHelloMessage(sender);
 }
 
 template<>
 void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
 	validate(sender,arguments);
-	MessageController *controller = MessageController::getController();
+	Server *server = Server::getServer();
 	sender.setNick(arguments[0]);
 	sender.setIsNicked(true);
 	if(sender.isDone())
-		controller->SendHelloMessage(sender);
+		server->SendHelloMessage(sender);
 
 }
 
@@ -43,8 +43,7 @@ template<>
 void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	validate(sender,arguments);
-	MessageController *message = MessageController::getController();
-	message->SendMessage(sender,sender,"PING","ping!");
+	sender.SendMessage(sender,"PING","ping!");
 }
 
 
@@ -52,8 +51,7 @@ template<>
 void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	validate(sender,arguments);
-	MessageController *message = MessageController::getController();
-	message->SendMessage(sender,sender,"PONG","pong!");
+	sender.SendMessage(sender,"PONG","pong!");
 }
 
 
@@ -78,7 +76,7 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 				server->getChannel(channelName).Broadcast(sender, MessageBody, "PRIVMSG");
 		}
 		else
-			message_controller->SendMessage(sender,client_managar->getClient(args[i]),
+			sender.SendMessage(client_managar->getClient(args[i]),
 				"PRIVMSG", MessageBody);
 	}
 
@@ -110,7 +108,7 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 		}
 		else if(client_managar->HasClient(args[i]))
 		{
-			message_controller->SendMessage(sender,client_managar->getClient(args[i]),
+			sender.SendMessage(client_managar->getClient(args[i]),
 				"NOTICE", arguments.back());
 		}
 		else
@@ -204,8 +202,8 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 	(void) sender;
 	(void) arguments;
 	std::string channel_name = arguments[0].at(0) == '#' ? arguments[0].substr(1,arguments[0].length() - 1) : arguments[0];
-	Server *server =  Server::getServer();
-	Channel &channel = server->getChannel(channel_name);
+	// Server *server =  Server::getServer();
+	// Channel &channel = server->getChannel(channel_name);
 	//add mode 
 	for (size_t i = 1; i < arguments.size(); i++)
 	{

@@ -104,7 +104,7 @@ void	ClientManager::HandleMessage(Client &client)
 		}
 		catch(const IRCException& exception)
 		{
-			messageController->SendMessageToClient(client,
+			Server::getServer()->SendMessageToClient(client,
 				exception.what());
 		}
 	}

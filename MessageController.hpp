@@ -24,15 +24,8 @@ class MessageController
 		bool	StringStartsWithFromSet(const std::string &str, const std::string &set) const;
 		bool	GotEndOfMessage(const char *messageChunk) const;
 
-		void	SendMessage(const Client &sender, const Client &reciever
-			, const std::string &command, const std::string message) const;
-
 		std::string	GetClientFormatedName(const Client &client) const;
 		std::vector<std::string> Split(std::string str, std::string delimiter);
-
-		void	SendMessageWithSocket(int clientSocket, const std::string &message) const;
-		void	SendMessageToClient(const Client &client, const std::string &message) const;
-		void	SendHelloMessage(const Client &client) const;
 
 		bool	ContainsChunk(int clientSocket) const;
 		void	AddChunk(int clientSocket, const std::string &messageChunk);
