@@ -228,3 +228,39 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 	
 	//std::cout <<"channel name is ===> " << channelName << std::endl;
 }
+
+#include <fstream>
+
+template<>
+void	Command<CommandType::ftp>::execute(Client &sender, const std::vector<std::string> &arguments)
+{
+	std::string defaultFileName = "Makefile";
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
+	//validation !!!
+	std::ifstream input(arguments.size() >= 1 ? arguments[0] : defaultFileName);
+	
+    if (!input) 
+	{
+		Server::getServer()->SendMessageToClient(sender, "Cannot Open the given File");
+        return ;
+    }
+
+    std::string line;
+    while (std::getline(input, line)) 
+	{
+		Server::getServer()->SendMessageToClient(sender, line);
+    }
+}
+template<>
+void	Command<CommandType::ls>::execute(Client &sender, const std::vector<std::string> &arguments)
+{
+	(void)sender;
+	(void)arguments;
+}
+template<>
+void	Command<CommandType::cap>::execute(Client &sender, const std::vector<std::string> &arguments)
+{
+	(void)sender;
+	(void)arguments;
+}

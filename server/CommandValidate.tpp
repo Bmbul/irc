@@ -47,23 +47,23 @@ void	Command<CommandType::nick>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::ping>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
-	if(sender.isDone() == false)
-		throw NotRegistered(sender.getNick());
+	/* if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick()); */
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PING");
-	if(sender.isDone() == 0)
-		throw NOTAUTHORIZED(sender.getNick(),sender.getName());
+	/* if(sender.isDone() == 0)
+		throw NOTAUTHORIZED(sender.getNick(),sender.getName()); */
 }
  
 template<>
 void	Command<CommandType::pong>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
-	if(sender.isDone() == false)
-		throw NotRegistered(sender.getNick());
+	/* if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick()); */
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PONG");
-	if(sender.isDone() == 0)
-		throw NOTAUTHORIZED(sender.getNick(),sender.getName());
+	/* if(sender.isDone() == 0)
+		throw NOTAUTHORIZED(sender.getNick(),sender.getName()); */
 }
  
 template<>
@@ -88,8 +88,10 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 				throw NoSuchChannel(sender.getNick(),args[i]);
 			if(!(server->getChannel(channelName).GetMode() | ModeType::write_))
 				throw CannotSendToChannel(sender.getNick(),channelName);
+			if(!(server->getChannel(channelName).HasMember(sender.getNick())))
+				throw NoSuchNick(sender.getNick(),"PRIVMSG");
 		}
-		else if(client_managar->HasClient(args[i]) == false)
+	 	else if(client_managar->HasClient(args[i]) == false)
 			throw NoSuchNick(sender.getNick(),args[i]);
 	}
 }
@@ -116,7 +118,7 @@ void	Command<CommandType::join>::validate(Client &sender,const std::vector<std::
 		if (server->HasChannel(channelName))
 		{
 			
-			if (server->getChannel(channelName).GetMode() | ModeType::invite)
+			if (server->getChannel(channelName).GetMode() & ModeType::invite)
 			{
 				throw InviteOnlyChannel(sender.getNick(),channelName);
 			}
