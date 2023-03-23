@@ -25,6 +25,7 @@ class MessageController
 		bool	GotEndOfMessage(const char *messageChunk) const;
 
 		std::string	GetClientFormatedName(const Client &client) const;
+		std::string	GetChannelName(const std::string &channelName) const;
 		std::vector<std::string> Split(std::string str, std::string delimiter);
 
 		bool	ContainsChunk(int clientSocket) const;

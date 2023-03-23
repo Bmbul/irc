@@ -1,5 +1,6 @@
 #include "IMessenger.hpp"
 #include "Client.hpp"
+#include <stdio.h>
 
 IMessenger::~IMessenger() { }
 

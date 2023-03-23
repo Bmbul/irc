@@ -59,24 +59,24 @@ template<>
 void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	validate(sender,arguments);
-	MessageController *message_controller = MessageController::getController();
-	ClientManager *client_managar = ClientManager::getManager();
+	MessageController *messageController = MessageController::getController();
+	ClientManager *clientManager = ClientManager::getManager();
 	Server *server = Server::getServer();
 	std::string MessageBody = "";
 	for (size_t i = 1; i < arguments.size(); i++)
 		MessageBody = MessageBody + arguments[i] + " ";
 	
-	std::vector<std::string> args = message_controller->Split(arguments[0],",");
+	std::vector<std::string> args = messageController->Split(arguments[0],",");
 	for (size_t i = 0; i < args.size(); i++)
 	{
-		if(message_controller->IsValidChannelName(args[i]))
+		if(messageController->IsValidChannelName(args[i]))
 		{
 
-				std::string channelName = args[i].at(0) == '#' ? args[i].substr(1,args[i].size() - 1) : args[i]; 
+				std::string channelName = messageController->GetChannelName(args[i]);
 				server->getChannel(channelName).Broadcast(sender, MessageBody, "PRIVMSG");
 		}
 		else
-			sender.SendMessage(client_managar->getClient(args[i]),
+			sender.SendMessage(clientManager->getClient(args[i]),
 				"PRIVMSG", MessageBody);
 	}
 
@@ -88,22 +88,22 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 {
 	if(sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
-	MessageController *message_controller = MessageController::getController();
+	MessageController *messageController = MessageController::getController();
 	ClientManager *client_managar = ClientManager::getManager();
 	Server *server = Server::getServer();
 	if(arguments.size() <= 1)
 		throw NeedMoreParams(sender.getNick(),"NOTICE");
-	std::vector<std::string> args = message_controller->Split(arguments[0],",");
+	std::vector<std::string> args = messageController->Split(arguments[0],",");
 	std::string MessageBody = "";
 	for (size_t i = 1; i < arguments.size(); i++)
 		MessageBody = MessageBody + arguments[i] + " ";
 	for (size_t i = 0; i < args.size(); i++)
 	{
-		if(message_controller->IsValidChannelName(args[i]))
+		if(messageController->IsValidChannelName(args[i]))
 		{
 			if(server->HasChannel(args[i]))
 			{
-				std::string channelName = args[i].at(0) == '#' ? args[i].substr(1,args[i].size() - 1) : args[i];
+				std::string channelName = messageController->GetChannelName(args[i]);
 				Channel channel = server->getChannel(channelName);
 				channel.Broadcast(sender, MessageBody, "NOTICE");
 			}
@@ -174,7 +174,7 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 {
 	validate(sender,arguments);
 	Server *server = Server::getServer();
-	std::string channelName = arguments[1].at(0) == '#' ? arguments[1].substr(1,arguments[1].size() - 1) : arguments[1];
+	std::string channelName = MessageController::getController()->GetChannelName(arguments[1]);
 	Channel &channel = server->getChannel(channelName);
 	channel.KickMember(sender.getNick(),arguments[0]);
 }
@@ -189,7 +189,6 @@ void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::
 	//validation !!!
 	ClientManager *manager = ClientManager::getManager();
 	int socket = sender.getSocket();
-	std::cout << socket << std::endl;
 	manager->CloseClient(socket);
 	manager->RemoveClient(socket);
 }
@@ -200,9 +199,9 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 {
 	(void) sender;
 	(void) arguments;
-	std::string channel_name = arguments[0].at(0) == '#' ? arguments[0].substr(1,arguments[0].length() - 1) : arguments[0];
-	 Server *server =  Server::getServer();
-	 Channel &channel = server->getChannel(channel_name);
+	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
+	Server *server =  Server::getServer();
+	Channel &channel = server->getChannel(channelName);
 	//add mode 
 	for (size_t i = 1; i < arguments.size(); i++)
 	{
@@ -227,5 +226,5 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 		
 	}
 	
-	//std::cout <<"channel name is ===> " << channel_name << std::endl;
+	//std::cout <<"channel name is ===> " << channelName << std::endl;
 }
