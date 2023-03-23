@@ -27,7 +27,8 @@ struct CommandType
 		part,
 		kick,
 		quit,
-		mode
+		mode,
+		ftp
 	};
 };
 

@@ -42,6 +42,7 @@ void	CommandHandler::InitilizeCommands()
 	commands["KICK"] = new Command<CommandType::kick>();
 	commands["QUIT"] = new Command<CommandType::quit>();
 	commands["MODE"] = new Command<CommandType::mode>();
+	commands["FTP"] = new Command<CommandType::ftp>();
 }
 
 void	CommandHandler::ClearCommands()
