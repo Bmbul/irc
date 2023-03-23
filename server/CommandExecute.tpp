@@ -252,3 +252,15 @@ void	Command<CommandType::ftp>::execute(Client &sender, const std::vector<std::s
 		Server::getServer()->SendMessageToClient(sender, line);
     }
 }
+template<>
+void	Command<CommandType::ls>::execute(Client &sender, const std::vector<std::string> &arguments)
+{
+	(void)sender;
+	(void)arguments;
+}
+template<>
+void	Command<CommandType::cap>::execute(Client &sender, const std::vector<std::string> &arguments)
+{
+	(void)sender;
+	(void)arguments;
+}

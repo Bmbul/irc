@@ -43,6 +43,9 @@ void	CommandHandler::InitilizeCommands()
 	commands["QUIT"] = new Command<CommandType::quit>();
 	commands["MODE"] = new Command<CommandType::mode>();
 	commands["FTP"] = new Command<CommandType::ftp>();
+	commands["CAP"] = new Command<CommandType::cap>();
+	commands["LS"] = new Command<CommandType::ls>();
+
 }
 
 void	CommandHandler::ClearCommands()

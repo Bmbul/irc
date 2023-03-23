@@ -181,7 +181,7 @@ int Channel::GetMode()const
 
 void Channel::AddMode(ModeType::Mode newMode)
 {
-	mode |= newMode;
+	mode &= newMode;
 }
 
 void Channel::RemoveMode(ModeType::Mode mode)
