@@ -135,9 +135,9 @@ void Channel::Unban(const std::string &admin, const std::string &memberName)
 }
 
 void Channel::Broadcast(const Client &sender,
-						const std::string &message, const std::string &command)
+	const std::string &message, const std::string &command) const
 {
-	for (std::map<std::string, Client>::iterator it = members.begin();
+	for (std::map<std::string, Client>::const_iterator it = members.begin();
 		it != members.end(); it++)
 	{
 		sender.SendMessageFromChannel(it->second, command, this->name, message);
