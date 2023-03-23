@@ -50,7 +50,7 @@ void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	validate(sender,arguments);
+	validate(sender, arguments);
 	sender.SendMessage(sender,"PONG","pong!");
 }
 
@@ -58,7 +58,7 @@ void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	validate(sender,arguments);
+	validate(sender, arguments);
 	MessageController *messageController = MessageController::getController();
 	ClientManager *clientManager = ClientManager::getManager();
 	Server *server = Server::getServer();

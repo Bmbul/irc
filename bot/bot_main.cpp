@@ -16,7 +16,7 @@ void	ValidateInput(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 	int port = atoi(argv[1]);
-	if (port < 0 || port > 65535)
+	if (port < 0 || port > 65535) // 0-1023 system ports. i think its bad idea to use these ports
 	{
 		std::cerr << "Wrong PORT specified!!! Please input a valid PORT" << std::endl
 		<< "It should be a number between 0 and 65535" << std::endl;
@@ -33,5 +33,6 @@ int main(int argc, char **argv)
 		bot.SetUser(argv[4]);
 	if (argc == 6)
 		bot.SetNick(argv[5]);
-	bot.ConnectToServer();
+	bot.RunBot();
+
 }

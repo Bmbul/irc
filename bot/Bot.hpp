@@ -8,29 +8,38 @@ class Bot
     private:
 		socklen_t	addrlen;
 		struct sockaddr_in address;
-		
 		int				port;
 		int				socketfd;
-
+		int				clientfd;
 		std::string		host;
 		std::string		pass;
 		std::string 	user;
 		std::string 	nick;
+		char			buffer[1025];
+		std::string		recvBuffer;
 
 		void	Setup();
 		void	CreateServer();
 		void	SetOptions();
 		void	BindSocket();
-
+		void	Listen();
+		void	ConnectToServer();
+		void	ReceiveMsg();
+		void	AcceptSocket();
+		void	SendMsg();
 	public:
+
+		void	RunBot();
 		Bot(const std::string &host, int _port, const std::string &_pass,
 			const std::string &_user = "havayi", const std::string &_nick = "butul");
         ~Bot();
 		
-		void	ConnectToServer();
 		void	SetUser(const std::string &_user);
 		void	SetNick(const std::string &_nick);
-};
+
+		void		AddToRecvMsg(const std::string &msg);
+		std::string	GetRecvMsg(void) const;
+};	
 
 
 #endif // BOT_HPP
