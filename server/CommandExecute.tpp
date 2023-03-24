@@ -1,3 +1,5 @@
+#include <fstream>
+
 template <CommandType::Type type>
 void	Command<type>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
@@ -230,16 +232,15 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 	//std::cout <<"channel name is ===> " << channelName << std::endl;
 }
 
-#include <fstream>
-
 template<>
 void	Command<CommandType::ftp>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	std::string defaultFileName = "Makefile";
 	if(sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
-	//validation !!!
-	std::ifstream input(arguments.size() >= 1 ? arguments[0] : defaultFileName);
+		
+	std::ifstream input(arguments.size() >= 1 ? 
+		arguments[0].c_str() : defaultFileName.c_str());
 	
     if (!input) 
 	{

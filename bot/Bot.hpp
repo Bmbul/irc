@@ -16,17 +16,19 @@ class Bot
 		std::string 	user;
 		std::string 	nick;
 		char			buffer[1025];
-		std::string		recvBuffer;
+		std::string		recvMessage;
 
 		void	Setup();
 		void	CreateServer();
 		void	SetOptions();
 		void	BindSocket();
-		void	Listen();
 		void	ConnectToServer();
 		void	ReceiveMsg();
 		void	AcceptSocket();
 		void	SendReply();
+		std::string	GiveResponse(const std::string &command);
+
+
 	public:
 		int socketCLIENT;
 		void	RunBot();

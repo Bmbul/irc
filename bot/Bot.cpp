@@ -76,23 +76,9 @@ void	Bot::ConnectToServer()
 	std::cout << "Waiting for connections ..." << std::endl;
 }
 
-std::string	Bot::GetRecvMsg(void) const
-{
-	return recvBuffer;
-}
-
 void	Bot::AddToRecvMsg(const std::string &msg)
 {
-	recvBuffer += msg;
-}
-
-void	Bot::Listen()
-{
-	if (listen(socketfd, 1) != 0)
-	{
-		perror("Failed to listen");
-		exit(EXIT_FAILURE);
-	}
+	recvMessage += msg;
 }
 
 void	Bot::AcceptSocket()
@@ -117,7 +103,7 @@ void	Bot::ReceiveMsg()
 			SendReply();
 	}
 
-	if (valRead < 0)
+	if (valRead == -1)
 	{
 		perror("Failed to receive message");
 		exit(EXIT_FAILURE);
@@ -130,13 +116,39 @@ void	Bot::ReceiveMsg()
 	}
 }
 
+std::string	Bot::GiveResponse(const std::string &command)
+{
+	std::string magic = "### ### #     #    #     #####  ###  #####  ### ###\n\\
+						 ### ### ##   ##   # #   #     #  #  #     # ### ###\n\\
+						 ### ### # # # #  #   #  #        #  #       ### ###\n\\
+						  #   #  #  #  # #     # #  ####  #  #        #   # \n\\
+						         #     # ####### #     #  #  #              \n\\
+						 ### ### #     # #     # #     #  #  #     # ### ###\n\\
+						 ### ### #     # #     #  #####  ###  #####  ### ###\n";
+	if (command == "help")
+		return ("You can use the following command:\n\ttime\n\tdate\n\tmagic\n");
+	else if (command == "time")
+		return __TIME__;
+	else if (command  == "date")
+		return __DATE__;
+	else if (command == "magic")
+		return (magic);
+	else
+		return ("I am not sure what you mean\nUse help command to find out what you can do with me\n");
+}
+
 void	Bot::SendReply()
 {
-	if (send(socketfd, recvBuffer.c_str(), recvBuffer.length() + 1, 0) < 0)
+	int	spacePos = recvMessage.find_first_of(' ');
+	std::string command = recvMessage.substr(0, spacePos);
+	std::string user = recvMessage.substr(spacePos + 1, recvMessage.length());
+	std::string replyMessage = "PRIVMSG " + user + " " + GiveResponse(command);
+	if (send(socketfd, replyMessage.c_str(), replyMessage.length() + 1, 0) < 0)
 	{
 		perror("Failed to send message");
 		exit(EXIT_FAILURE);
 	}
+	recvMessage = "";
 }
 
 
@@ -148,7 +160,7 @@ void	Bot::RunBot()
 	if ((valRead = recv(socketfd, buffer, 1024, 0)) > 0)
 	{
 		buffer[valRead] = '\0';
-		std::cout << buffer << std::endl;
+		std::cout << buffer;
 	}
 	ReceiveMsg();
 }
