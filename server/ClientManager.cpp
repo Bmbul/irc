@@ -127,6 +127,8 @@ void	ClientManager::CloseClient(int	clientSocket, const std::string &reason)
 		<< "Reason: " << (reason.length() == 0 ? "not specified." : reason) << std::endl;
 	//Close the socket and mark as 0 in list for reuse
 	server->ClearClientFromChannels(clientMap[clientSocket]);
+	if (clientSocket == server->getBotDescriptor())
+		server->RemoveBot();
 	close(clientSocket);
 }
 

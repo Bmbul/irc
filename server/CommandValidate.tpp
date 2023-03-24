@@ -207,6 +207,8 @@ void	Command<CommandType::bot>::validate(Client &sender, const std::vector<std::
 	ClientManager *manager = ClientManager::getManager();
 	if (arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(), "/bot");
+	if (!server->IsBotConnected())
+		throw NoBotConnected(sender.getNick());
 	if (arguments.size() == 1)
 		return ;
 	std::string channelName = controller->GetChannelName(arguments[1]);

@@ -211,3 +211,13 @@ void	Server::setBotDescriptor(int new_fd)
 {
 	this->bot_fd = new_fd;
 }
+
+void	Server::RemoveBot()
+{
+	this->bot_fd = 0;
+}
+
+bool	Server::IsBotConnected() const
+{
+	return (bot_fd != 0);
+}
