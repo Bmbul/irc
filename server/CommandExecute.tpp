@@ -201,6 +201,7 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 	(void) arguments;
 	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
 	Server *server =  Server::getServer();
+	std::cout << "CHANNEL NAME: " << channelName << std::endl;
 	Channel &channel = server->getChannel(channelName);
 	//add mode 
 	for (size_t i = 1; i < arguments.size(); i++)

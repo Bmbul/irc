@@ -160,6 +160,9 @@ void Channel::PrintData()
 	{
 		std::cout << "Socket: " << *it << std::endl;
 	}
+	std::cout << "MODES: " << std::endl;
+	std::cout << "WRITEONLY: " << (mode & ModeType::write_) <<
+		", READONLY" << (mode & ModeType::read) << ", INVITEONLY: " << (mode & ModeType::invite) << std::endl;
 	std::cout << std::endl;
 }
 
@@ -181,7 +184,7 @@ int Channel::GetMode()const
 
 void Channel::AddMode(ModeType::Mode newMode)
 {
-	mode &= newMode;
+	mode |= newMode;
 }
 
 void Channel::RemoveMode(ModeType::Mode mode)

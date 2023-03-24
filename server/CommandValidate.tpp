@@ -58,7 +58,7 @@ void	Command<CommandType::ping>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::pong>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
-	/* if(sender.isDone() == false)
+	/* f(sender.isDone() == false)
 		throw NotRegistered(sender.getNick()); */
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PONG");
@@ -86,7 +86,7 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 			std::string channelName = messageController->GetChannelName(args[i]);
 			if(server->HasChannel(channelName) == false)
 				throw NoSuchChannel(sender.getNick(),args[i]);
-			if(!(server->getChannel(channelName).GetMode() | ModeType::write_))
+			if(!(server->getChannel(channelName).GetMode() & ModeType::write_))
 				throw CannotSendToChannel(sender.getNick(),channelName);
 			if(!(server->getChannel(channelName).HasMember(sender.getNick())))
 				throw NoSuchNick(sender.getNick(),"PRIVMSG");
@@ -181,6 +181,7 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 		throw NotRegistered(sender.getNick());
 	if(arguments.size() < 2)
 		throw NeedMoreParams(sender.getNick(),"MODE");
+
 	std::string channel_name = MessageController::getController()->GetChannelName(arguments[0]);
 	Server *server = Server::getServer();
 	if(server->HasChannel(channel_name) == false)
