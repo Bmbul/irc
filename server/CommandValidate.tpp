@@ -196,8 +196,44 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 		char set =arguments[i].at(1);
 		 if(arguments[i].at(0) != '+' || arguments[i].at(0) != '-')
 			throw UnknownMode(sender.getNick(),channel.name);
-		if(set != 'W' && set != 'R' && set != 'I')
+		if(set != 'W' && set != 'R' && set != 'I' && set != 'O')
 			throw UnknownMode(sender.getNick(),channel.name);
+		if(set == 'O')
+		{
+			if(arguments[i + 1].size() == 0)
+				throw NeedMoreParams(sender.getNick(),"MODE");
+			if(channel.HasMember(arguments[i + 1]) == false)
+				throw UserNotInChannel(sender.getName(),sender.getNick(),channel_name);
+		}
+
 	}
+	
+}
+
+template<>
+void	Command<CommandType::bot>::execute(Client &sender, const std::vector<std::string> &arguments)
+{
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
+	Server *server = Server::getServer();
+	MessageController *controller = MessageController::getController();
+	ClientManager *manager = ClientManager::getManager()
+	std::string channelName = controller->GetChannelName(arguments[1]);
+	if(arguments.size() != 2)
+		throw NeedMoreParams(sender.getNick(),"BOT");
+	if(controller->IsValidChannelName(arguments[1]))
+	{
+		if(server->HasChannel(channelName) == false)
+			throw NoSuchChannel(sender.getNick(),channelName);
+		Channel &channel = server->getChannel(channelName);
+		if(channel.HasMember(sender.getNick()) == false)
+			throw NoSuchNick(sender.getNick(),channelName);
+	}
+	else if(manager->HasClient(arguments[1]) == false)
+		throw NoSuchNick(sender.getNick(),channelName)
+	if(arguments[0] != "help" | arguments[0] != "time")
+		throw UnknownCommand(sender.getNick(),arguments[0]);
+	
+
 	
 }

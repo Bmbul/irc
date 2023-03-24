@@ -45,6 +45,7 @@ void	CommandHandler::InitilizeCommands()
 	commands["FTP"] = new Command<CommandType::ftp>();
 	commands["CAP"] = new Command<CommandType::cap>();
 	commands["LS"] = new Command<CommandType::ls>();
+	commands["/bot"] = new Command<CommandType::bot>();
 
 }
 

@@ -1,3 +1,5 @@
+#include "./irc.hpp"
+
 template <CommandType::Type type>
 void	Command<type>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
@@ -214,6 +216,10 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 				channel.AddMode(ModeType::read);
 			else if(arguments[i].at(1) == 'I')
 				channel.AddMode(ModeType::invite);
+			else if(arguments[i].at(1) == 'O')
+			{
+				channel.MakeAdmin(sender.getNick(),arguments[i + 1]);
+			}
 		}
 		else if(arguments[i].at(0) == '-')
 		{
@@ -223,6 +229,9 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 				channel.RemoveMode(ModeType::read);
 			else if(arguments[i].at(1) == 'I')
 				channel.RemoveMode(ModeType::invite);
+			else if(arguments[i].at(1) == 'O')
+				channel.RemoveFromAdmins(sender.getNick(),arguments[i + 1]);
+
 		}
 		
 	}
@@ -264,4 +273,14 @@ void	Command<CommandType::cap>::execute(Client &sender, const std::vector<std::s
 {
 	(void)sender;
 	(void)arguments;
+}
+
+template<>
+void	Command<CommandType::bot>::execute(Client &sender, const std::vector<std::string> &arguments)
+{
+	validate(sender,arguments);
+	Server *server = Server::getServer();
+	std::string channelName = MessageController::getController()->GetChannelName(arguments[1]);
+	Channel &channel = server->getChannel(channelName);
+
 }
