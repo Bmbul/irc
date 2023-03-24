@@ -9,7 +9,7 @@ Server::Server()
 }
 
 Server::Server(int _port, std::string _password) 
-	: port(_port), password(_password)
+	: port(_port), password(_password), bot_fd(0)
 {
 	if (!instance)
 		instance = this;
@@ -93,9 +93,15 @@ void	Server::ListenForClientInput()
 	ClientManager::getManager()->HandleInput(&readfds);
 }
 
-void	Server::SendToClient(int sockfd, const char *message)
+void	Server::SendToClient(int sockfd, const char *message) const
 {
 	if (send(sockfd, message, strlen(message), 0) < 0)
+		perror("send");
+}
+
+void	Server::SendMessageToBot(const std::string &message) const
+{
+	if (send(bot_fd, message.c_str(), message.length() + 1, 0) < 0)
 		perror("send");
 }
 
@@ -193,4 +199,15 @@ void Server::removeChannel(std::string const &name)
 void	Server::SendHelloMessage(const Client &client) const
 {
 	SendMessageToClient(client, "Welcome to the Internet Relay Network 001 " + MessageController::getController()->GetClientFormatedName(client));
+}
+
+int		Server::getBotDescriptor() const 
+{
+	return this->bot_fd;
+}
+
+
+void	Server::setBotDescriptor(int new_fd)
+{
+	this->bot_fd = new_fd;
 }

@@ -14,7 +14,7 @@ class Server : public IMessenger
 		int max_sd;
 		int	port;
 		std::string password;
-
+		int	bot_fd;
 		std::map<std::string, Channel> channels;
 		struct sockaddr_in address;
 		socklen_t	addrlen;
@@ -33,7 +33,8 @@ class Server : public IMessenger
 		void	StartListening();
 		int		AcceptNewSocket();
 		void	ListenForClientInput();
-		void	SendToClient(int sockfd, const char *message);
+		void	SendToClient(int sockfd, const char *message) const;
+		void	SendMessageToBot(const std::string &message) const;
 		void	WaitForActivity();
 		void	HandleIncomingConnections();
 		void	ClearClientFromChannels(const Client &client);
@@ -42,6 +43,10 @@ class Server : public IMessenger
 		std::string const &getPass()const;
 		std::string	const getHost() const;
 		void	SendHelloMessage(const Client &client) const;
+
+	public:
+		int		getBotDescriptor() const;
+		void	setBotDescriptor(int new_fd);
 
 		bool HasChannel(std::string const &name);
 		//const Channel &getChannel(std::string const &name)const;
