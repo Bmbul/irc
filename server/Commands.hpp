@@ -30,7 +30,8 @@ struct CommandType
 		mode,
 		ftp,
 		cap,
-		ls
+		ls,
+		bot
 	};
 };
 
