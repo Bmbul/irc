@@ -26,9 +26,9 @@ class Bot
 		void	ConnectToServer();
 		void	ReceiveMsg();
 		void	AcceptSocket();
-		void	SendMsg();
+		void	SendReply();
 	public:
-
+		int socketCLIENT;
 		void	RunBot();
 		Bot(const std::string &host, int _port, const std::string &_pass,
 			const std::string &_user = "havayi", const std::string &_nick = "butul");

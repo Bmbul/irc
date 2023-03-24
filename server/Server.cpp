@@ -99,7 +99,6 @@ void	Server::SendToClient(int sockfd, const char *message)
 		perror("send");
 }
 
-
 void	Server::WaitForActivity()
 {
 	int activity = select(max_sd + 1 , &readfds , NULL , NULL , NULL);

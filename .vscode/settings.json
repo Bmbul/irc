@@ -71,6 +71,9 @@
 		"numeric": "cpp",
 		"random": "cpp",
 		"numbers": "cpp",
-		"*.tpp": "cpp"
+		"*.tpp": "cpp",
+		"fstream": "cpp",
+		"iomanip": "cpp",
+		"stack": "cpp"
 	}
 }

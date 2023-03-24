@@ -112,27 +112,27 @@ void	Bot::ReceiveMsg()
 	while ((valRead = recv(socketfd, buffer, 1024, 0)) > 0)
 	{
 		buffer[valRead] = '\0';
-		std::cout << buffer << std::endl;
 		AddToRecvMsg(std::string(buffer));
+		if (valRead < 1024)
+			SendReply();
 	}
+
 	if (valRead < 0)
 	{
 		perror("Failed to receive message");
 		exit(EXIT_FAILURE);
 	}
-	
 	if (valRead == 0)
 	{
 		std::cout <<  "Server has been closed!" << std::endl;
 		close(socketfd);
+		exit(EXIT_SUCCESS);
 	}
-	else
-		std::cout << recvBuffer;
 }
 
-void	Bot::SendMsg()
+void	Bot::SendReply()
 {
-	if (send(clientfd, recvBuffer.c_str(), recvBuffer.length(), 0) < 0)
+	if (send(socketfd, recvBuffer.c_str(), recvBuffer.length() + 1, 0) < 0)
 	{
 		perror("Failed to send message");
 		exit(EXIT_FAILURE);
@@ -144,5 +144,11 @@ void	Bot::RunBot()
 {
 	CreateServer();
 	ConnectToServer();
+	int valRead;
+	if ((valRead = recv(socketfd, buffer, 1024, 0)) > 0)
+	{
+		buffer[valRead] = '\0';
+		std::cout << buffer << std::endl;
+	}
 	ReceiveMsg();
 }
