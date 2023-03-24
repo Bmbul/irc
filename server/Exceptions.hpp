@@ -203,6 +203,12 @@ struct BadChannelKey : public IRCException
 		: IRCException(_name, " " + channelName + " :Cannot join channel (+k)", 475) {}
 };
 
+struct BadChannelMask : public IRCException
+{
+	BadChannelMask(const std::string &_name, const std::string &channelName)
+		: IRCException(_name, " " + channelName + " :Bad channel mask", 476) {}
+};
+
 struct ChannelOpPrivsNeeded : public IRCException
 {
 	ChannelOpPrivsNeeded(const std::string &_name, const std::string &channelName)

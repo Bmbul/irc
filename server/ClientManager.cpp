@@ -111,7 +111,7 @@ void	ClientManager::HandleMessage(Client &client)
 	messageController->ClearChunk(client.getSocket());
 }
 
-void	ClientManager::CloseClient(int	clientSocket)
+void	ClientManager::CloseClient(int	clientSocket, const std::string &reason)
 {
 	Server	*server = Server::getServer();
 	struct sockaddr_in *address;
@@ -122,8 +122,9 @@ void	ClientManager::CloseClient(int	clientSocket)
 	//Somebody disconnected , get his details and print
 	getpeername(clientSocket , (sockaddr *)address , &addrlen);
 	
-	std::cout << "Host disconnected , ip " << inet_ntoa(address->sin_addr)
-		<< " , port " << ntohs(address->sin_port) << std::endl;
+	std::cout << "Host disconnected, IP: " << inet_ntoa(address->sin_addr)
+		<< ", PORT: " << ntohs(address->sin_port) << std::endl
+		<< "Reason: " << (reason.length() == 0 ? "not specified." : reason) << std::endl;
 	//Close the socket and mark as 0 in list for reuse
 	server->ClearClientFromChannels(clientMap[clientSocket]);
 	close(clientSocket);
@@ -142,7 +143,7 @@ void	ClientManager::HandleInput(fd_set *readfds)
 			if ((valread = recv(sd, buffer, 1024, MSG_DONTWAIT)) == 0)
 			{
 				++it;
-				CloseClient(sd);
+				CloseClient(sd, "");
 				RemoveClient(sd);
 			}
 			else // in case if client inputed message

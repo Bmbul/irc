@@ -66,9 +66,7 @@ void	Bot::ConnectToServer()
 		perror("Failed to connect to server");
 		exit(EXIT_FAILURE);
 	}
-	// Starting a bot, bot is running, after this we have to check is it connected ?
-	// After that we can wait for connections.
-	std::string	message = "PASS " + pass + "\nUSER " + user + " a a a\nNICK " + nick + "\n";
+	std::string	message = "PASS " + pass + "\nUSER " + user + " a a a\nNICK " + nick + "\nbotme\n";
 	if (send(socketfd, message.c_str(), message.length() + 1, 0) < 0) 
 	{
 		std::cerr << "Vori e" << std::endl;

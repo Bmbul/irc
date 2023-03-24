@@ -39,6 +39,7 @@ class Client : public IMessenger
 			const std::string message) const;
 		void	SendMessageFromChannel(const Client &reciever, const std::string &command,
 			const std::string &channel, const std::string message) const;
+		bool	operator==(const Client &rhs) const;
 };
 
 #endif // CLIENT_HPP

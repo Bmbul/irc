@@ -25,9 +25,7 @@ void	Command<CommandType::user>::validate(Client &sender,const std::vector<std::
 		throw NotRegistered(sender.getNick());
 	if(arguments.size() < 4)
 		throw NeedMoreParams(sender.getNick(),"USER");
-	if (sender.getIsPassed() == false)
-		throw NOTAUTHORIZED(sender.getNick(),sender.getName());
-	if(sender.isDone())
+	if(sender.getIsUsered())
 		throw AlreadyRegistered(sender.getNick());
 }
 
@@ -96,12 +94,6 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 	}
 }
  
-/* template<>
-void	Command<CommandType::notice>::validate(Client &sender,const std::vector<std::string> &arguments)
-{
-	
-}*/
- 
 template<>
 void	Command<CommandType::join>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
@@ -114,6 +106,8 @@ void	Command<CommandType::join>::validate(Client &sender,const std::vector<std::
 	std::vector<std::string> args = messageController->Split(arguments[0],",");
 	for (size_t i = 0; i < args.size(); i++)
 	{
+		if (!messageController->IsValidChannelName(args[i]))
+			throw BadChannelMask(sender.getNick(), args[i]);
 		std::string channelName = messageController->GetChannelName(args[i]);
 		if (server->HasChannel(channelName))
 		{
@@ -126,8 +120,6 @@ void	Command<CommandType::join>::validate(Client &sender,const std::vector<std::
 		}
 		 
 	}
-	
-	
 }
  
 template<>
@@ -136,19 +128,17 @@ void	Command<CommandType::part>::validate(Client &sender,const std::vector<std::
 	if(sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
 	Server *server = Server::getServer();
-	if(arguments.size() != 1)
+	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PART");
 	MessageController *messageController = MessageController::getController();
 	std::vector<std::string> channels = messageController->Split(arguments[0],",");
 	for (size_t i = 0; i < channels.size(); i++)
 	{
+		if (!messageController->IsValidChannelName(channels[i]))
+			throw BadChannelMask(sender.getNick(), channels[i]);
 		std::string channelName = messageController->GetChannelName(channels[i]);
-		if(server->HasChannel(channelName) == false)
+		if(!server->HasChannel(channelName))
 			throw NoSuchChannel(sender.getNick(),channels[i]);
-	}
-	for (size_t i = 0; i < channels.size(); i++)
-	{
-		std::string channelName = messageController->GetChannelName(channels[i]);
 		Channel channel = server->getChannel(channelName);
 		if(channel.HasMember(sender.getNick()) == false)
 			throw NotOnChannel(sender.getNick(),channelName);
@@ -158,22 +148,19 @@ void	Command<CommandType::part>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::kick>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
+	std::string chName = arguments[0];
 	if(sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
 	if(arguments.size() != 2)
 		throw NeedMoreParams(sender.getNick(),"KICK");
-	std::string ChannelName = MessageController::getController()->GetChannelName(arguments[1]);
+	if (!MessageController::getController()->IsValidChannelName(chName))
+		throw BadChannelMask(sender.getNick(), chName);
+	std::string channelName = MessageController::getController()->GetChannelName(chName);
 	Server *server = Server::getServer();
-	if(server->HasChannel(ChannelName) == false)
-		throw NoSuchChannel(sender.getNick(),ChannelName);
+	if(server->HasChannel(channelName) == false)
+		throw NoSuchChannel(sender.getNick(),channelName);
 }
  
-/* template<>
-void	Command<CommandType::quit>::validate(Client &sender,const std::vector<std::string> &arguments)
-{
-	
-} */
-
 template<>
 void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
@@ -233,7 +220,4 @@ void	Command<CommandType::bot>::validate(Client &sender, const std::vector<std::
 		throw NoSuchNick(sender.getNick(),channelName);
 	if(arguments[0] != "help" || arguments[0] != "time")
 		throw UnknownCommand(sender.getNick(),arguments[0]);
-	
-
-	
 }

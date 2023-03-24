@@ -27,14 +27,14 @@ class ClientManager
 		void	RemoveClient(std::map<int, Client>::iterator &iter);
 
 		int		AddClientstToReadFds(fd_set *readfds);
-		void	CloseClient(int	clientSocket);
+		void	CloseClient(int	clientSocket, const std::string &reason);
 		void	HandleInput(fd_set *readfds);
 		void	HandleMessage(Client &client);
 
 		ClientManager();
 		~ClientManager();
 		static ClientManager *getManager();
-		const Client &getClient(std::string const &NickName)const;
+		const Client &getClient(std::string const &NickName) const;
 
 };
 

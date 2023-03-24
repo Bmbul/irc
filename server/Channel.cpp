@@ -140,6 +140,8 @@ void Channel::Broadcast(const Client &sender,
 	for (std::map<std::string, Client>::const_iterator it = members.begin();
 		it != members.end(); it++)
 	{
+		if (it->second == sender)
+			continue ;
 		sender.SendMessageFromChannel(it->second, command, this->name, message);
 	}
 }

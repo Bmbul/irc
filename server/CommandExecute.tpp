@@ -35,6 +35,8 @@ void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::s
 	validate(sender,arguments);
 	Server *server = Server::getServer();
 	sender.setNick(arguments[0]);
+	if(sender.isDone())
+		return ;
 	sender.setIsNicked(true);
 	if(sender.isDone())
 		server->SendHelloMessage(sender);
@@ -45,7 +47,7 @@ template<>
 void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	validate(sender,arguments);
-	sender.SendMessage(sender,"PING","ping!");
+	sender.SendMessage(sender,"PING","pong!");
 }
 
 
@@ -73,9 +75,8 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 	{
 		if(messageController->IsValidChannelName(args[i]))
 		{
-
-				std::string channelName = messageController->GetChannelName(args[i]);
-				server->getChannel(channelName).Broadcast(sender, MessageBody, "PRIVMSG");
+			std::string channelName = messageController->GetChannelName(args[i]);
+			server->getChannel(channelName).Broadcast(sender, MessageBody, "PRIVMSG");
 		}
 		else
 			sender.SendMessage(clientManager->getClient(args[i]),
@@ -93,33 +94,30 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 	MessageController *messageController = MessageController::getController();
 	ClientManager *client_managar = ClientManager::getManager();
 	Server *server = Server::getServer();
+	
 	if(arguments.size() <= 1)
 		throw NeedMoreParams(sender.getNick(),"NOTICE");
 	std::vector<std::string> args = messageController->Split(arguments[0],",");
 	std::string MessageBody = "";
+	
 	for (size_t i = 1; i < arguments.size(); i++)
 		MessageBody = MessageBody + arguments[i] + " ";
+	
 	for (size_t i = 0; i < args.size(); i++)
 	{
-		if(messageController->IsValidChannelName(args[i]))
+		bool isValidChannel = messageController->IsValidChannelName(args[i]);
+		std::string channelName = messageController->GetChannelName(args[i]);
+		if(isValidChannel && server->HasChannel(channelName))
 		{
-			if(server->HasChannel(args[i]))
-			{
-				std::string channelName = messageController->GetChannelName(args[i]);
-				Channel channel = server->getChannel(channelName);
-				channel.Broadcast(sender, MessageBody, "NOTICE");
-			}
+			Channel channel = server->getChannel(channelName);
+			channel.Broadcast(sender, MessageBody, "NOTICE");
 		}
 		else if(client_managar->HasClient(args[i]))
 		{
 			sender.SendMessage(client_managar->getClient(args[i]),
 				"NOTICE", arguments.back());
 		}
-		else
-		{
-			//throw NoSuchChannel(sender.getNick(),args[i]);
-			return ;
-		}
+		else return;
 	}
 }
 
@@ -135,17 +133,17 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 	{
 		if (server->HasChannel(args[i]))
 		{
-		
-			Channel &channel = server->getChannel(args[i]);
+			std::string channelName = message->GetChannelName(args[i]);
+			Channel &channel = server->getChannel(channelName);
 			channel.AddMember(sender.getNick());
 		}
 		else
 		{
-			Channel &channel = server->getChannel(args[i]);
+			std::string channelName = message->GetChannelName(args[i]);
+			Channel &channel = server->getChannel(channelName);
 			channel.AddMember(sender.getNick());
 			channel.AddMode(ModeType::write_);
 		}
-		 
 	}
 }
 
@@ -155,18 +153,16 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 	validate(sender,arguments);
 	MessageController *message = MessageController::getController();
 	std::vector<std::string> args = message->Split(arguments[0],",");
+	std::string channelName;
 	for (size_t i = 0; i < args.size(); i++)
 	{
 		Server *server = Server::getServer();
-		if(!server->HasChannel(args[i]))
-			throw NoSuchChannel(sender.getNick(),args[i]);
-			
-		Channel &channel = server->getChannel(args[i]);
+		channelName = message->GetChannelName(args[i]);
 
+		Channel &channel = server->getChannel(channelName);
     	channel.LeaveMember(sender.getNick());
     	if(channel.getMemberCount() == 0)
-        	server->removeChannel(args[i]);
-		
+        	server->removeChannel(channelName);
 	}
 	
 }
@@ -176,22 +172,18 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 {
 	validate(sender,arguments);
 	Server *server = Server::getServer();
-	std::string channelName = MessageController::getController()->GetChannelName(arguments[1]);
+	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
 	Channel &channel = server->getChannel(channelName);
-	channel.KickMember(sender.getNick(),arguments[0]);
+	channel.KickMember(sender.getNick(),arguments[1]);
 }
 
 
 template<>
 void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void)arguments;
-	if(sender.isDone() == false)
-		throw NotRegistered(sender.getNick());
-	//validation !!!
 	ClientManager *manager = ClientManager::getManager();
 	int socket = sender.getSocket();
-	manager->CloseClient(socket);
+	manager->CloseClient(socket, arguments[0]);
 	manager->RemoveClient(socket);
 }
 
@@ -231,12 +223,8 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 				channel.RemoveMode(ModeType::invite);
 			else if(arguments[i].at(1) == 'O')
 				channel.RemoveFromAdmins(sender.getNick(),arguments[i + 1]);
-
 		}
-		
 	}
-	
-	//std::cout <<"channel name is ===> " << channelName << std::endl;
 }
 
 template<>
@@ -261,12 +249,7 @@ void	Command<CommandType::ftp>::execute(Client &sender, const std::vector<std::s
 		Server::getServer()->SendMessageToClient(sender, line);
     }
 }
-template<>
-void	Command<CommandType::ls>::execute(Client &sender, const std::vector<std::string> &arguments)
-{
-	(void)sender;
-	(void)arguments;
-}
+
 template<>
 void	Command<CommandType::cap>::execute(Client &sender, const std::vector<std::string> &arguments)
 {

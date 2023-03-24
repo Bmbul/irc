@@ -85,3 +85,8 @@ void	Client::SendMessageFromChannel(const Client &reciever, const std::string &c
 		+ command + " #" + channel  + ":" + message;
 	SendMessageToClient(reciever, finalizedMessage);
 }
+
+bool	Client::operator==(const Client &rhs) const
+{
+	return (this->fd == rhs.fd);
+}
