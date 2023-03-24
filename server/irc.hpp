@@ -5,6 +5,7 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <arpa/inet.h> //close
+#include <fcntl.h>
 
 #include <map>
 #include <cerrno>

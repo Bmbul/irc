@@ -47,7 +47,7 @@ template<>
 void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	validate(sender,arguments);
-	sender.SendMessage(sender,"PING","pong!");
+	sender.SendMessage(sender,"PONG",arguments[0]);
 }
 
 
@@ -55,7 +55,7 @@ template<>
 void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	validate(sender, arguments);
-	sender.SendMessage(sender,"PONG","pong!");
+	sender.SendMessage(sender,"PONG",arguments[0]);
 }
 
 

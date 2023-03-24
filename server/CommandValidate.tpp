@@ -45,8 +45,8 @@ void	Command<CommandType::nick>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::ping>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
-	/* if(sender.isDone() == false)
-		throw NotRegistered(sender.getNick()); */
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PING");
 	/* if(sender.isDone() == 0)
@@ -56,8 +56,8 @@ void	Command<CommandType::ping>::validate(Client &sender,const std::vector<std::
 template<>
 void	Command<CommandType::pong>::validate(Client &sender,const std::vector<std::string> &arguments)
 {
-	/* f(sender.isDone() == false)
-		throw NotRegistered(sender.getNick()); */
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PONG");
 	/* if(sender.isDone() == 0)

@@ -7,7 +7,7 @@ IMessenger::~IMessenger() { }
 void	IMessenger::SendMessageWithSocket(int clientSocket,
 	const std::string &message) const
 {
-	if (send(clientSocket, (message + "\n").c_str(), message.length() + 1, 0) < 0)
+	if (send(clientSocket, (message + "\r\n").c_str(), message.length() + 2, 0) < 0)
 		perror("send");
 }
 

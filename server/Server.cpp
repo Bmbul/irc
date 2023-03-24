@@ -85,6 +85,7 @@ void	Server::StartListening()
 		perror("listen");
 		exit(EXIT_FAILURE);
 	}
+	fcntl(this->master_socket,F_SETFL,O_NONBLOCK);
 	std::cout << "Waiting for connections ..." << std::endl;
 }
 

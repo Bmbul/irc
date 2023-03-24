@@ -73,7 +73,7 @@ void	Client::SendMessage(const Client &reciever,
 {
 	//:senderNickname!name@host COMMAND recieverNickname:message
 	std::string finalizedMessage = ":" + MessageController::getController()->GetClientFormatedName(*this) + " "
-		+ commmand + " " + reciever.getNick() + ":" + message;
+		+ commmand + " " + reciever.getNick() + " : " + message;
 	SendMessageToClient(reciever, finalizedMessage);
 }
 
