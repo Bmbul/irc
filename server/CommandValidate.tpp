@@ -211,13 +211,13 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 }
 
 template<>
-void	Command<CommandType::bot>::execute(Client &sender, const std::vector<std::string> &arguments)
+void	Command<CommandType::bot>::validate(Client &sender, const std::vector<std::string> &arguments)
 {
 	if(sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
 	Server *server = Server::getServer();
 	MessageController *controller = MessageController::getController();
-	ClientManager *manager = ClientManager::getManager()
+	ClientManager *manager = ClientManager::getManager();
 	std::string channelName = controller->GetChannelName(arguments[1]);
 	if(arguments.size() != 2)
 		throw NeedMoreParams(sender.getNick(),"BOT");
@@ -230,8 +230,8 @@ void	Command<CommandType::bot>::execute(Client &sender, const std::vector<std::s
 			throw NoSuchNick(sender.getNick(),channelName);
 	}
 	else if(manager->HasClient(arguments[1]) == false)
-		throw NoSuchNick(sender.getNick(),channelName)
-	if(arguments[0] != "help" | arguments[0] != "time")
+		throw NoSuchNick(sender.getNick(),channelName);
+	if(arguments[0] != "help" || arguments[0] != "time")
 		throw UnknownCommand(sender.getNick(),arguments[0]);
 	
 

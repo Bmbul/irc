@@ -278,8 +278,8 @@ template<>
 void	Command<CommandType::bot>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	validate(sender,arguments);
-	Server *server = Server::getServer();
-	std::string channelName = MessageController::getController()->GetChannelName(arguments[1]);
-	Channel &channel = server->getChannel(channelName);
+	// Server *server = Server::getServer();
+	// std::string channelName = MessageController::getController()->GetChannelName(arguments[1]);
+	// Channel &channel = server->getChannel(channelName);
 
 }
