@@ -260,9 +260,19 @@ void	Command<CommandType::cap>::execute(Client &sender, const std::vector<std::s
 template<>
 void	Command<CommandType::bot>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	validate(sender,arguments);
-	// Server *server = Server::getServer();
-	// std::string channelName = MessageController::getController()->GetChannelName(arguments[1]);
-	// Channel &channel = server->getChannel(channelName);
+	validate(sender, arguments);
 
+	std::string receiver;
+	if (arguments.size() == 1)
+		receiver = sender.getNick();
+	else 
+		receiver = arguments[1];
+	Server::getServer()->SendMessageToBot(arguments[0] + " " + receiver);
+}
+
+template<>
+void	Command<CommandType::botme>::execute(Client &sender, const std::vector<std::string> &arguments)
+{
+	(void) arguments;
+	Server::getServer()->setBotDescriptor(sender.getSocket());
 }

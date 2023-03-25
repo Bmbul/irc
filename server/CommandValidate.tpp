@@ -205,19 +205,19 @@ void	Command<CommandType::bot>::validate(Client &sender, const std::vector<std::
 	Server *server = Server::getServer();
 	MessageController *controller = MessageController::getController();
 	ClientManager *manager = ClientManager::getManager();
+	if (arguments.size() == 0)
+		throw NeedMoreParams(sender.getNick(), "/bot");
+	if (arguments.size() == 1)
+		return ;
 	std::string channelName = controller->GetChannelName(arguments[1]);
-	if(arguments.size() != 2)
-		throw NeedMoreParams(sender.getNick(),"BOT");
-	if(controller->IsValidChannelName(arguments[1]))
+	if (controller->IsValidChannelName(arguments[1]))
 	{
-		if(server->HasChannel(channelName) == false)
-			throw NoSuchChannel(sender.getNick(),channelName);
+		if (!server->HasChannel(channelName))
+			throw NoSuchChannel(sender.getNick(), channelName);
 		Channel &channel = server->getChannel(channelName);
-		if(channel.HasMember(sender.getNick()) == false)
-			throw NoSuchNick(sender.getNick(),channelName);
+		if (!channel.HasMember(sender.getNick()))
+			throw UserNotInChannel(sender.getNick(), sender.getNick(), channelName);
 	}
-	else if(manager->HasClient(arguments[1]) == false)
-		throw NoSuchNick(sender.getNick(),channelName);
-	if(arguments[0] != "help" || arguments[0] != "time")
-		throw UnknownCommand(sender.getNick(),arguments[0]);
+	else if (!manager->HasClient(arguments[1]))
+		throw NoSuchNick(sender.getNick(), channelName);
 }

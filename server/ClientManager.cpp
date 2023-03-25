@@ -149,7 +149,6 @@ void	ClientManager::HandleInput(fd_set *readfds)
 			else // in case if client inputed message
 			{
 				buffer[valread] = '\0';
-				std::cout << "got some message: " << buffer << std::endl;
 				if (buffer[0] && !(buffer[0] == '\n' && !messageController->ContainsChunk(sd)))
 					HandleMessage(it->second);
 
