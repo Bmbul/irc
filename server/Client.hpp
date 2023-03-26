@@ -37,6 +37,10 @@ class Client : public IMessenger
 
 		void	SendMessage(const Client &reciever, const std::string &commmand,
 			const std::string message) const;
+		void	SendPongMessage(const std::string &message) const;
+		void	SendSelf(const std::string &message) const;
+
+
 		void	SendMessageFromChannel(const Client &reciever, const std::string &command,
 			const std::string &channel, const std::string message) const;
 		bool	operator==(const Client &rhs) const;

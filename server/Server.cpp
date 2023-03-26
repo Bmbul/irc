@@ -46,7 +46,7 @@ void	Server::ResetSockets()
 
 void	Server::CreateServer()
 {
-	if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)
+	if( (master_socket = socket(PF_INET , SOCK_STREAM , 0)) == 0)
 	{
 		perror("socket failed");
 		exit(EXIT_FAILURE);
@@ -211,4 +211,14 @@ int		Server::getBotDescriptor() const
 void	Server::setBotDescriptor(int new_fd)
 {
 	this->bot_fd = new_fd;
+}
+
+void	Server::RemoveBot()
+{
+	this->bot_fd = 0;
+}
+
+bool	Server::IsBotConnected() const
+{
+	return (bot_fd != 0);
 }

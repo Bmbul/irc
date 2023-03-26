@@ -11,11 +11,23 @@ template<>
 void	Command<CommandType::pass>::validate(Client &sender, const std::vector<std::string> &arguments)
 {
 	if(sender.getIsPassed())
+	{
+		std::cout << "is passed!!!!!!" <<std::endl;
 		throw AlreadyRegistered(sender.getNick());
+	}
 	if(arguments.size() == 0)
+	{
+		std::cout << "is sizeeee!!!!!!" <<std::endl;
+
 		throw NeedMoreParams(sender.getNick(),"PASS");
+	}
 	if (Server::getServer()->getPass() != arguments[0])
+	{
+		std::cout << "PASSS ["<< Server::getServer()->getPass() << "]" << "arguments[0] = ["<< arguments[0] << "]" << "is true == " << (Server::getServer()->getPass() != arguments[0]) << std::endl;
+		std::cout << "is misssmachhhhhhh!!!!!!" <<std::endl;
 		throw PasswordMissmatch(sender.getNick());
+	}
+	
 }
 
 template<>
@@ -49,8 +61,6 @@ void	Command<CommandType::ping>::validate(Client &sender,const std::vector<std::
 		throw NotRegistered(sender.getNick());
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PING");
-	/* if(sender.isDone() == 0)
-		throw NOTAUTHORIZED(sender.getNick(),sender.getName()); */
 }
  
 template<>
@@ -60,8 +70,6 @@ void	Command<CommandType::pong>::validate(Client &sender,const std::vector<std::
 		throw NotRegistered(sender.getNick());
 	if(arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(),"PONG");
-	/* if(sender.isDone() == 0)
-		throw NOTAUTHORIZED(sender.getNick(),sender.getName()); */
 }
  
 template<>
@@ -111,14 +119,9 @@ void	Command<CommandType::join>::validate(Client &sender,const std::vector<std::
 		std::string channelName = messageController->GetChannelName(args[i]);
 		if (server->HasChannel(channelName))
 		{
-			
 			if (server->getChannel(channelName).GetMode() & ModeType::invite)
-			{
 				throw InviteOnlyChannel(sender.getNick(),channelName);
-			}
-			
 		}
-		 
 	}
 }
  
@@ -207,6 +210,8 @@ void	Command<CommandType::bot>::validate(Client &sender, const std::vector<std::
 	ClientManager *manager = ClientManager::getManager();
 	if (arguments.size() == 0)
 		throw NeedMoreParams(sender.getNick(), "/bot");
+	if (!server->IsBotConnected())
+		throw NoBotConnected(sender.getNick());
 	if (arguments.size() == 1)
 		return ;
 	std::string channelName = controller->GetChannelName(arguments[1]);

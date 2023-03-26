@@ -77,12 +77,24 @@ void	Client::SendMessage(const Client &reciever,
 	SendMessageToClient(reciever, finalizedMessage);
 }
 
+void	Client::SendSelf(const std::string &message) const
+{
+	SendMessageToClient(*this, message);
+}
+
+void	Client::SendPongMessage(const std::string &message) const
+{
+	std::string finalizedMessage = ":" + MessageController::getController()->GetClientFormatedName(*this)
+		+ " PONG :" + message;
+	SendSelf(finalizedMessage);
+}
+
 void	Client::SendMessageFromChannel(const Client &reciever, const std::string &command,
-	const std::string &channel, const std::string message) const 
+	const std::string &channel, const std::string message) const
 {
 	//:senderNickname!name@host COMMAND recieverNickname:message
 	std::string finalizedMessage = ":" + MessageController::getController()->GetClientFormatedName(*this) + " "
-		+ command + " #" + channel  + ":" + message;
+		+ command + " #" + channel  + " :" + message;
 	SendMessageToClient(reciever, finalizedMessage);
 }
 

@@ -38,8 +38,9 @@ CommandData	MessageController::ParseSingleCommand(const std::string &commandLine
 
 	// trimming the beginning and the end of the message
 	int  actualStart = mainPart.find_first_not_of(" ");
-	int actualEnd = mainPart.find_last_not_of("\r\n");
-	mainPart = mainPart.substr(actualStart, actualEnd + 1);
+	int actualEnd = mainPart.find_last_not_of("\n");
+	char last_elem =  mainPart.at(mainPart.size() - 1);
+	mainPart =last_elem == '\n' || last_elem == '\r' ? mainPart.substr(actualStart, actualEnd ) : mainPart.substr(actualStart, actualEnd + 1);
 
 	std::stringstream ss(mainPart);
 	if (std::getline(ss, str, ' '))
@@ -71,6 +72,8 @@ std::vector<CommandData>	MessageController::Parse(std::string &input) const
 	return (commandDatas);
 }
 
+#include <string>
+
 void	MessageController::PrintData(std::vector<CommandData> &dataVector) const
 {
 	std::vector<CommandData>::iterator	data;
@@ -80,7 +83,7 @@ void	MessageController::PrintData(std::vector<CommandData> &dataVector) const
 			std::cout << "MY: COMMAND: "<< data->command << std::endl;
 		for (size_t i = 0; i < data->args.size(); i++)
 		{
-			std::cout << "MY: ARG[" << i << "]: " << data->args[i] << std::endl;
+			std::cout << "MY: ARG[" << i << "]: " << data->args[i] << "size ===> " << data->args[i].size() << "last_element is ==> " << data->args[i].at(data->args[i].size() - 1)<< std::endl;
 		}
 		std::cout << std::endl;
 	}

@@ -26,12 +26,12 @@ void	Bot::Setup()
 void	Bot::CreateServer()
 {
 
-	if( (socketfd = socket(AF_INET , SOCK_STREAM , 0)) < 0) // prev  if( (socketfd = socket(AF_INET , SOCK_STREAM , 0)) == 0)
+	if( (socketfd = socket(PF_INET , SOCK_STREAM , 0)) < 0) // prev  if( (socketfd = socket(AF_INET , SOCK_STREAM , 0)) == 0)
 	{
 		perror("Failed to create a socket");
 		exit(EXIT_FAILURE);
 	}
-	address.sin_family = AF_INET;
+	address.sin_family = PF_INET;
 	address.sin_addr.s_addr = inet_addr(host.c_str());
 	address.sin_port = htons(port);
 }
@@ -87,7 +87,7 @@ void	Bot::AcceptSocket()
 		perror("Failed to accept socket");
 		exit(EXIT_FAILURE);
 	}
-
+    fcntl(socketfd, F_SETFL, O_NONBLOCK);
 }
 
 void	Bot::ReceiveMsg()
@@ -97,7 +97,6 @@ void	Bot::ReceiveMsg()
 	{
 		buffer[valRead] = '\0';
 		AddToRecvMsg(std::string(buffer));
-		std::cout << "BUFFER: " << buffer << std::endl;
 		if (valRead < 1024)
 			SendReply();
 	}
@@ -117,15 +116,21 @@ void	Bot::ReceiveMsg()
 
 std::string	Bot::GiveResponse(const std::string &command)
 {
-/* 	std::string magic = "\r### ### #     #    #     #####  ###  #####  ### ###\r\
-						 ### ### ##   ##   # #   #     #  #  #     # ### ###\r\
-						 ### ### # # # #  #   #  #        #  #       ### ###\r\
-						  #   #  #  #  # #     # #  ####  #  #        #   # \r\
-						         #     # ####### #     #  #  #              \r\
-						 ### ### #     # #     # #     #  #  #     # ### ###\r\
-						 ### ### #     # #     #  #####  ###  #####  ### ###";
+	std::string magic = "																																	\
+	 ### ### #     #    #     #####  ###  #####  ### ###																							\
+	 ### ### ##   ##   # #   #     #  #  #     # ### ###																							\
+	 ### ### # # # #  #   #  #        #  #       ### ###																							\
+	  #   #  #  #  # #     # #  ####  #  #        #   # 																							\
+	         #     # ####### #     #  #  #             																								\
+	 ### ### #     # #     # #     #  #  #     # ### ###																							\
+	 ### ### #     # #     #  #####  ###  #####  ### ###																							\
+	";
 	if (command == "help")
-		return ("You can use the following command:\r\ttime\r\tdate\r\tmagic");
+		return ("You can use the following commands:																								\
+			  \ttime																																\
+			  \tdate																																\
+			  \tmagic																																\
+			");
 	else if (command == "time")
 		return __TIME__;
 	else if (command  == "date")
@@ -133,25 +138,8 @@ std::string	Bot::GiveResponse(const std::string &command)
 	else if (command == "magic")
 		return (magic);
 	else
-		return ("I am not sure what you mean\rUse help command to find out what you can do with me."); */
-
-	std::string magic = "\r### ### #     #    #     #####  ###  #####  ### ###\r\
-						 ### ### ##   ##   # #   #     #  #  #     # ### ###\r\
-						 ### ### # # # #  #   #  #        #  #       ### ###\r\
-						  #   #  #  #  # #     # #  ####  #  #        #   # \r\
-						         #     # ####### #     #  #  #              \r\
-						 ### ### #     # #     # #     #  #  #     # ### ###\r\
-						 ### ### #     # #     #  #####  ###  #####  ### ###";
-	if (command == "help")
-		return ("You can use the following command:\r\ttime\r\tdate\r\tmagic");
-	else if (command == "time")
-		return __TIME__;
-	else if (command  == "date")
-		return __DATE__;
-	else if (command == "magic")
-		return (magic);
-	else
-		return ("I am not sure what you mean.\rUse help command to find out what you can do with me.");
+		return ("I am not sure what you mean.																												\
+			  Use help command to find out what you can do with me.");
 }
 
 void	Bot::SendReply()
@@ -162,8 +150,7 @@ void	Bot::SendReply()
 
 	std::string user = recvMessage.substr(spacePos + 1, recvMessage.length());
 	std::string replyMessage = "PRIVMSG " + user + " :" + GiveResponse(command) + "\r\n";
-	std::cout << "REPLYMSG: " << replyMessage << std::endl;
-	if (send(socketfd, replyMessage.c_str(), replyMessage.length(), 0) < 0)
+	if ((send(socketfd, replyMessage.c_str(), replyMessage.length(), 0)) < 0)
 	{
 		perror("Failed to send message");
 		exit(EXIT_FAILURE);

@@ -14,14 +14,21 @@ void	Command<type>::execute(Client &sender, const std::vector<std::string> &argu
 template<>
 void	Command<CommandType::pass>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
+	(void)arguments;
+	(void)sender;
+	std::cout << "PASS cmd!!!" << std::endl;
 	validate(sender, arguments);
+	std::cout << "PASS cmd!!!" << std::endl;
 	sender.setIsPassed(true);
 }
 
 template<>
 void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
+	std::cout << "USER cmd!!!" << std::endl;
 	validate(sender, arguments);
+	std::cout << "USER cmd!!!" << std::endl;
+
 	Server *server = Server::getServer();
 	sender.setName(arguments[0]);
 	sender.setIsUsered(true);
@@ -32,7 +39,9 @@ void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::s
 template<>
 void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
+	std::cout << "NICK cmd!!!" << std::endl;
 	validate(sender,arguments);
+	std::cout << "NICK cmd!!!" << std::endl;
 	Server *server = Server::getServer();
 	sender.setNick(arguments[0]);
 	if(sender.isDone())
@@ -46,16 +55,18 @@ void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::s
 template<>
 void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
+	std::cout << "PINGGG!!!" << std::endl;
 	validate(sender,arguments);
-	sender.SendMessage(sender,"PONG",arguments[0]);
+	sender.SendPongMessage(arguments[0]);
 }
 
 
 template<>
 void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
+	std::cout << "PONGGGGGG!!" << std::endl;
 	validate(sender, arguments);
-	sender.SendMessage(sender,"PONG",arguments[0]);
+	sender.SendPongMessage(arguments[0]);
 }
 
 
