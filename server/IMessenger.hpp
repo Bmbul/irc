@@ -9,10 +9,10 @@ class Client;
 class IMessenger
 {
 	private:
-		void	SendMessageWithSocket(int clientSocket, const std::string &message) const;
 
 	public:
 		virtual ~IMessenger();
+		void	SendMessageWithSocket(int clientSocket, const std::string &message) const;
 		void	SendMessageToClient(const Client &client, const std::string &message) const;
 };
 

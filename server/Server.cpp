@@ -46,7 +46,7 @@ void	Server::ResetSockets()
 
 void	Server::CreateServer()
 {
-	if( (master_socket = socket(PF_INET , SOCK_STREAM , 0)) == 0)
+	if( (master_socket = socket(AF_INET , SOCK_STREAM , 0)) == 0)
 	{
 		perror("socket failed");
 		exit(EXIT_FAILURE);
@@ -80,7 +80,7 @@ void	Server::StartListening()
 {
 	std::cout << "Listener on port " << port << std::endl;
 	// specifying maximum of 3 pending connections for the master socket
-	if (listen(master_socket, 3) < 0)
+	if (listen(master_socket, 100) < 0)
 	{
 		perror("listen");
 		exit(EXIT_FAILURE);
@@ -199,7 +199,9 @@ void Server::removeChannel(std::string const &name)
 
 void	Server::SendHelloMessage(const Client &client) const
 {
-	SendMessageToClient(client, "Welcome to the Internet Relay Network 001 " + MessageController::getController()->GetClientFormatedName(client));
+	std::string mess = client.getNick() + "!" + client.getName() + "@localhost 001 " + client.getNick() + " :Wellcome to irc server";
+	//IMessenger::SendMessageWithSocket(client.getSocket(), mess);
+	//SendMessageToClient(client, "Wellcome to the Internet Relay Network 001 " + MessageController::getController()->GetClientFormatedName(client));
 }
 
 int		Server::getBotDescriptor() const 

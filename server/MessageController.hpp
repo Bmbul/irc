@@ -32,6 +32,7 @@ class MessageController
 		void	AddChunk(int clientSocket, const std::string &messageChunk);
 		void	ClearChunk(int clientSocket);
 		std::string	ConstructFullMessage(int clientSocket);
+		std::string trim(std::string const &str)const;
 
 		static	MessageController	*getController();
 

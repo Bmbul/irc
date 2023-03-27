@@ -37,21 +37,21 @@ CommandData	MessageController::ParseSingleCommand(const std::string &commandLine
 	} else mainPart = commandLine;
 
 	// trimming the beginning and the end of the message
-	int  actualStart = mainPart.find_first_not_of(" ");
-	int actualEnd = mainPart.find_last_not_of("\n");
-	char last_elem =  mainPart.at(mainPart.size() - 1);
-	mainPart =last_elem == '\n' || last_elem == '\r' ? mainPart.substr(actualStart, actualEnd ) : mainPart.substr(actualStart, actualEnd + 1);
-
+	//int  actualStart = mainPart.find_first_not_of(" ");
+	//int actualEnd = mainPart.find_last_not_of("\n");
+	//char last_elem =  mainPart.at(mainPart.size() - 1);
+		// mainPart =last_elem == '\n' || last_elem == '\r' ? mainPart.substr(actualStart, actualEnd ) : mainPart.substr(actualStart, actualEnd + 1);
+		mainPart = trim(mainPart);
 	std::stringstream ss(mainPart);
 	if (std::getline(ss, str, ' '))
 		data.command = str;
 	while (std::getline(ss, str, ' '))
 	{
 		if (str[0])
-			data.args.push_back(str);
+			data.args.push_back(trim(str));
 	}
 	if (found != std::string::npos)
-		data.args.push_back(longArg);
+		data.args.push_back(trim(longArg));
 	
 	return data;
 }
@@ -83,7 +83,7 @@ void	MessageController::PrintData(std::vector<CommandData> &dataVector) const
 			std::cout << "MY: COMMAND: "<< data->command << std::endl;
 		for (size_t i = 0; i < data->args.size(); i++)
 		{
-			std::cout << "MY: ARG[" << i << "]: " << data->args[i] << "size ===> " << data->args[i].size() << "last_element is ==> " << data->args[i].at(data->args[i].size() - 1)<< std::endl;
+			std::cout << "  MY: ARG[" << i << "] : " << data->args[i] << "size ===> " << data->args[i].size() << " last_element is ==> " << data->args[i].at(data->args[i].size() - 1)<< std::endl;
 		}
 		std::cout << std::endl;
 	}
@@ -187,4 +187,16 @@ std::vector<std::string> MessageController::Split(std::string str, std::string d
 std::string	MessageController::GetChannelName(const std::string &channelName) const
 {
 	return (channelName.substr(1,channelName.length()));
+}
+
+std::string MessageController::trim(std::string const &str)const 
+{
+    size_t start_pos = str.find_first_not_of(" \t\r\n");
+    size_t end_pos = str.find_last_not_of(" \t\r\n");
+
+    if (start_pos == std::string::npos || end_pos == std::string::npos) {
+        return "";
+    }
+
+    return str.substr(start_pos, end_pos - start_pos + 1);
 }
