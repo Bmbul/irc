@@ -33,7 +33,7 @@ ClientManager::~ClientManager()
 
 void	ClientManager::AddClient(const int socketFd)
 {
-	std::pair<int, Client> newClient(socketFd, Client("Client Name", socketFd));
+	std::pair<int, Client> newClient(socketFd, Client(socketFd));
 	clientMap.insert(newClient);
 	std::cout << "Adding to list of sockets as "
 		<< clientMap.size() << std::endl;

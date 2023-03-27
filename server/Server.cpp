@@ -199,7 +199,7 @@ void Server::removeChannel(std::string const &name)
 
 void	Server::SendHelloMessage(const Client &client) const
 {
-	std::string mess = client.getNick() + "!" + client.getName() + "@localhost 001 " + client.getNick() + " :Wellcome to irc server";
+	std::string mess = client.GetFormattedText() + " 001 " + client.getNick() + " :Welcome to irc server";
 	SendMessageWithSocket(client.getSocket(), mess);
 }
 

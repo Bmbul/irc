@@ -102,6 +102,16 @@ bool	MessageController::IsValidChannelName(const std::string &channelName) const
 	return (StringStartsWithFromSet(channelName, "#&"));
 }
 
+bool	MessageController::IsValidNickname(const std::string &nickname) const
+{
+	if (nickname.find_first_of(" ,*?!@.") != std::string::npos)
+		return (false);
+	char ch = nickname[0];
+	if (ch == '$' || ch == ':' || ch == '#' || ch == '&')
+		return (false);
+	return (true);
+}
+
 bool	MessageController::GotEndOfMessage(const char *messageChunk) const
 {
 	int i = -1;
@@ -121,18 +131,6 @@ MessageController *MessageController::getController()
 	if (!instance)
 		new MessageController();
 	return (instance);
-}
-
-std::string	MessageController::GetClientFormatedName(const Client &client) const
-{
-	std::string formatted;
-
-	if (client.getIsNicked())
-		formatted = client.getNick();
-	if (client.getIsUsered())
-		formatted += "!" + client.getName();
-	formatted += "@" + Server::getServer()->getHost();
-	return (formatted);
 }
 
 bool	MessageController::ContainsChunk(int clientSocket) const

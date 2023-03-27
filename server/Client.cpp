@@ -1,6 +1,7 @@
 #include "Client.hpp"
 #include <sys/socket.h>
 #include "MessageController.hpp"
+#include "Server.hpp"
 
 Client::Client()
     : name("default name")
@@ -8,8 +9,8 @@ Client::Client()
 
 }
 
-Client::Client(std::string _name, int _socketfd)
-    : isPassed(false), isUsered(false), isNicked(false), name(_name), fd(_socketfd)
+Client::Client(int _socketfd)
+    : isPassed(false), isUsered(false), isNicked(false), name(""), fd(_socketfd)
 { }
 
 Client::~Client()
@@ -57,7 +58,6 @@ void Client::setName(std::string const &name)
 }
 void Client::setNick(std::string const &nick)
 {
-	std::cout << "setting nick to " << nick << std::endl;
 	this->nick = nick;
 }
 
@@ -68,11 +68,25 @@ bool Client::isDone()
 	return false;
 }
 
+
+std::string	Client::GetFormattedText() const
+{
+	std::string formatted = ":";
+
+	if (isNicked)
+		formatted += nick;
+	if (isUsered)
+		formatted += "!" + name;
+	formatted += "@" + Server::getServer()->getHost();
+	return (formatted);
+}
+
+
 void	Client::SendMessage(const Client &reciever,
 	const std::string &commmand, const std::string message) const
 {
 	//:senderNickname!name@host COMMAND recieverNickname:message
-	std::string finalizedMessage = ":" + MessageController::getController()->GetClientFormatedName(*this) + " "
+	std::string finalizedMessage = GetFormattedText() + " "
 		+ commmand + " " + reciever.getNick() + " : " + message;
 	SendMessageToClient(reciever, finalizedMessage);
 }
@@ -84,7 +98,7 @@ void	Client::SendSelf(const std::string &message) const
 
 void	Client::SendPongMessage(const std::string &message) const
 {
-	std::string finalizedMessage = ":" + MessageController::getController()->GetClientFormatedName(*this)
+	std::string finalizedMessage = GetFormattedText()
 		+ " PONG :" + message;
 	SendSelf(finalizedMessage);
 }
@@ -93,7 +107,7 @@ void	Client::SendMessageFromChannel(const Client &reciever, const std::string &c
 	const std::string &channel, const std::string message) const
 {
 	//:senderNickname!name@host COMMAND recieverNickname:message
-	std::string finalizedMessage = ":" + MessageController::getController()->GetClientFormatedName(*this) + " "
+	std::string finalizedMessage = GetFormattedText() + " "
 		+ command + " #" + channel  + " :" + message;
 	SendMessageToClient(reciever, finalizedMessage);
 }
