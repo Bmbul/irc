@@ -199,8 +199,8 @@ void Server::removeChannel(std::string const &name)
 
 void	Server::SendHelloMessage(const Client &client) const
 {
-	std::string mess = client.getNick() + "!" + client.getName() + "@localhost 001 " + client.getNick() + " :Wellcome to irc server";
-	//IMessenger::SendMessageWithSocket(client.getSocket(), mess);
+	std::string mess = ":" + client.getNick() + "!" + client.getName() + "@127.0.0.1 001 " + client.getNick() + " :Wellcome to irc server";
+	IMessenger::SendMessageWithSocket(client.getSocket(), mess);
 	//SendMessageToClient(client, "Wellcome to the Internet Relay Network 001 " + MessageController::getController()->GetClientFormatedName(client));
 }
 
