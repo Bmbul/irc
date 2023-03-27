@@ -17,7 +17,7 @@ class Client : public IMessenger
 
 	public:
 		Client();
-		Client(std::string _name, int _fd);
+		Client(int _fd);
 		~Client();
 		
 		std::string getName() const ;
@@ -35,6 +35,8 @@ class Client : public IMessenger
 		void setNick(std::string const &nick);
 		bool isDone();
 
+
+		std::string	GetFormattedText() const;
 		void	SendMessage(const Client &reciever, const std::string &commmand,
 			const std::string message) const;
 		void	SendPongMessage(const std::string &message) const;

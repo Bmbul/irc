@@ -36,12 +36,8 @@ CommandData	MessageController::ParseSingleCommand(const std::string &commandLine
   		longArg = commandLine.substr(found +1, std::string::npos);
 	} else mainPart = commandLine;
 
-	// trimming the beginning and the end of the message
-	//int  actualStart = mainPart.find_first_not_of(" ");
-	//int actualEnd = mainPart.find_last_not_of("\n");
-	//char last_elem =  mainPart.at(mainPart.size() - 1);
-		// mainPart =last_elem == '\n' || last_elem == '\r' ? mainPart.substr(actualStart, actualEnd ) : mainPart.substr(actualStart, actualEnd + 1);
-		mainPart = trim(mainPart);
+	
+	mainPart = trim(mainPart);
 	std::stringstream ss(mainPart);
 	if (std::getline(ss, str, ' '))
 		data.command = str;
@@ -106,6 +102,16 @@ bool	MessageController::IsValidChannelName(const std::string &channelName) const
 	return (StringStartsWithFromSet(channelName, "#&"));
 }
 
+bool	MessageController::IsValidNickname(const std::string &nickname) const
+{
+	if (nickname.find_first_of(" ,*?!@.") != std::string::npos)
+		return (false);
+	char ch = nickname[0];
+	if (ch == '$' || ch == ':' || ch == '#' || ch == '&')
+		return (false);
+	return (true);
+}
+
 bool	MessageController::GotEndOfMessage(const char *messageChunk) const
 {
 	int i = -1;
@@ -125,18 +131,6 @@ MessageController *MessageController::getController()
 	if (!instance)
 		new MessageController();
 	return (instance);
-}
-
-std::string	MessageController::GetClientFormatedName(const Client &client) const
-{
-	std::string formatted;
-
-	if (client.getIsNicked())
-		formatted = client.getNick();
-	if (client.getIsUsered())
-		formatted += "!" + client.getName();
-	formatted += "@" + Server::getServer()->getHost();
-	return (formatted);
 }
 
 bool	MessageController::ContainsChunk(int clientSocket) const
@@ -191,7 +185,7 @@ std::string	MessageController::GetChannelName(const std::string &channelName) co
 
 std::string MessageController::trim(std::string const &str)const 
 {
-    size_t start_pos = str.find_first_not_of(" \t\r\n");
+    size_t start_pos = str.find_first_not_of(" \r\n");
     size_t end_pos = str.find_last_not_of(" \t\r\n");
 
     if (start_pos == std::string::npos || end_pos == std::string::npos) {

@@ -150,7 +150,7 @@ void	Bot::SendReply()
 
 	std::string user = recvMessage.substr(spacePos + 1, recvMessage.length());
 	std::string replyMessage = "PRIVMSG " + user + " :" + GiveResponse(command) + "\r\n";
-	if ((send(socketfd, replyMessage.c_str(), replyMessage.length(), 0)) < 0)
+	if ((send(socketfd, replyMessage.c_str(), replyMessage.length() + 1, 0)) < 0)
 	{
 		perror("Failed to send message");
 		exit(EXIT_FAILURE);
@@ -164,10 +164,8 @@ void	Bot::RunBot()
 	CreateServer();
 	ConnectToServer();
 	int valRead;
+	// ignoring welcome message
 	if ((valRead = recv(socketfd, buffer, 1024, 0)) > 0)
-	{
 		buffer[valRead] = '\0';
-		std::cout << buffer;
-	}
 	ReceiveMsg();
 }

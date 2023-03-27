@@ -108,7 +108,8 @@ struct UnknownCommand : public IRCException
 		: IRCException(_name, " " + command + " :Unknown command", 421) {}
 };
 
-struct NoNickNameGiven : public IRCException
+struct NoNickNameGiven :
+ public IRCException
 {
 	NoNickNameGiven(const std::string &_name) : IRCException(_name, " :No nickname given", 431) {}
 };
@@ -225,12 +226,6 @@ struct UsersDontMatch : public IRCException
 {
 	UsersDontMatch(const std::string &_name)
 		: IRCException(_name, " :Cant change mode for other users", 502) {}
-};
-
-struct NOTAUTHORIZED : public IRCException
-{
-	NOTAUTHORIZED(const std::string &_name, const std::string &user)
-		: IRCException(_name, " " + user + " :not authorized", 999) {}
 };
 
 struct NoBotConnected : public IRCException

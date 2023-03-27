@@ -11,23 +11,11 @@ template<>
 void	Command<CommandType::pass>::validate(Client &sender, const std::vector<std::string> &arguments)
 {
 	if(sender.getIsPassed())
-	{
-		std::cout << "is passed!!!!!!" <<std::endl;
 		throw AlreadyRegistered(sender.getNick());
-	}
 	if(arguments.size() == 0)
-	{
-		std::cout << "is sizeeee!!!!!!" <<std::endl;
-
 		throw NeedMoreParams(sender.getNick(),"PASS");
-	}
 	if (Server::getServer()->getPass() != arguments[0])
-	{
-		std::cout << "PASSS ["<< Server::getServer()->getPass() << "]" << "arguments[0] = ["<< arguments[0] << "]" << "is true == " << (Server::getServer()->getPass() != arguments[0]) << std::endl;
-		std::cout << "is misssmachhhhhhh!!!!!!" <<std::endl;
 		throw PasswordMissmatch(sender.getNick());
-	}
-	
 }
 
 template<>
@@ -48,10 +36,10 @@ void	Command<CommandType::nick>::validate(Client &sender,const std::vector<std::
 		throw NotRegistered(sender.getNick());
 	if (arguments.size() == 0)
 		throw NoNickNameGiven(sender.getName());
-	if (sender.getIsPassed() == false)
-		throw NOTAUTHORIZED(sender.getName(),sender.getNick());
 	if (ClientManager::getManager()->HasClient(arguments[0]))
-		 throw NicknameInUse(arguments[0],sender.getNick());
+		throw NicknameInUse(arguments[0],sender.getNick());
+	if (!MessageController::getController()->IsValidNickname(arguments[0]))
+		throw ErroneusNickname(sender.getNick(), arguments[0]);
 }
 
 template<>
@@ -83,8 +71,6 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 	std::vector<std::string> args = messageController->Split(arguments[0],",");
 	if(arguments.size() <= 1)
 		throw NeedMoreParams(sender.getNick(),"PRIVMSG");
-	if(sender.isDone() == 0)
-		throw NOTAUTHORIZED(sender.getNick(),sender.getName());
 	for (size_t i = 0; i < args.size(); i++)
 	{
 		if(messageController->IsValidChannelName(args[i]))
@@ -94,7 +80,7 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 				throw NoSuchChannel(sender.getNick(),args[i]);
 			if(!(server->getChannel(channelName).GetMode() & ModeType::write_))
 				throw CannotSendToChannel(sender.getNick(),channelName);
-			if(!(server->getChannel(channelName).HasMember(sender.getNick())))
+			if(!server->IsBot(sender) && !(server->getChannel(channelName).HasMember(sender.getNick())))
 				throw NoSuchNick(sender.getNick(),"PRIVMSG");
 		}
 	 	else if(client_managar->HasClient(args[i]) == false)
@@ -175,7 +161,7 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 	std::string channel_name = MessageController::getController()->GetChannelName(arguments[0]);
 	Server *server = Server::getServer();
 	if(server->HasChannel(channel_name) == false)
-		throw NoSuchChannel(sender.getNick(),channel_name);//???????????
+		throw NoSuchChannel(sender.getNick(),channel_name);
 	Channel channel = server->getChannel(channel_name);
 	if(channel.IsAdmin(sender.getNick()) == false)
 		throw UsersDontMatch(sender.getNick());
