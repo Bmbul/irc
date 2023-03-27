@@ -59,7 +59,10 @@ void	CommandHandler::ExecuteCommand(Client &sender, const CommandData &data)
 {
 	it = commands.find(data.command);
 	if (it != commands.end())
+	{
+		it->second->validate(sender, data.args);
 		it->second->execute(sender, data.args);
+	}
 	else
 	{
 		throw UnknownCommand(sender.getNick(), data.command);

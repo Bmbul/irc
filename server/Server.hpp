@@ -43,6 +43,7 @@ class Server : public IMessenger
 		std::string const &getPass()const;
 		std::string	const getHost() const;
 		void	SendHelloMessage(const Client &client) const;
+		void	SendJoinMessage(const Client &client ,std::string const &channelName) const;
 
 	public:
 		int		getBotDescriptor() const;

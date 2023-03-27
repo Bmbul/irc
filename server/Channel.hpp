@@ -10,21 +10,23 @@ struct ModeType
 {
 	enum Mode
 	{
+		none = 0, 
 		read = 1,
 		write_ = 2,
-		invite = 4
-
+		invite = 4,
+		private_ = 8
 	};
 };
 
 class Channel
 {
 	public:
-		std::string name;
+		std::string	name;
+		std::string	password;
 		
 		Channel();
 		~Channel();
-		Channel(std::string const &name);
+		Channel(std::string const &_name);
 		void	AddMember(const std::string &newMember);
 		void	KickMember(const std::string &admin, const std::string &removingMember);
 		void	LeaveMember(const std::string &memberNick);
@@ -42,9 +44,11 @@ class Channel
 		void	Broadcast(const Client &sender, const std::string &message, const std::string &command) const;
 		int		getMemberCount();
 		void	PrintData();
-		int GetMode()const;
-		void AddMode(ModeType::Mode mode);
-		void RemoveMode(ModeType::Mode mode);
+		void	SetPassword(const std::string &_password);
+		bool	CheckPassword(const std::string &_checkingPass) const;
+		int		HasMode(ModeType::Mode _mode)const;
+		void	AddMode(ModeType::Mode mode);
+		void	RemoveMode(ModeType::Mode mode);
 
 	private:
 		int		mode;

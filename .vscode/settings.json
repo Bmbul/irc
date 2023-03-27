@@ -74,6 +74,7 @@
 		"*.tpp": "cpp",
 		"fstream": "cpp",
 		"iomanip": "cpp",
-		"stack": "cpp"
+		"stack": "cpp",
+		"__cxx_version": "cpp"
 	}
 }

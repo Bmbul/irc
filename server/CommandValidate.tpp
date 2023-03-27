@@ -4,7 +4,6 @@ void	Command<type>::validate(Client &sender, const std::vector<std::string> &arg
 	(void) sender;
 	(void) arguments;
 
-	throw std::exception();
 }
 
 template<>
@@ -78,7 +77,7 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 			std::string channelName = messageController->GetChannelName(args[i]);
 			if(server->HasChannel(channelName) == false)
 				throw NoSuchChannel(sender.getNick(),args[i]);
-			if(!(server->getChannel(channelName).GetMode() & ModeType::write_))
+			if(!(server->getChannel(channelName).HasMode(ModeType::write_)))
 				throw CannotSendToChannel(sender.getNick(),channelName);
 			if(!server->IsBot(sender) && !(server->getChannel(channelName).HasMember(sender.getNick())))
 				throw NoSuchNick(sender.getNick(),"PRIVMSG");
@@ -105,8 +104,11 @@ void	Command<CommandType::join>::validate(Client &sender,const std::vector<std::
 		std::string channelName = messageController->GetChannelName(args[i]);
 		if (server->HasChannel(channelName))
 		{
-			if (server->getChannel(channelName).GetMode() & ModeType::invite)
+			Channel	channel = server->getChannel(channelName);
+			if (channel.HasMode(ModeType::invite))
 				throw InviteOnlyChannel(sender.getNick(),channelName);
+			if (channel.HasMode(ModeType::private_) && !channel.CheckPassword(arguments[1]))
+				throw BadChannelKey(sender.getNick(), channelName);
 		}
 	}
 }
@@ -168,20 +170,26 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 	for (size_t i = 1; i < arguments.size(); i++)
 	{
 		if(arguments[i].size() != 2)
-			throw UnknownMode(sender.getNick(),channel.name);
+			throw UnknownMode(sender.getNick(), arguments[0]);
 		char set =arguments[i].at(1);
-		 if(arguments[i].at(0) != '+' || arguments[i].at(0) != '-')
-			throw UnknownMode(sender.getNick(),channel.name);
-		if(set != 'W' && set != 'R' && set != 'I' && set != 'O')
-			throw UnknownMode(sender.getNick(),channel.name);
+		if(arguments[i].at(0) != '+' && arguments[i].at(0) != '-')
+			throw UnknownMode(sender.getNick(), arguments[0]);
+		if(set != 'W' && set != 'R' && set != 'I' && set != 'O' && set != 'K')
+			throw UnknownMode(sender.getNick(), arguments[0]);
 		if(set == 'O')
 		{
 			if(arguments[i + 1].size() == 0)
 				throw NeedMoreParams(sender.getNick(),"MODE");
 			if(channel.HasMember(arguments[i + 1]) == false)
 				throw UserNotInChannel(sender.getName(),sender.getNick(),channel_name);
+			else ++i;
 		}
-
+		if (set == 'K' && arguments[i][0] == '+')
+		{
+			if (i == arguments.size() - 1 || arguments[i + 1].size() == 0)
+				throw NeedMoreParams(sender.getNick(),"MODE");
+			else ++i;
+		}
 	}
 	
 }

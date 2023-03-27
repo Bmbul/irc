@@ -14,21 +14,13 @@ void	Command<type>::execute(Client &sender, const std::vector<std::string> &argu
 template<>
 void	Command<CommandType::pass>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void)arguments;
-	(void)sender;
-	std::cout << "PASS cmd!!!" << std::endl;
-	validate(sender, arguments);
-	std::cout << "PASS cmd!!!" << std::endl;
+	(void) arguments;
 	sender.setIsPassed(true);
 }
 
 template<>
 void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
-	std::cout << "USER cmd!!!" << std::endl;
-	validate(sender, arguments);
-	std::cout << "USER cmd!!!" << std::endl;
-
 	Server *server = Server::getServer();
 	sender.setName(arguments[0]);
 	sender.setIsUsered(true);
@@ -39,9 +31,6 @@ void	Command<CommandType::user>::execute(Client &sender,const std::vector<std::s
 template<>
 void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::string> &arguments)
 {
-	std::cout << "NICK cmd!!!" << std::endl;
-	validate(sender,arguments);
-	std::cout << "NICK cmd!!!" << std::endl;
 	Server *server = Server::getServer();
 	sender.setNick(arguments[0]);
 	if(sender.isDone())
@@ -55,8 +44,6 @@ void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::s
 template<>
 void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	std::cout << "PINGGG!!!" << std::endl;
-	validate(sender,arguments);
 	sender.SendPongMessage(arguments[0]);
 }
 
@@ -64,8 +51,6 @@ void	Command<CommandType::ping>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	std::cout << "PONGGGGGG!!" << std::endl;
-	validate(sender, arguments);
 	sender.SendPongMessage(arguments[0]);
 }
 
@@ -73,7 +58,6 @@ void	Command<CommandType::pong>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	validate(sender, arguments);
 	MessageController *messageController = MessageController::getController();
 	ClientManager *clientManager = ClientManager::getManager();
 	Server *server = Server::getServer();
@@ -137,25 +121,31 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 template<>
 void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	validate(sender,arguments);
 	Server *server = Server::getServer();
 	MessageController *message = MessageController::getController();
 	std::vector<std::string> args = message->Split(arguments[0],",");
 	for (size_t i = 0; i < args.size(); i++)
 	{
+		std::string channelName = message->GetChannelName(args[i]);
 		if (server->HasChannel(args[i]))
 		{
-			std::string channelName = message->GetChannelName(args[i]);
 			Channel &channel = server->getChannel(channelName);
 			channel.AddMember(sender.getNick());
+			channel.PrintData();
 		}
 		else
 		{
-			std::string channelName = message->GetChannelName(args[i]);
 			Channel &channel = server->getChannel(channelName);
 			channel.AddMember(sender.getNick());
 			channel.AddMode(ModeType::write_);
+			if (arguments.size() > 1)
+			{
+				channel.SetPassword(arguments[1]);
+				channel.AddMode(ModeType::private_);
+			}
+			channel.PrintData();
 		}
+		server->SendJoinMessage(sender ,channelName);
 	}
 }
 
@@ -203,39 +193,41 @@ void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	(void) sender;
-	(void) arguments;
 	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
 	Server *server =  Server::getServer();
-	std::cout << "CHANNEL NAME: " << channelName << std::endl;
 	Channel &channel = server->getChannel(channelName);
-	//add mode 
+
 	for (size_t i = 1; i < arguments.size(); i++)
 	{
-		if(arguments[i].at(0) == '+')
+		int sign = 0;
+		char mode = arguments[i][1];
+		ModeType::Mode type = ModeType::none;
+		if(arguments[i][0] == '+')
+			sign = 1;
+
+		if(mode == 'W')
+			type = ModeType::write_;
+		else if(mode == 'R')
+			type = ModeType::read;
+		else if(mode == 'I')
+			type = ModeType::invite;
+		else if (mode == 'K')
 		{
-			if(arguments[i].at(1) == 'W')
-				channel.AddMode(ModeType::write_);
-			else if(arguments[i].at(1) == 'R')
-				channel.AddMode(ModeType::read);
-			else if(arguments[i].at(1) == 'I')
-				channel.AddMode(ModeType::invite);
-			else if(arguments[i].at(1) == 'O')
-			{
-				channel.MakeAdmin(sender.getNick(),arguments[i + 1]);
-			}
+			type = ModeType::private_;
+			channel.SetPassword(arguments[i + 1]);
 		}
-		else if(arguments[i].at(0) == '-')
+		else if(mode == 'O')
 		{
-			if(arguments[i].at(1) == 'W')
-				channel.RemoveMode(ModeType::write_);
-			else if(arguments[i].at(1) == 'R')
-				channel.RemoveMode(ModeType::read);
-			else if(arguments[i].at(1) == 'I')
-				channel.RemoveMode(ModeType::invite);
-			else if(arguments[i].at(1) == 'O')
+			if(sign == 1) 
+				channel.MakeAdmin(sender.getNick(),arguments[i + 1]);
+			else
 				channel.RemoveFromAdmins(sender.getNick(),arguments[i + 1]);
 		}
+
+		if (sign == 0)
+			channel.RemoveMode(type);
+		else
+			channel.AddMode(type);
 	}
 }
 
@@ -272,7 +264,6 @@ void	Command<CommandType::cap>::execute(Client &sender, const std::vector<std::s
 template<>
 void	Command<CommandType::bot>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	validate(sender, arguments);
 
 	std::string receiver;
 	if (arguments.size() == 1)

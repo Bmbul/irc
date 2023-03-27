@@ -16,14 +16,12 @@ void Channel::AddMember(const std::string &memberNick)
 		SetAdmin(memberNick);
 	Client addingClient = ClientManager::getManager()->getClient(memberNick);
 	members.insert(std::pair<std::string, Client>(memberNick, addingClient));
-	PrintData();
 }
 
 void Channel::KickMember(const std::string &admin, const std::string &memberNick)
 {
 	ValidateCanModifyAdmin(admin, memberNick);
 	LeaveMember(memberNick);
-	PrintData();
 }
 
 void	Channel::LeaveMember(const std::string &memberNick)
@@ -32,7 +30,6 @@ void	Channel::LeaveMember(const std::string &memberNick)
 	members.erase(memberNick);
 	if (IsAdmin(memberNick))
 		DeleteAdmin(memberNick);
-	PrintData();
 }
 
 void	Channel::LeaveIfMember(const std::string &memberNick)
@@ -149,6 +146,7 @@ void Channel::Broadcast(const Client &sender,
 void Channel::PrintData()
 {
 	std::cout << "CHANNEL: " << name << std::endl;
+	std::cout << "PASSWORD: " << password << std::endl;
 	std::cout << "MEMBERS: " << std::endl;
 	for (std::map<std::string, Client>::iterator it = members.begin();
 		it != members.end(); it++)
@@ -163,10 +161,23 @@ void Channel::PrintData()
 		std::cout << "Socket: " << *it << std::endl;
 	}
 	std::cout << "MODES: " << std::endl;
-	std::cout << "WRITEONLY: " << (mode & ModeType::write_) <<
-		", READONLY" << (mode & ModeType::read) << ", INVITEONLY: " << (mode & ModeType::invite) << std::endl;
-	std::cout << std::endl;
+	std::cout << "WRITEONLY: " << (mode & ModeType::write_) << std::endl
+		<< "READONLY: " << (mode & ModeType::read) << std::endl
+		<< "INVITEONLY: " << (mode & ModeType::invite) << std::endl
+		<< "PRIVATE: " << (mode & ModeType::private_) << std::endl;
+ 	std::cout << std::endl;
 }
+
+void	Channel::SetPassword(const std::string &_password)
+{
+	password = _password;
+}
+
+bool	Channel::CheckPassword(const std::string &_checkingPass) const
+{
+	return (password == _checkingPass);
+}
+
 
 int Channel::getMemberCount()
 {
@@ -174,14 +185,11 @@ int Channel::getMemberCount()
 	return members.size();
 }
 
-Channel::Channel(std::string const &name)
-{
-	this->name = name;
-}
+Channel::Channel(std::string const &_name) : name(_name), password(""), mode(ModeType::none) { }
 
-int Channel::GetMode()const
+int Channel::HasMode(ModeType::Mode modeToCheck) const
 {
-	return mode;
+	return (mode & modeToCheck);
 }
 
 void Channel::AddMode(ModeType::Mode newMode)
@@ -191,5 +199,5 @@ void Channel::AddMode(ModeType::Mode newMode)
 
 void Channel::RemoveMode(ModeType::Mode mode)
 {
-	this->mode ^=mode;
+	this->mode ^= mode;
 }

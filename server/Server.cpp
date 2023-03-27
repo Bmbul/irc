@@ -202,6 +202,14 @@ void	Server::SendHelloMessage(const Client &client) const
 	std::string mess = client.GetFormattedText() + " 001 " + client.getNick() + " :Welcome to irc server";
 	SendMessageWithSocket(client.getSocket(), mess);
 }
+void	Server::SendJoinMessage(const Client &client ,std::string const &channelName) const
+{
+	std::string join_reply = ":" + client.getNick() + " JOIN " + channelName + "\r\n";
+	std::string a = ":sadsdsfs\r\n";
+	std::string b = ": dadadad\r\n";
+	//std::string mess = client.GetFormattedText() + " 001 " + client.getNick() + " :Welcome to irc server";
+	SendMessageWithSocket(client.getSocket(), join_reply + a + b);
+}
 
 int		Server::getBotDescriptor() const 
 {
