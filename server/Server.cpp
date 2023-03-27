@@ -200,8 +200,7 @@ void Server::removeChannel(std::string const &name)
 void	Server::SendHelloMessage(const Client &client) const
 {
 	std::string mess = client.getNick() + "!" + client.getName() + "@localhost 001 " + client.getNick() + " :Wellcome to irc server";
-	//IMessenger::SendMessageWithSocket(client.getSocket(), mess);
-	//SendMessageToClient(client, "Wellcome to the Internet Relay Network 001 " + MessageController::getController()->GetClientFormatedName(client));
+	SendMessageWithSocket(client.getSocket(), mess);
 }
 
 int		Server::getBotDescriptor() const 
@@ -223,4 +222,9 @@ void	Server::RemoveBot()
 bool	Server::IsBotConnected() const
 {
 	return (bot_fd != 0);
+}
+
+bool	Server::IsBot(const Client &client) const
+{
+	return (bot_fd == client.getSocket());
 }

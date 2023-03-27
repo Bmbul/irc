@@ -101,13 +101,13 @@ template<>
 void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	if(sender.isDone() == false)
-		throw NotRegistered(sender.getNick());
+		return ;
 	MessageController *messageController = MessageController::getController();
 	ClientManager *client_managar = ClientManager::getManager();
 	Server *server = Server::getServer();
 	
 	if(arguments.size() <= 1)
-		throw NeedMoreParams(sender.getNick(),"NOTICE");
+		return ;
 	std::vector<std::string> args = messageController->Split(arguments[0],",");
 	std::string MessageBody = "";
 	
@@ -121,7 +121,8 @@ void	Command<CommandType::notice>::execute(Client &sender, const std::vector<std
 		if(isValidChannel && server->HasChannel(channelName))
 		{
 			Channel channel = server->getChannel(channelName);
-			channel.Broadcast(sender, MessageBody, "NOTICE");
+			if (channel.HasMember(sender.getNick()))
+				channel.Broadcast(sender, MessageBody, "NOTICE");
 		}
 		else if(client_managar->HasClient(args[i]))
 		{

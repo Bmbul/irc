@@ -49,6 +49,7 @@ class Server : public IMessenger
 		void	setBotDescriptor(int new_fd);
 		void	RemoveBot();
 		bool	IsBotConnected() const;
+		bool	IsBot(const Client &client) const;
 
 		bool HasChannel(std::string const &name);
 		//const Channel &getChannel(std::string const &name)const;

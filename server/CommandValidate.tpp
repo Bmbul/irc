@@ -83,8 +83,6 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 	std::vector<std::string> args = messageController->Split(arguments[0],",");
 	if(arguments.size() <= 1)
 		throw NeedMoreParams(sender.getNick(),"PRIVMSG");
-	if(sender.isDone() == 0)
-		throw NOTAUTHORIZED(sender.getNick(),sender.getName());
 	for (size_t i = 0; i < args.size(); i++)
 	{
 		if(messageController->IsValidChannelName(args[i]))
@@ -94,7 +92,7 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 				throw NoSuchChannel(sender.getNick(),args[i]);
 			if(!(server->getChannel(channelName).GetMode() & ModeType::write_))
 				throw CannotSendToChannel(sender.getNick(),channelName);
-			if(!(server->getChannel(channelName).HasMember(sender.getNick())))
+			if(!server->IsBot(sender) && !(server->getChannel(channelName).HasMember(sender.getNick())))
 				throw NoSuchNick(sender.getNick(),"PRIVMSG");
 		}
 	 	else if(client_managar->HasClient(args[i]) == false)
