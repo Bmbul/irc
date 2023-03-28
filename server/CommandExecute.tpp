@@ -235,33 +235,9 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 }
 
 template<>
-void	Command<CommandType::ftp>::execute(Client &sender, const std::vector<std::string> &arguments)
+void	Command<CommandType::who>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	std::string defaultFileName = "Makefile";
-	if(sender.isDone() == false)
-		throw NotRegistered(sender.getNick());
-		
-	std::ifstream input(arguments.size() >= 1 ? 
-		arguments[0].c_str() : defaultFileName.c_str());
-	
-    if (!input) 
-	{
-		Server::getServer()->SendMessageToClient(sender, "Cannot Open the given File");
-        return ;
-    }
 
-    std::string line;
-    while (std::getline(input, line)) 
-	{
-		Server::getServer()->SendMessageToClient(sender, line);
-    }
-}
-
-template<>
-void	Command<CommandType::cap>::execute(Client &sender, const std::vector<std::string> &arguments)
-{
-	(void)sender;
-	(void)arguments;
 }
 
 template<>

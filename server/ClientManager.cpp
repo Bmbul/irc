@@ -151,7 +151,7 @@ void	ClientManager::HandleInput(fd_set *readfds)
 			else // in case if client inputed message
 			{
 				buffer[valread] = '\0';
-				if (buffer[0] && !(buffer[0] == '\n' && buffer[0] == '\r' && !messageController->ContainsChunk(sd)))
+				if (buffer[0] && !((buffer[0] == '\n' || buffer[0] == '\r') && !messageController->ContainsChunk(sd)))
 					HandleMessage(it->second);
 
 				if (clientMap.size() == 0)

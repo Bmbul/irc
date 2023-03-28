@@ -194,6 +194,13 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 	
 }
 
+template <>
+void	Command<CommandType::who>::validate(Client &sender, const std::vector<std::string> &arguments)
+{
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
+}
+
 template<>
 void	Command<CommandType::bot>::validate(Client &sender, const std::vector<std::string> &arguments)
 {

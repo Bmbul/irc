@@ -202,6 +202,7 @@ void	Server::SendHelloMessage(const Client &client) const
 	std::string mess = client.GetFormattedText() + " 001 " + client.getNick() + " :Welcome to irc server";
 	SendMessageWithSocket(client.getSocket(), mess);
 }
+
 int		Server::getBotDescriptor() const 
 {
 	return this->bot_fd;
