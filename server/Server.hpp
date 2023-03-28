@@ -47,7 +47,7 @@ class Server : public CommandResponse
 
 	public:
 		int		getBotDescriptor() const;
-		void	setBotDescriptor(int new_fd);
+		void	SetBotDescriptor(int new_fd);
 		void	RemoveBot();
 		bool	IsBotConnected() const;
 		bool	IsBot(const Client &client) const;

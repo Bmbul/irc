@@ -165,7 +165,21 @@ void	Channel::SendJoinReply(const Client &client) const
 	}
 }
 
-
+void	Channel::SendWhoReply(const Client &client) const
+{
+	Server	*server = Server::getServer();
+	std::string host = server->getHost();
+	for (std::map<std::string, Client>::const_iterator it = members.begin(); it != members.end();it++)
+	{
+		std::string sign = " +";
+		if(IsAdmin(it->first))
+			sign = " @";
+		std::string message_body = client.GetFormattedText() + " 352 " + name 
+			+ " " + it->second.getName() + " " + host + " IRC Server "
+				 + it->second.getNick() + " " + sign + " :0 " + it->second.getName();
+		server->SendMessageToClient(client, message_body);
+	}
+}
 
 void Channel::PrintData()
 {

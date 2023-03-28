@@ -11,6 +11,7 @@ struct CommandResponse : public IMessenger
 	void	SendReplyName(const Client &client)const;
 	void	PartMessage(const Client &client, std::string const &channelName)const;
 	void	KickMessage(const Client &client, std::string const &channelName,std::string const &admin)const;
+	void	WhoMessage(const Client &client, const std::string &channelName) const;
 };
 
 

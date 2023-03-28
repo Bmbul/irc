@@ -267,5 +267,5 @@ template<>
 void	Command<CommandType::botme>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	(void) arguments;
-	Server::getServer()->setBotDescriptor(sender.getSocket());
+	Server::getServer()->SetBotDescriptor(sender.getSocket());
 }
