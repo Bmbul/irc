@@ -237,7 +237,8 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::who>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-
+	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
+	Server::getServer()->WhoMessage(sender, channelName);
 }
 
 template<>
@@ -256,5 +257,5 @@ template<>
 void	Command<CommandType::botme>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
 	(void) arguments;
-	Server::getServer()->setBotDescriptor(sender.getSocket());
+	Server::getServer()->SetBotDescriptor(sender.getSocket());
 }

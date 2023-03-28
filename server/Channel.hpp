@@ -42,10 +42,13 @@ class Channel
 		void	Broadcast(const Client &sender, const std::string &message, const std::string &command) const;
 		void	SendChannelReply(const std::string &message) const;
 		void	SendJoinReply(const Client &client) const;
+		void	SendWhoReply(const Client &client) const;
 		int		getMemberCount();
 		void	PrintData();
+
 		void	SetPassword(const std::string &_password);
 		bool	CheckPassword(const std::string &_checkingPass) const;
+
 		int		HasMode(ModeType::Mode _mode)const;
 		void	AddMode(ModeType::Mode mode);
 		void	RemoveMode(ModeType::Mode mode);

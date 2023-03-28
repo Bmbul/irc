@@ -209,7 +209,7 @@ int		Server::getBotDescriptor() const
 }
 
 
-void	Server::setBotDescriptor(int new_fd)
+void	Server::SetBotDescriptor(int new_fd)
 {
 	this->bot_fd = new_fd;
 }

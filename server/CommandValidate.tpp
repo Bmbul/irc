@@ -197,8 +197,15 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 template <>
 void	Command<CommandType::who>::validate(Client &sender, const std::vector<std::string> &arguments)
 {
-	if(sender.isDone() == false)
+
+	if (sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
+
+	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
+	Server *server = Server::getServer();
+
+	if(!server->HasChannel(channelName))
+		throw NoSuchChannel(sender.getNick(), arguments[0]);
 }
 
 template<>

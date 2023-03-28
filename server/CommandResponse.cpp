@@ -23,7 +23,7 @@ void CommandResponse::SendJoinMessage(const Client &client, std::string const &c
 void	CommandResponse::PartMessage(const Client &client,std::string const &channelName) const
 {
     (void) client;
-	Channel channel = Server::getServer()->getChannel(channelName);
+	Channel &channel = Server::getServer()->getChannel(channelName);
 	std::string part_reply = " PART " + channelName;
     channel.SendChannelReply(part_reply);
 }
@@ -31,8 +31,15 @@ void	CommandResponse::PartMessage(const Client &client,std::string const &channe
 void	CommandResponse::KickMessage(const Client &client, std::string const &channelName, std::string const &admin) const
 {
     (void) client;
-	Channel channel = Server::getServer()->getChannel(channelName);
+	Channel &channel = Server::getServer()->getChannel(channelName);
 	std::string kick_reply = " KICK FROM " + channelName + " BY " + admin;
     channel.SendChannelReply(kick_reply);
 }
 
+void	CommandResponse::WhoMessage(const Client &client, const std::string &channelName) const
+{
+	Channel &channel = Server::getServer()->getChannel(channelName);
+	channel.SendWhoReply(client);
+	std::string endingString = client.GetFormattedText() + " 315 " + channelName + " :End of /WHO list";
+	SendMessageToClient(client, endingString);
+}
