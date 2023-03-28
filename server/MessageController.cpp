@@ -180,7 +180,8 @@ std::vector<std::string> MessageController::Split(std::string str, std::string d
 
 std::string	MessageController::GetChannelName(const std::string &channelName) const
 {
-	return (channelName.substr(1,channelName.length()));
+	return (channelName[0] == '#' || channelName[0] == '&'
+		? channelName.substr(1,channelName.length()) : channelName);
 }
 
 std::string MessageController::trim(std::string const &str)const 

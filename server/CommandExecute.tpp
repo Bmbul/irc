@@ -6,8 +6,6 @@ void	Command<type>::execute(Client &sender, const std::vector<std::string> &argu
 {
 	(void) sender;
 	(void) arguments;
-
-	throw std::exception();
 }
 
 
@@ -69,11 +67,10 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 	std::vector<std::string> args = messageController->Split(arguments[0],",");
 	for (size_t i = 0; i < args.size(); i++)
 	{
-		if(messageController->IsValidChannelName(args[i]))
-		{
-			std::string channelName = messageController->GetChannelName(args[i]);
+
+		std::string channelName = messageController->GetChannelName(args[i]);
+		if (server->HasChannel(channelName))
 			server->getChannel(channelName).Broadcast(sender, MessageBody, "PRIVMSG");
-		}
 		else
 			sender.SendMessage(clientManager->getClient(args[i]),
 				"PRIVMSG", MessageBody);
@@ -165,8 +162,8 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 		Channel &channel = server->getChannel(channelName);
 		Server::getServer()->PartMessage(sender,channelName);
     	channel.LeaveMember(sender.getNick());
-    	if(channel.getMemberCount() == 0)
-        	server->removeChannel(channelName);
+    	/* if(channel.getMemberCount() == 0)
+        	server->removeChannel(channelName); */
 	}
 	
 }
@@ -237,7 +234,9 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::who>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-
+	(void)sender;
+	(void)arguments;
+	
 }
 
 template<>

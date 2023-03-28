@@ -44,7 +44,7 @@ void	CommandHandler::InitilizeCommands()
 	commands["MODE"] = new Command<CommandType::mode>();
 	commands["WHO"] = new Command<CommandType::who>();
 	commands["CAP"] = new Command<CommandType::cap>();
-	commands["/bot"] = new Command<CommandType::bot>();
+	commands["bot"] = new Command<CommandType::bot>();
 	commands["botme"] = new Command<CommandType::botme>();
 }
 
@@ -58,7 +58,10 @@ void	CommandHandler::ExecuteCommand(Client &sender, const CommandData &data)
 {
 	it = commands.find(data.command);
 	if (it != commands.end())
+	{
+		it->second->validate(sender, data.args);
 		it->second->execute(sender, data.args);
+	}
 	else
 	{
 		throw UnknownCommand(sender.getNick(), data.command);

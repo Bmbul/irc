@@ -24,7 +24,7 @@ void	CommandResponse::PartMessage(const Client &client,std::string const &channe
 {
     (void) client;
 	Channel channel = Server::getServer()->getChannel(channelName);
-	std::string part_reply = " PART " + channelName;
+	std::string part_reply = ": PART " + channelName;
     channel.SendChannelReply(part_reply);
 }
 

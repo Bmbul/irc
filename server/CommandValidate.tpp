@@ -72,18 +72,18 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 		throw NeedMoreParams(sender.getNick(),"PRIVMSG");
 	for (size_t i = 0; i < args.size(); i++)
 	{
-		if(messageController->IsValidChannelName(args[i]))
+		std::string channelName = messageController->GetChannelName(args[i]);
+
+		if(server->HasChannel(channelName))
 		{
-			std::string channelName = messageController->GetChannelName(args[i]);
-			if(server->HasChannel(channelName) == false)
-				throw NoSuchChannel(sender.getNick(),args[i]);
 			if(!(server->getChannel(channelName).HasMode(ModeType::write_)))
 				throw CannotSendToChannel(sender.getNick(),channelName);
 			if(!server->IsBot(sender) && !(server->getChannel(channelName).HasMember(sender.getNick())))
 				throw NoSuchNick(sender.getNick(),"PRIVMSG");
 		}
-	 	else if(client_managar->HasClient(args[i]) == false)
+		else if(client_managar->HasClient(args[i]) == false)
 			throw NoSuchNick(sender.getNick(),args[i]);
+						
 	}
 }
  
@@ -157,9 +157,11 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 {
 	if(sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
-	if(arguments.size() < 2)
+/* 	if(arguments.size() < 2)
+	{
+		
 		throw NeedMoreParams(sender.getNick(),"MODE");
-
+	} */
 	std::string channel_name = MessageController::getController()->GetChannelName(arguments[0]);
 	Server *server = Server::getServer();
 	if(server->HasChannel(channel_name) == false)
@@ -197,6 +199,7 @@ void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::
 template <>
 void	Command<CommandType::who>::validate(Client &sender, const std::vector<std::string> &arguments)
 {
+	(void) arguments;
 	if(sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
 }
