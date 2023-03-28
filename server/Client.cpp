@@ -88,12 +88,12 @@ void	Client::SendMessage(const Client &reciever,
 	//:senderNickname!name@host COMMAND recieverNickname:message
 	std::string finalizedMessage = GetFormattedText() + " "
 		+ commmand + " " + reciever.getNick() + " : " + message;
-	SendMessageToClient(reciever, finalizedMessage);
+	SendMessageWithSocket(reciever.getSocket(), finalizedMessage);
 }
 
 void	Client::SendSelf(const std::string &message) const
 {
-	SendMessageToClient(*this, message);
+	SendMessageWithSocket(fd, message);
 }
 
 void	Client::SendPongMessage(const std::string &message) const
@@ -109,7 +109,7 @@ void	Client::SendMessageFromChannel(const Client &reciever, const std::string &c
 	//:senderNickname!name@host COMMAND recieverNickname:message
 	std::string finalizedMessage = GetFormattedText() + " "
 		+ command + " #" + channel  + " :" + message;
-	SendMessageToClient(reciever, finalizedMessage);
+	SendMessageWithSocket(reciever.getSocket(), finalizedMessage);
 }
 
 bool	Client::operator==(const Client &rhs) const

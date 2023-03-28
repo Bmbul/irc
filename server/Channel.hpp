@@ -21,8 +21,6 @@ struct ModeType
 class Channel
 {
 	public:
-		std::string	name;
-		std::string	password;
 		
 		Channel();
 		~Channel();
@@ -42,6 +40,8 @@ class Channel
 		void	Unban(const std::string &admin, const std::string &memberName);
 
 		void	Broadcast(const Client &sender, const std::string &message, const std::string &command) const;
+		void	SendChannelReply(const std::string &message) const;
+		void	SendJoinReply(const Client &client) const;
 		int		getMemberCount();
 		void	PrintData();
 		void	SetPassword(const std::string &_password);
@@ -49,8 +49,12 @@ class Channel
 		int		HasMode(ModeType::Mode _mode)const;
 		void	AddMode(ModeType::Mode mode);
 		void	RemoveMode(ModeType::Mode mode);
+		std::string	GetAdmin();
 
 	private:
+		std::string	name;
+		std::string	password;
+		std::map<std::string, Client> members;
 		int		mode;
 		void	ValidateAdmin(const std::string &admin) const;
 		void	ValidateAdminIsInChannel(const std::string &admin) const;
@@ -65,7 +69,6 @@ class Channel
 		void	SetAdmin(const std::string &newAdmin);
 		void	DeleteAdmin(const std::string &removingAdmin);
 
-		std::map<std::string, Client> members;
 		mutable std::vector<std::string> admins;
 		std::vector<int> bannedClients;
 };

@@ -3,8 +3,9 @@
 
 #include "ClientManager.hpp"
 #include "Channel.hpp"
+#include "CommandResponse.hpp"
 
-class Server : public IMessenger
+class Server : public CommandResponse
 {
 	private: // for singleton
 		static Server *instance;
@@ -43,7 +44,6 @@ class Server : public IMessenger
 		std::string const &getPass()const;
 		std::string	const getHost() const;
 		void	SendHelloMessage(const Client &client) const;
-		void	SendJoinMessage(const Client &client ,std::string const &channelName) const;
 
 	public:
 		int		getBotDescriptor() const;

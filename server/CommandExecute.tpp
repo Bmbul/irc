@@ -1,4 +1,5 @@
 #include <fstream>
+#include "CommandResponse.hpp"
 
 template <CommandType::Type type>
 void	Command<type>::execute(Client &sender, const std::vector<std::string> &arguments)
@@ -162,6 +163,7 @@ void	Command<CommandType::part>::execute(Client &sender, const std::vector<std::
 		channelName = message->GetChannelName(args[i]);
 
 		Channel &channel = server->getChannel(channelName);
+		Server::getServer()->PartMessage(sender,channelName);
     	channel.LeaveMember(sender.getNick());
     	if(channel.getMemberCount() == 0)
         	server->removeChannel(channelName);
@@ -176,6 +178,7 @@ void	Command<CommandType::kick>::execute(Client &sender, const std::vector<std::
 	Server *server = Server::getServer();
 	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
 	Channel &channel = server->getChannel(channelName);
+	server->KickMessage(ClientManager::getManager()->getClient(arguments[1]),channelName,sender.getNick());
 	channel.KickMember(sender.getNick(),arguments[1]);
 }
 

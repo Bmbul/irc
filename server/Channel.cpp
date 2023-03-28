@@ -49,6 +49,8 @@ void Channel::SetAdmin(const std::string &newAdmin)
 	admins.push_back(newAdmin);
 }
 
+std::string	Channel::GetAdmin() { return *(admins.begin()); }
+
 void Channel::RemoveFromAdmins(const std::string &admin, const std::string &removingAdmin)
 {
 	ValidateCanModifyAdmin(admin, removingAdmin);
@@ -143,6 +145,29 @@ void Channel::Broadcast(const Client &sender,
 	}
 }
 
+void	Channel::SendChannelReply(const std::string &message) const
+{
+	Server *server = Server::getServer();
+	for (std::map<std::string, Client>::const_iterator it = members.begin();
+		it != members.end(); it++)
+		server->SendMessageToClient(it->second, it->second.GetFormattedText() + message);
+}
+
+void	Channel::SendJoinReply(const Client &client) const
+{
+	Server *server = Server::getServer();
+	for (std::map<std::string, Client>::const_iterator it = members.begin(); it != members.end();it++)
+	{
+		std::string sign = " +";
+		if(IsAdmin(it->first))
+			sign = " @";
+		std::string message_body = client.GetFormattedText() + " " + name + sign + it->second.getNick() ;
+		server->SendMessageToClient(client, message_body);
+	}
+}
+
+
+
 void Channel::PrintData()
 {
 	std::cout << "CHANNEL: " << name << std::endl;
@@ -181,7 +206,6 @@ bool	Channel::CheckPassword(const std::string &_checkingPass) const
 
 int Channel::getMemberCount()
 {
-
 	return members.size();
 }
 
