@@ -42,11 +42,10 @@ void	CommandHandler::InitilizeCommands()
 	commands["KICK"] = new Command<CommandType::kick>();
 	commands["QUIT"] = new Command<CommandType::quit>();
 	commands["MODE"] = new Command<CommandType::mode>();
-	commands["FTP"] = new Command<CommandType::ftp>();
+	commands["WHO"] = new Command<CommandType::who>();
 	commands["CAP"] = new Command<CommandType::cap>();
-	commands["bot"] = new Command<CommandType::bot>();
+	commands["/bot"] = new Command<CommandType::bot>();
 	commands["botme"] = new Command<CommandType::botme>();
-
 }
 
 void	CommandHandler::ClearCommands()
@@ -59,10 +58,7 @@ void	CommandHandler::ExecuteCommand(Client &sender, const CommandData &data)
 {
 	it = commands.find(data.command);
 	if (it != commands.end())
-	{
-		it->second->validate(sender, data.args);
 		it->second->execute(sender, data.args);
-	}
 	else
 	{
 		throw UnknownCommand(sender.getNick(), data.command);

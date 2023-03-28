@@ -28,7 +28,7 @@ struct CommandType
 		kick,
 		quit,
 		mode,
-		ftp,
+		who,
 		cap,
 		ls,
 		bot,
