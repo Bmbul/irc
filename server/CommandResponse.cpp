@@ -9,15 +9,16 @@ void	CommandResponse::SendMessageToClient(const Client &client,
 
 void CommandResponse::SendJoinMessage(const Client &client, std::string const &channelName) const
 {
-	Channel &channel = Server::getServer()->getChannel(channelName);
-	std::string message = ":" + client.getNick() + " JOIN " + channelName;
-	std::string admin_reply = ":" + channel.GetAdmin() + " is a " + channelName + " ADMIN ";
-	channel.Broadcast(client, message, "");
+	//Channel &channel = Server::getServer()->getChannel(channelName);
+	std::string message = client.GetFormattedText() + " JOIN " + "#" + channelName;
+	std::cout << message << std::endl;
+	//std::string admin_reply = "" + channel.GetAdmin() + " is a " + channelName + " ADMIN ";
+	//channel.Broadcast(client, message, "");
 	SendMessageToClient(client, message);
-	SendMessageToClient(client, admin_reply);
-    channel.SendJoinReply(client);
-	std::string end = ":366" + client.getNick() + " " + channelName + " :End of /NAMES list";
-	SendMessageToClient(client, end);
+	//SendMessageToClient(client, admin_reply);
+    //channel.SendJoinReply(client);
+	//std::string end = ":366" + client.getNick() + " " + channelName + " :End of /NAMES list";
+	//SendMessageToClient(client, end);
 }
 
 void	CommandResponse::PartMessage(const Client &client,std::string const &channelName) const

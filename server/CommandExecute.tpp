@@ -236,6 +236,18 @@ void	Command<CommandType::who>::execute(Client &sender, const std::vector<std::s
 {
 	(void)sender;
 	(void)arguments;
+	std::string target = arguments[0];
+	MessageController *controller = MessageController::getController();
+	Server *server = Server::getServer();
+	if(controller->IsValidChannelName(target))
+	{
+		std::string channelName = controller->GetChannelName(arguments[0]);
+		// who to channel reply !!!!!!!
+		return ;
+	}
+	Client Client = ClientManager::getManager()->getClient(sender.getNick());
+	// who to client reply !!!!!!!
+
 	
 }
 

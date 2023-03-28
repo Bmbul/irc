@@ -202,6 +202,21 @@ void	Command<CommandType::who>::validate(Client &sender, const std::vector<std::
 	(void) arguments;
 	if(sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
+	if(arguments.size() == 0)
+		throw NeedMoreParams(sender.getNick(),"WHO");
+	std::string target = arguments[0];
+	MessageController *controller = MessageController::getController();
+	Server *server = Server::getServer();
+	if(controller->IsValidChannelName(target))
+	{
+		std::string channelName = controller->GetChannelName(arguments[0]);
+		if(server->HasChannel(channelName) == false)
+			throw NoSuchChannel(sender.getNick(),arguments[0]);
+		if(server->getChannel(channelName).HasMember(sender.getNick()) == false)
+			throw NotOnChannel(sender.getNick(),arguments[0]);
+	}
+	if(ClientManager::getManager()->HasClient(sender.getNick()) == false)
+		throw NoSuchNick(sender.getNick(),"WHO");
 }
 
 template<>
