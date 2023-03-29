@@ -195,3 +195,27 @@ std::string MessageController::trim(std::string const &str)const
 
     return str.substr(start_pos, end_pos - start_pos + 1);
 }
+
+std::string	MessageController::GetModesString(const std::string &argument, char sign) const
+{
+	size_t	pos = argument.find(sign);
+	if (pos == std::string::npos)
+		return std::string();
+	size_t	endPos = argument.find_first_not_of("wriok", pos + 1);
+	if (endPos == pos)
+		return std::string();
+	if (endPos == std::string::npos)
+		return (argument.substr(pos + 1));
+	else 
+		return (argument.substr(pos + 1, endPos - pos - 1));
+}
+
+int	MessageController::SignCount(const std::string &str, char sign) const
+{
+	int count = 0;
+	int	i = -1;
+	while(str[++i])
+		if (str[i] == sign)
+			count++;
+	return (count);
+}

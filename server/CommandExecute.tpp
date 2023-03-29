@@ -193,9 +193,21 @@ void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
-	Server *server =  Server::getServer();
-	Channel &channel = server->getChannel(channelName);
+	MessageController	*messageController = MessageController::getController();
+	Server	*server =  Server::getServer();
+	std::string target = arguments[0];
+
+	if (messageController->IsValidChannelName(target))
+	{
+		std::string channelName = messageController->GetChannelName(arguments[0]);
+		Channel &channel = server->getChannel(channelName);
+		if (arguments.size == 1)
+		{
+			server->ChannelModeMessage(sender, argument[0]);
+		}
+	}
+	else
+		server->UserModeMessage(sender);
 
 	for (size_t i = 1; i < arguments.size(); i++)
 	{
@@ -238,7 +250,7 @@ void	Command<CommandType::who>::execute(Client &sender, const std::vector<std::s
 	(void)arguments;
 	std::string target = arguments[0];
 	MessageController *controller = MessageController::getController();
-	Server *server = Server::getServer();
+	// Server *server = Server::getServer();
 	if(controller->IsValidChannelName(target))
 	{
 		std::string channelName = controller->GetChannelName(arguments[0]);

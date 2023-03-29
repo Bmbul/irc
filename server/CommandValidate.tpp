@@ -151,50 +151,86 @@ void	Command<CommandType::kick>::validate(Client &sender,const std::vector<std::
 	if(server->HasChannel(channelName) == false)
 		throw NoSuchChannel(sender.getNick(),channelName);
 }
- 
+
 template<>
-void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::string> &arguments)
+void	Command<CommandType::mode>::validmessageController->ate(Client &sender,const std::vector<std::string> &arguments)
 {
 	if(sender.isDone() == false)
 		throw NotRegistered(sender.getNick());
-/* 	if(arguments.size() < 2)
+
+	ClientManager *clientManager = ClientManager::getManager();
+
+	if (messageController->IsValidChannelName(arguments[0]))
 	{
-		
-		throw NeedMoreParams(sender.getNick(),"MODE");
-	} */
-	std::string channel_name = MessageController::getController()->GetChannelName(arguments[0]);
+		ValidateChannelMode(sender, arguments);
+	}
+	else if (clientManager->HasClient(arguments[0]))
+	{
+		if (sender.getNick() != arguments[0])
+			throw UsersDontMatch(arguments[0]);
+	}
+	else
+		throw NoSuchNick(sender.getNick(), arguments[0]);
+}
+
+void	ValidateChannelMode(const Client &client, const std::vector<std::string> &arguments)
+{
 	Server *server = Server::getServer();
-	if(server->HasChannel(channel_name) == false)
-		throw NoSuchChannel(sender.getNick(),channel_name);
-	Channel channel = server->getChannel(channel_name);
-	if(channel.IsAdmin(sender.getNick()) == false)
-		throw UsersDontMatch(sender.getNick());
-	for (size_t i = 1; i < arguments.size(); i++)
+	MessageController *messageController = MessageController::getController();
+
+
+	std::string channelName = messageController->GetChannelName(arguments[0]);
+	if(server->HasChannel(channelName) == false)
+		throw NoSuchChannel(sender.getNick(),channelName);
+	Channel &channel = server->getChannel(channelName);
+	if (arguments.size() == 1)
+		return ;
+
+	std::string modeString = arguments[1];
+	size_t index = modeString.find_first_not_of("+-wriok");
+	if (index != std::string::npos)
+		throw UnknownMode(sender.getNick(), modeString);
+	int plusSign  = messageController->SignCount(modeString, '+');
+	int minusSign = messageController->SignCount(modeString, '-');
+	if ((plusSign != 0 && plusSign != 1) ||
+		(minusSign != 0 && minusSign != 1) || (minusSign + plusSign == 0))
+		throw UnknownMode(sender.getNick(), modeString);
+	if (*modeString.rbegin() == '+' || *modeString.rbegin() == '-')
+		throw UnknownMode(sender.getNick(), modeString);
+
+	std::string addingModes = messageController->GetModesString(modeString, '+');
+	std::string removingModes = messageController->GetModesString(modeString, '-');
+
+	std::cout << "ADDING modes: " << addingModes << std::endl;
+	std::cout << "REMOVING modes: " << removingModes << std::endl;
+	for(int i = 0; i < addingModes.length(); ++i)
 	{
-		if(arguments[i].size() != 2)
-			throw UnknownMode(sender.getNick(), arguments[0]);
-		char set =arguments[i].at(1);
-		if(arguments[i].at(0) != '+' && arguments[i].at(0) != '-')
-			throw UnknownMode(sender.getNick(), arguments[0]);
-		if(set != 'W' && set != 'R' && set != 'I' && set != 'O' && set != 'K')
-			throw UnknownMode(sender.getNick(), arguments[0]);
-		if(set == 'O')
+		char set = addingModes[i];
+		if(set == 'o' || set == 'k')
 		{
-			if(arguments[i + 1].size() == 0)
+			if(channel.IsAdmin(sender.getNick()) == false)
+				throw UsersDontMatch(sender.getNick());
+			if (arguments.size() < 3)
 				throw NeedMoreParams(sender.getNick(),"MODE");
-			if(channel.HasMember(arguments[i + 1]) == false)
-				throw UserNotInChannel(sender.getName(),sender.getNick(),channel_name);
-			else ++i;
 		}
-		if (set == 'K' && arguments[i][0] == '+')
+		if (set == 'o' && !channel.HasMember(arguments[i + 1]))
+				throw UserNotInChannel(sender.getName(),sender.getNick(), channel_name);
+	}
+	for(int i = 0; i < removingModes.length(); ++i)
+	{
+		char set = removingModes[i];
+		if(set == 'o')
 		{
-			if (i == arguments.size() - 1 || arguments[i + 1].size() == 0)
+			if(channel.IsAdmin(sender.getNick()) == false)
+				throw UsersDontMatch(sender.getNick());
+			if (arguments.size() < 3)
 				throw NeedMoreParams(sender.getNick(),"MODE");
-			else ++i;
+			if (!channel.HasMember(arguments[i + 1]))
+				throw UserNotInChannel(sender.getName(),sender.getNick(), channel_name);
 		}
 	}
-	
 }
+
 
 template <>
 void	Command<CommandType::who>::validate(Client &sender, const std::vector<std::string> &arguments)

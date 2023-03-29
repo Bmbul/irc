@@ -33,6 +33,10 @@ class MessageController
 		void	ClearChunk(int clientSocket);
 		std::string	ConstructFullMessage(int clientSocket);
 		std::string trim(std::string const &str)const;
+		std::string	GetModesString(const std::string &argument, char sign) const;
+		int	SignCount(const std::string &str, char sign) const;
+
+
 
 		static	MessageController	*getController();
 
