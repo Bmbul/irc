@@ -20,7 +20,8 @@ class ClientManager
 		MessageController	*messageController;
 
 	public:
-		bool	HasClient(const std::string &clientName) const;
+		bool	HasClient(int clientSocket) const;
+		bool	HasClient(const std::string &clientNick) const;
 		int		GetClientSocket(const std::string &clientName) const;
 		void	AddClient(const int socketFd);
 		void	RemoveClient(const int socketFd);
@@ -34,8 +35,8 @@ class ClientManager
 		ClientManager();
 		~ClientManager();
 		static ClientManager *getManager();
-		const Client &getClient(std::string const &NickName) const;
-
+		const Client &getClient(int clientSocket) const;
+		const Client &getClient(const std::string &clientSocket) const;
 };
 
 

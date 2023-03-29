@@ -28,19 +28,17 @@ class Channel : public  CommandResponse
 		Channel();
 		~Channel();
 		Channel(std::string const &_name);
-		void	AddMember(const std::string &newMember);
-		void	KickMember(const std::string &admin, const std::string &removingMember);
-		void	LeaveMember(const std::string &memberNick);
-		void	LeaveIfMember(const std::string &memberNick);
+		void	AddMember(int newMember);
+		void	KickMember(int admin, int removingMember);
+		void	LeaveMember(int memberNick);
+		void	LeaveIfMember(int memberNick);
 
 
-		void	MakeAdmin(const std::string &admin, const std::string &newAdmin);
-		void	RemoveFromAdmins(const std::string &admin, const std::string &oldAdmin);
+		void	MakeAdmin(int admin, int newAdmin);
+		void	RemoveFromAdmins(int admin, int oldAdmin);
 
-		bool	IsAdmin(const std::string &memberNick) const;
-		bool	HasMember(const std::string &memberName) const;
-		void	Ban(const std::string &admin, const std::string &memberName);
-		void	Unban(const std::string &admin, const std::string &memberName);
+		bool	IsAdmin(int memberNick) const;
+		bool	HasMember(int memberName) const;
 
 		void	Broadcast(const Client &sender, const std::string &message, const std::string &command) const;
 		void	SendChannelReply(const std::string &message) const;
@@ -56,7 +54,10 @@ class Channel : public  CommandResponse
 		void	AddMode(ModeType::Mode mode);
 		void	RemoveMode(ModeType::Mode mode);
 		std::string	ModeInfo() const;
-		std::string	GetAdmin();
+
+		int		GetAdmin();
+		std::string	GetNickWithSocket(int socket) const;
+		
 		void ChannelWhoResponse(Client const &client);
 		void ChannelJoinResponse(Client const &client);
 		void ChangeChannelUser(Client const &client);
@@ -64,23 +65,22 @@ class Channel : public  CommandResponse
 	private:
 		std::string	name;
 		std::string	password;
-		std::map<std::string, Client> members;
+		std::map<int, Client> members;
 		int		mode;
-		void	ValidateAdmin(const std::string &admin) const;
-		void	ValidateAdminIsInChannel(const std::string &admin) const;
+		void	ValidateAdmin(int admin) const;
+		void	ValidateAdminIsInChannel(int admin) const;
 
-		void	ValidateClientIsInServer(const std::string &client) const;
-		void	ValidateClientIsInChannel(const std::string &admin, const std::string &client) const;
+		void	ValidateClientIsInServer(int client) const;
+		void	ValidateClientIsInChannel(int admin, int client) const;
 
-		void	ValidateCanModifyAdmin(const std::string &admin, const std::string &newAdmin) const;
+		void	ValidateCanModifyAdmin(int admin, int newAdmin) const;
 
 
 	private:
-		void	SetAdmin(const std::string &newAdmin);
-		void	DeleteAdmin(const std::string &removingAdmin);
+		void	SetAdmin(int newAdmin);
+		void	DeleteAdmin(int removingAdmin);
 
-		mutable std::vector<std::string> admins;
-		std::vector<int> bannedClients;
+		mutable std::vector<int> admins;
 };
 
 

@@ -143,11 +143,11 @@ void	Server::HandleIncomingConnections()
 
 void	Server::ClearClientFromChannels(const Client &client)
 {
-	std::string nick = client.getNick();
+	int socket = client.getSocket();
 	for(std::map<std::string, Channel>::iterator it = channels.begin();
 		it != channels.end(); it++)
 	{
-		it->second.LeaveIfMember(nick);
+		it->second.LeaveIfMember(socket);
 	}
 }
 

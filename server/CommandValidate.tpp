@@ -78,7 +78,7 @@ void	Command<CommandType::privmsg>::validate(Client &sender,const std::vector<st
 		{
 			if(!(server->getChannel(channelName).HasMode(ModeType::write_)))
 				throw CannotSendToChannel(sender.getNick(),channelName);
-			if(!server->IsBot(sender) && !(server->getChannel(channelName).HasMember(sender.getNick())))
+			if(!server->IsBot(sender) && !(server->getChannel(channelName).HasMember(sender.getSocket())))
 				throw NoSuchNick(sender.getNick(),"PRIVMSG");
 		}
 		else if(client_managar->HasClient(args[i]) == false)
@@ -131,7 +131,7 @@ void	Command<CommandType::part>::validate(Client &sender,const std::vector<std::
 		if(!server->HasChannel(channelName))
 			throw NoSuchChannel(sender.getNick(),channels[i]);
 		Channel channel = server->getChannel(channelName);
-		if(channel.HasMember(sender.getNick()) == false)
+		if(channel.HasMember(sender.getSocket()) == false)
 			throw NotOnChannel(sender.getNick(),channelName);
 	}
 }
@@ -156,7 +156,7 @@ void	ValidateChannelMode(const Client &sender, const std::vector<std::string> &a
 {
 	Server *server = Server::getServer();
 	MessageController *messageController = MessageController::getController();
-
+	ClientManager	*clientManager = ClientManager::getManager();
 
 	std::string channelName = messageController->GetChannelName(arguments[0]);
 	if(server->HasChannel(channelName) == false)
@@ -187,12 +187,13 @@ void	ValidateChannelMode(const Client &sender, const std::vector<std::string> &a
 		char set = addingModes[i];
 		if(set == 'o' || set == 'k')
 		{
-			if(channel.IsAdmin(sender.getNick()) == false)
+			if(channel.IsAdmin(sender.getSocket()) == false)
 				throw UsersDontMatch(sender.getNick());
 			if (arguments.size() < 3)
 				throw NeedMoreParams(sender.getNick(),"MODE");
 		}
-		if (set == 'o' && !channel.HasMember(arguments[i + 1]))
+		int clientSocket = clientManager->GetClientSocket(arguments[i + 1]);
+		if (set == 'o' && !channel.HasMember(clientSocket))
 				throw UserNotInChannel(sender.getName(),sender.getNick(), channelName);
 	}
 	for(size_t i = 0; i < removingModes.length(); ++i)
@@ -200,11 +201,12 @@ void	ValidateChannelMode(const Client &sender, const std::vector<std::string> &a
 		char set = removingModes[i];
 		if(set == 'o')
 		{
-			if(channel.IsAdmin(sender.getNick()) == false)
+			if(channel.IsAdmin(sender.getSocket()) == false)
 				throw UsersDontMatch(sender.getNick());
 			if (arguments.size() < 3)
 				throw NeedMoreParams(sender.getNick(),"MODE");
-			if (!channel.HasMember(arguments[i + 1]))
+			int clientSocket = clientManager->GetClientSocket(arguments[i + 1]);
+			if (!channel.HasMember(clientSocket))
 				throw UserNotInChannel(sender.getName(),sender.getNick(), channelName);
 		}
 	}
@@ -248,10 +250,10 @@ void	Command<CommandType::who>::validate(Client &sender, const std::vector<std::
 		std::string channelName = controller->GetChannelName(arguments[0]);
 		if(server->HasChannel(channelName) == false)
 			throw NoSuchChannel(sender.getNick(),arguments[0]);
-		if(server->getChannel(channelName).HasMember(sender.getNick()) == false)
+		if(server->getChannel(channelName).HasMember(sender.getSocket()) == false)
 			throw NotOnChannel(sender.getNick(),arguments[0]);
 	}
-	if(ClientManager::getManager()->HasClient(sender.getNick()) == false)
+	if(ClientManager::getManager()->HasClient(sender.getSocket()) == false)
 		throw NoSuchNick(sender.getNick(),"WHO");
 }
 
@@ -275,7 +277,7 @@ void	Command<CommandType::bot>::validate(Client &sender, const std::vector<std::
 		if (!server->HasChannel(channelName))
 			throw NoSuchChannel(sender.getNick(), channelName);
 		Channel &channel = server->getChannel(channelName);
-		if (!channel.HasMember(sender.getNick()))
+		if (!channel.HasMember(sender.getSocket()))
 			throw UserNotInChannel(sender.getNick(), sender.getNick(), channelName);
 	}
 	else if (!manager->HasClient(arguments[1]))
