@@ -152,28 +152,7 @@ void	Command<CommandType::kick>::validate(Client &sender,const std::vector<std::
 		throw NoSuchChannel(sender.getNick(),channelName);
 }
 
-template<>
-void	Command<CommandType::mode>::validmessageController->ate(Client &sender,const std::vector<std::string> &arguments)
-{
-	if(sender.isDone() == false)
-		throw NotRegistered(sender.getNick());
-
-	ClientManager *clientManager = ClientManager::getManager();
-
-	if (messageController->IsValidChannelName(arguments[0]))
-	{
-		ValidateChannelMode(sender, arguments);
-	}
-	else if (clientManager->HasClient(arguments[0]))
-	{
-		if (sender.getNick() != arguments[0])
-			throw UsersDontMatch(arguments[0]);
-	}
-	else
-		throw NoSuchNick(sender.getNick(), arguments[0]);
-}
-
-void	ValidateChannelMode(const Client &client, const std::vector<std::string> &arguments)
+void	ValidateChannelMode(const Client &sender, const std::vector<std::string> &arguments)
 {
 	Server *server = Server::getServer();
 	MessageController *messageController = MessageController::getController();
@@ -203,7 +182,7 @@ void	ValidateChannelMode(const Client &client, const std::vector<std::string> &a
 
 	std::cout << "ADDING modes: " << addingModes << std::endl;
 	std::cout << "REMOVING modes: " << removingModes << std::endl;
-	for(int i = 0; i < addingModes.length(); ++i)
+	for(size_t i = 0; i < addingModes.length(); ++i)
 	{
 		char set = addingModes[i];
 		if(set == 'o' || set == 'k')
@@ -214,9 +193,9 @@ void	ValidateChannelMode(const Client &client, const std::vector<std::string> &a
 				throw NeedMoreParams(sender.getNick(),"MODE");
 		}
 		if (set == 'o' && !channel.HasMember(arguments[i + 1]))
-				throw UserNotInChannel(sender.getName(),sender.getNick(), channel_name);
+				throw UserNotInChannel(sender.getName(),sender.getNick(), channelName);
 	}
-	for(int i = 0; i < removingModes.length(); ++i)
+	for(size_t i = 0; i < removingModes.length(); ++i)
 	{
 		char set = removingModes[i];
 		if(set == 'o')
@@ -226,11 +205,32 @@ void	ValidateChannelMode(const Client &client, const std::vector<std::string> &a
 			if (arguments.size() < 3)
 				throw NeedMoreParams(sender.getNick(),"MODE");
 			if (!channel.HasMember(arguments[i + 1]))
-				throw UserNotInChannel(sender.getName(),sender.getNick(), channel_name);
+				throw UserNotInChannel(sender.getName(),sender.getNick(), channelName);
 		}
 	}
 }
 
+template<>
+void	Command<CommandType::mode>::validate(Client &sender,const std::vector<std::string> &arguments)
+{
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
+
+	ClientManager *clientManager = ClientManager::getManager();
+	MessageController *messageController = MessageController::getController();
+
+	if (messageController->IsValidChannelName(arguments[0]))
+	{
+		ValidateChannelMode(sender, arguments);
+	}
+	else if (clientManager->HasClient(arguments[0]))
+	{
+		if (sender.getNick() != arguments[0])
+			throw UsersDontMatch(arguments[0]);
+	}
+	else
+		throw NoSuchNick(sender.getNick(), arguments[0]);
+}
 
 template <>
 void	Command<CommandType::who>::validate(Client &sender, const std::vector<std::string> &arguments)

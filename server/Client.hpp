@@ -13,6 +13,7 @@ class Client : public IMessenger
 		bool isNicked;
 		std::string name;
 		std::string nick;
+		std::string hostname;
 		int	fd;
 
 	public:

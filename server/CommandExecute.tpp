@@ -32,8 +32,7 @@ void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::s
 {
 	Server *server = Server::getServer();
 	sender.setNick(arguments[0]);
-	if(sender.isDone())
-		return ;
+    //sender.SendMessageWithSocket(sender.getSocket(),":" + sender.getNick() + " NICK " + arguments[0]);
 	sender.setIsNicked(true);
 	if(sender.isDone())
 		server->SendHelloMessage(sender);
@@ -129,7 +128,7 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 		{
 			Channel &channel = server->getChannel(channelName);
 			channel.AddMember(sender.getNick());
-			channel.PrintData();
+			//channel.PrintData();
 		}
 		else
 		{
@@ -141,7 +140,7 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 				channel.SetPassword(arguments[1]);
 				channel.AddMode(ModeType::private_);
 			}
-			channel.PrintData();
+			//channel.PrintData();
 		}
 		server->SendJoinMessage(sender ,channelName);
 	}
@@ -189,7 +188,6 @@ void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::
 	manager->RemoveClient(socket);
 }
 
-
 template<>
 void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
@@ -201,46 +199,53 @@ void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::
 	{
 		std::string channelName = messageController->GetChannelName(arguments[0]);
 		Channel &channel = server->getChannel(channelName);
-		if (arguments.size == 1)
+		if (arguments.size() == 1)
 		{
-			server->ChannelModeMessage(sender, argument[0]);
+			server->ChannelModeMessage(sender, channelName);
+			return ;
+		}
+		std::string modeString = arguments[1];
+		std::string addingModes = messageController->GetModesString(modeString, '+');
+		std::string removingModes = messageController->GetModesString(modeString, '-');
+
+		for (int i = 0; addingModes[i]; ++i)
+		{
+			char mode = addingModes[i];
+
+			if (mode == 'w')
+				channel.AddMode(ModeType::write_);
+			else if (mode == 'r')
+				channel.AddMode(ModeType::read);
+			else if (mode == 'i')
+				channel.AddMode(ModeType::invite);
+			else if (mode == 'k')
+			{
+				channel.AddMode(ModeType::private_);
+				channel.SetPassword(arguments[2]);
+			}
+			else if(mode == 'o')
+				channel.MakeAdmin(sender.getNick(),arguments[2]);
+		}
+		for (int i = 0; removingModes[i]; ++i)
+		{
+			char mode = removingModes[i];
+			if (mode == 'w')
+				channel.RemoveMode(ModeType::write_);
+			else if (mode == 'r')
+				channel.RemoveMode(ModeType::read);
+			else if (mode == 'i')
+				channel.RemoveMode(ModeType::invite);
+			else if (mode == 'k')
+			{
+				channel.RemoveMode(ModeType::private_);
+				channel.SetPassword("");
+			}
+			else if(mode == 'o')
+				channel.RemoveFromAdmins(sender.getNick(),arguments[2]);
 		}
 	}
 	else
 		server->UserModeMessage(sender);
-
-	for (size_t i = 1; i < arguments.size(); i++)
-	{
-		int sign = 0;
-		char mode = arguments[i][1];
-		ModeType::Mode type = ModeType::none;
-		if(arguments[i][0] == '+')
-			sign = 1;
-
-		if(mode == 'W')
-			type = ModeType::write_;
-		else if(mode == 'R')
-			type = ModeType::read;
-		else if(mode == 'I')
-			type = ModeType::invite;
-		else if (mode == 'K')
-		{
-			type = ModeType::private_;
-			channel.SetPassword(arguments[i + 1]);
-		}
-		else if(mode == 'O')
-		{
-			if(sign == 1) 
-				channel.MakeAdmin(sender.getNick(),arguments[i + 1]);
-			else
-				channel.RemoveFromAdmins(sender.getNick(),arguments[i + 1]);
-		}
-
-		if (sign == 0)
-			channel.RemoveMode(type);
-		else
-			channel.AddMode(type);
-	}
 }
 
 template<>
@@ -250,11 +255,12 @@ void	Command<CommandType::who>::execute(Client &sender, const std::vector<std::s
 	(void)arguments;
 	std::string target = arguments[0];
 	MessageController *controller = MessageController::getController();
-	// Server *server = Server::getServer();
+	Server *server = Server::getServer();
 	if(controller->IsValidChannelName(target))
 	{
 		std::string channelName = controller->GetChannelName(arguments[0]);
 		// who to channel reply !!!!!!!
+		server->getChannel(channelName).ChannelWhoResponse(sender);
 		return ;
 	}
 	Client Client = ClientManager::getManager()->getClient(sender.getNick());

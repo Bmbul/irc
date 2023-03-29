@@ -58,6 +58,8 @@ void Client::setName(std::string const &name)
 }
 void Client::setNick(std::string const &nick)
 {
+	if((this->nick == "") == false)
+        	this->SendMessageWithSocket(this->fd,":" + this->nick + " NICK " + nick);
 	this->nick = nick;
 }
 
