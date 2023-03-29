@@ -149,8 +149,10 @@ void	Channel::SendChannelReply(const std::string &message) const
 	Server *server = Server::getServer();
 	for (std::map<std::string, Client>::const_iterator it = members.begin();
 		it != members.end(); it++)
-		server->SendMessageToClient(it->second,message);
+	{
+		server->SendMessageToClient(it->second, message);
 		std::cout << message <<std::endl;
+	}
 }
 
 void	Channel::SendJoinReply(const Client &client) const
@@ -244,6 +246,24 @@ void Channel::AddMode(ModeType::Mode newMode)
 void Channel::RemoveMode(ModeType::Mode mode)
 {
 	this->mode ^= mode;
+}
+
+std::string	Channel::ModeInfo() const
+{
+	std::string modesString = "";
+
+	std::cout <<"Password: " <<  password << std::endl;
+	if (mode & ModeType::read)
+		modesString += 'r';
+	if (mode & ModeType::write_)
+		modesString += 'w';
+	if (mode & ModeType::invite)
+		modesString += 'i';
+	if (mode & ModeType::private_)
+		modesString += 'k';
+	if (mode & ModeType::private_)
+		modesString += (" " + password);
+	return (modesString);
 }
 
 void Channel::ChannelWhoResponse(Client const &client)

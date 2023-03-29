@@ -4,7 +4,7 @@
 #include "Client.hpp"
 #include <vector>
 #include <map>
-#include "./CommandResponse.hpp"
+#include "CommandResponse.hpp"
 
 
 struct ModeType
@@ -55,6 +55,7 @@ class Channel : public  CommandResponse
 		int		HasMode(ModeType::Mode _mode)const;
 		void	AddMode(ModeType::Mode mode);
 		void	RemoveMode(ModeType::Mode mode);
+		std::string	ModeInfo() const;
 		std::string	GetAdmin();
 		void ChannelWhoResponse(Client const &client);
 		void ChannelJoinResponse(Client const &client);

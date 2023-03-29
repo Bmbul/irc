@@ -189,47 +189,64 @@ void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::
 	manager->RemoveClient(socket);
 }
 
-
 template<>
 void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
-	return ;
-	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
-	Server *server =  Server::getServer();
-	Channel &channel = server->getChannel(channelName);
+	MessageController	*messageController = MessageController::getController();
+	Server	*server =  Server::getServer();
+	std::string target = arguments[0];
 
-	for (size_t i = 1; i < arguments.size(); i++)
+	if (messageController->IsValidChannelName(target))
 	{
-		int sign = 0;
-		char mode = arguments[i][1];
-		ModeType::Mode type = ModeType::none;
-		if(arguments[i][0] == '+')
-			sign = 1;
-
-		if(mode == 'W')
-			type = ModeType::write_;
-		else if(mode == 'R')
-			type = ModeType::read;
-		else if(mode == 'I')
-			type = ModeType::invite;
-		else if (mode == 'K')
+		std::string channelName = messageController->GetChannelName(arguments[0]);
+		Channel &channel = server->getChannel(channelName);
+		if (arguments.size() == 1)
 		{
-			type = ModeType::private_;
-			channel.SetPassword(arguments[i + 1]);
+			server->ChannelModeMessage(sender, channelName);
+			return ;
 		}
-		else if(mode == 'O')
-		{
-			if(sign == 1) 
-				channel.MakeAdmin(sender.getNick(),arguments[i + 1]);
-			else
-				channel.RemoveFromAdmins(sender.getNick(),arguments[i + 1]);
-		}
+		std::string modeString = arguments[1];
+		std::string addingModes = messageController->GetModesString(modeString, '+');
+		std::string removingModes = messageController->GetModesString(modeString, '-');
 
-		if (sign == 0)
-			channel.RemoveMode(type);
-		else
-			channel.AddMode(type);
+		for (int i = 0; addingModes[i]; ++i)
+		{
+			char mode = addingModes[i];
+
+			if (mode == 'w')
+				channel.AddMode(ModeType::write_);
+			else if (mode == 'r')
+				channel.AddMode(ModeType::read);
+			else if (mode == 'i')
+				channel.AddMode(ModeType::invite);
+			else if (mode == 'k')
+			{
+				channel.AddMode(ModeType::private_);
+				channel.SetPassword(arguments[2]);
+			}
+			else if(mode == 'o')
+				channel.MakeAdmin(sender.getNick(),arguments[2]);
+		}
+		for (int i = 0; removingModes[i]; ++i)
+		{
+			char mode = removingModes[i];
+			if (mode == 'w')
+				channel.RemoveMode(ModeType::write_);
+			else if (mode == 'r')
+				channel.RemoveMode(ModeType::read);
+			else if (mode == 'i')
+				channel.RemoveMode(ModeType::invite);
+			else if (mode == 'k')
+			{
+				channel.RemoveMode(ModeType::private_);
+				channel.SetPassword("");
+			}
+			else if(mode == 'o')
+				channel.RemoveFromAdmins(sender.getNick(),arguments[2]);
+		}
 	}
+	else
+		server->UserModeMessage(sender);
 }
 
 template<>

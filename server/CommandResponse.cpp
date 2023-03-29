@@ -33,7 +33,7 @@ void	CommandResponse::KickMessage(const Client &client, std::string const &chann
 {
     (void) client;
 	Channel &channel = Server::getServer()->getChannel(channelName);
-	std::string kick_reply = " KICK FROM " + channelName + " BY " + admin;
+	std::string kick_reply = " KICK FROM #" + channelName + " BY " + admin;
     channel.SendChannelReply(kick_reply);
 }
 
@@ -42,5 +42,19 @@ void	CommandResponse::WhoMessage(const Client &client, const std::string &channe
 	Channel &channel = Server::getServer()->getChannel(channelName);
 	channel.SendWhoReply(client);
 	std::string endingString = client.GetFormattedText() + " 315 " + "#" + channelName + " :End of /WHO list";
+	SendMessageToClient(client, endingString);
+}
+
+void	CommandResponse::UserModeMessage(const Client &client) const
+{
+	std::string endingString = "221  ";
+	SendMessageToClient(client, endingString);
+}
+
+void	CommandResponse::ChannelModeMessage(const Client &client, const std::string &channelName) const
+{
+	Channel &channel = Server::getServer()->getChannel(channelName);
+	std::string endingString = "324 " + client.getNick() + " #"
+		+ channelName + " " + channel.ModeInfo();
 	SendMessageToClient(client, endingString);
 }
