@@ -149,7 +149,8 @@ void	Channel::SendChannelReply(const std::string &message) const
 	Server *server = Server::getServer();
 	for (std::map<std::string, Client>::const_iterator it = members.begin();
 		it != members.end(); it++)
-		server->SendMessageToClient(it->second, it->second.GetFormattedText() + message);
+		server->SendMessageToClient(it->second,message);
+		std::cout << message <<std::endl;
 }
 
 void	Channel::SendJoinReply(const Client &client) const
@@ -157,11 +158,12 @@ void	Channel::SendJoinReply(const Client &client) const
 	Server *server = Server::getServer();
 	for (std::map<std::string, Client>::const_iterator it = members.begin(); it != members.end();it++)
 	{
-		std::string sign = " +";
+		std::string sign = " :+";
 		if(IsAdmin(it->first))
-			sign = " @";
-		std::string message_body = client.GetFormattedText() + " " + name + sign + it->second.getNick() ;
+			sign = " :@";
+		std::string message_body = "353 " + client.getNick() + " = " + "#" + name + sign + it->second.getNick() ;
 		server->SendMessageToClient(client, message_body);
+		std::cout << message_body <<std::endl;
 	}
 }
 
@@ -237,4 +239,33 @@ void Channel::AddMode(ModeType::Mode newMode)
 void Channel::RemoveMode(ModeType::Mode mode)
 {
 	this->mode ^= mode;
+}
+
+void Channel::ChannelWhoResponse(Client const &client)
+{
+
+	/*"352 " + client->getNick() + " " + name_ + " " + (*it)->getUser() + " " + 
+	(*it)->getHost() + " ft_irc " + (*it)->getNick() 
+	+ " " + "H" + " :1 " + (*it)->getReal()*/
+	std::string message;
+	std::map<std::string,Client>::iterator it = members.begin();
+	for (; it != members.end(); ++it)
+	{
+		message = "352 " + client.getNick() + " " + name + " " + it->second.getName() +
+		" 127.0.0.1 irc " + it->second.getNick() + " H :1 " + it->second.getName();
+		SendMessageToClient(client,message);
+	}
+	message = "315 " + client.getNick() + " " + name + " :End of WHO list";
+	SendMessageToClient(client,message);
+}
+
+void Channel::ChannelJoinResponse(Client const &client)
+{
+	
+	std::string message = client.GetFormattedText() + " JOIN " + name;
+	std::map<std::string,Client>::iterator it = members.begin();
+	for (; it != members.end() ; ++it)
+	{
+		SendMessageWithSocket(it->second.getSocket(),message);
+	}
 }

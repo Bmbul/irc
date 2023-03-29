@@ -4,6 +4,7 @@
 #include "Client.hpp"
 #include <vector>
 #include <map>
+#include "./CommandResponse.hpp"
 
 
 struct ModeType
@@ -18,7 +19,9 @@ struct ModeType
 	};
 };
 
-class Channel
+class CommandResponse;
+
+class Channel : public  CommandResponse
 {
 	public:
 		
@@ -53,6 +56,8 @@ class Channel
 		void	AddMode(ModeType::Mode mode);
 		void	RemoveMode(ModeType::Mode mode);
 		std::string	GetAdmin();
+		void ChannelWhoResponse(Client const &client);
+		void ChannelJoinResponse(Client const &client);
 
 	private:
 		std::string	name;
@@ -75,5 +80,8 @@ class Channel
 		mutable std::vector<std::string> admins;
 		std::vector<int> bannedClients;
 };
+
+
+
 
 #endif // CHANNEL_HPP

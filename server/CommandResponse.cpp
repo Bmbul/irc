@@ -9,14 +9,14 @@ void	CommandResponse::SendMessageToClient(const Client &client,
 
 void CommandResponse::SendJoinMessage(const Client &client, std::string const &channelName) const
 {
-	//Channel &channel = Server::getServer()->getChannel(channelName);
+	Channel &channel = Server::getServer()->getChannel(channelName);
 	std::string message = client.GetFormattedText() + " JOIN " + "#" + channelName;
 	std::cout << message << std::endl;
 	//std::string admin_reply = "" + channel.GetAdmin() + " is a " + channelName + " ADMIN ";
 	//channel.Broadcast(client, message, "");
 	SendMessageToClient(client, message);
 	//SendMessageToClient(client, admin_reply);
-    //channel.SendJoinReply(client);
+    channel.SendJoinReply(client);
 	//std::string end = ":366" + client.getNick() + " " + channelName + " :End of /NAMES list";
 	//SendMessageToClient(client, end);
 }
@@ -25,7 +25,7 @@ void	CommandResponse::PartMessage(const Client &client,std::string const &channe
 {
     (void) client;
 	Channel &channel = Server::getServer()->getChannel(channelName);
-	std::string part_reply = " PART " + channelName;
+	std::string part_reply = client.GetFormattedText() + " PART " + "#" + channelName;
     channel.SendChannelReply(part_reply);
 }
 
@@ -41,6 +41,6 @@ void	CommandResponse::WhoMessage(const Client &client, const std::string &channe
 {
 	Channel &channel = Server::getServer()->getChannel(channelName);
 	channel.SendWhoReply(client);
-	std::string endingString = client.GetFormattedText() + " 315 " + channelName + " :End of /WHO list";
+	std::string endingString = client.GetFormattedText() + " 315 " + "#" + channelName + " :End of /WHO list";
 	SendMessageToClient(client, endingString);
 }

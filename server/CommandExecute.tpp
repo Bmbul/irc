@@ -32,8 +32,7 @@ void	Command<CommandType::nick>::execute(Client &sender,const std::vector<std::s
 {
 	Server *server = Server::getServer();
 	sender.setNick(arguments[0]);
-	if(sender.isDone())
-		return ;
+    //sender.SendMessageWithSocket(sender.getSocket(),":" + sender.getNick() + " NICK " + arguments[0]);
 	sender.setIsNicked(true);
 	if(sender.isDone())
 		server->SendHelloMessage(sender);
@@ -129,7 +128,7 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 		{
 			Channel &channel = server->getChannel(channelName);
 			channel.AddMember(sender.getNick());
-			channel.PrintData();
+			//channel.PrintData();
 		}
 		else
 		{
@@ -141,7 +140,7 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 				channel.SetPassword(arguments[1]);
 				channel.AddMode(ModeType::private_);
 			}
-			channel.PrintData();
+			//channel.PrintData();
 		}
 		server->SendJoinMessage(sender ,channelName);
 	}
@@ -193,6 +192,7 @@ void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::
 template<>
 void	Command<CommandType::mode>::execute(Client &sender, const std::vector<std::string> &arguments)
 {
+	return ;
 	std::string channelName = MessageController::getController()->GetChannelName(arguments[0]);
 	Server *server =  Server::getServer();
 	Channel &channel = server->getChannel(channelName);
@@ -243,6 +243,7 @@ void	Command<CommandType::who>::execute(Client &sender, const std::vector<std::s
 	{
 		std::string channelName = controller->GetChannelName(arguments[0]);
 		// who to channel reply !!!!!!!
+		server->getChannel(channelName).ChannelWhoResponse(sender);
 		return ;
 	}
 	Client Client = ClientManager::getManager()->getClient(sender.getNick());

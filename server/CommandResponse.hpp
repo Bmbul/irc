@@ -4,8 +4,9 @@
 
 #include "Client.hpp"
 
-struct CommandResponse : public IMessenger
+class CommandResponse : public IMessenger
 {
+public:
 	void	SendMessageToClient(const Client &client, const std::string &message) const;
 	void	SendJoinMessage(const Client &client,std::string const &channelName)const;
 	void	SendReplyName(const Client &client)const;
