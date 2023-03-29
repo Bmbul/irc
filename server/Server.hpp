@@ -57,12 +57,22 @@ class Server : public CommandResponse
 		Channel &getChannel(std::string const &name);
 		//void AddChannel(std::string const &name);
 		void removeChannel(std::string const &name);
+		void ChangeNick(Client const &client);
 
 	private:
 		Server();
 };
 
+/* void Server::ChangeNick(Client const &client)
+{
+	std::map<std::string,Channel>::iterator it = channels.begin();
+	for (; it !=  channels.end() ; ++it)
+	{
+		Channel &chan  = this->getChannel(it->first);
 
+	}
+	 
+} */
 //void Server::AddChannel(std::string const &name);//der chem grel!!
 
 #endif // SERVER_HPP

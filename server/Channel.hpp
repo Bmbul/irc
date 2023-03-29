@@ -58,6 +58,7 @@ class Channel : public  CommandResponse
 		std::string	GetAdmin();
 		void ChannelWhoResponse(Client const &client);
 		void ChannelJoinResponse(Client const &client);
+		void ChangeChannelUser(Client const &client);
 
 	private:
 		std::string	name;

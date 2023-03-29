@@ -40,6 +40,8 @@ class MessageController
 		std::map<int, std::vector<std::string> > chunksMap;
 		static MessageController *instance;
 };
-     
+
+
+
 
 #endif // MESSAGE_CONTROLLER_HPP

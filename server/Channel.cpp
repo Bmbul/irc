@@ -156,15 +156,20 @@ void	Channel::SendChannelReply(const std::string &message) const
 void	Channel::SendJoinReply(const Client &client) const
 {
 	Server *server = Server::getServer();
+	std::string message_body;
 	for (std::map<std::string, Client>::const_iterator it = members.begin(); it != members.end();it++)
 	{
 		std::string sign = " :+";
 		if(IsAdmin(it->first))
 			sign = " :@";
-		std::string message_body = "353 " + client.getNick() + " = " + "#" + name + sign + it->second.getNick() ;
+		message_body = "353 " + client.getNick() + " = " + "#" + name + sign + it->second.getNick() ;
 		server->SendMessageToClient(client, message_body);
 		std::cout << message_body <<std::endl;
 	}
+	//366 a2 #a :End of /NAMES list
+	message_body = "366 " +  client.getNick() + " " + "#"+ name + " :End of /NAMES list";
+	server->SendMessageToClient(client, message_body);
+	std::cout << message_body <<std::endl;
 }
 
 void	Channel::SendWhoReply(const Client &client) const
@@ -262,10 +267,14 @@ void Channel::ChannelWhoResponse(Client const &client)
 void Channel::ChannelJoinResponse(Client const &client)
 {
 	
-	std::string message = client.GetFormattedText() + " JOIN " + name;
+	std::string message = client.GetFormattedText() + " JOIN " + "#" + name;
 	std::map<std::string,Client>::iterator it = members.begin();
+	if(it == members.end())
+		std::cout << "errrorrr" << std::endl;
 	for (; it != members.end() ; ++it)
 	{
 		SendMessageWithSocket(it->second.getSocket(),message);
+		std::cout << "sockett = "<<it->second.getSocket() << std::endl;
 	}
+	SendJoinReply(client);
 }

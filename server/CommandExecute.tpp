@@ -142,7 +142,8 @@ void	Command<CommandType::join>::execute(Client &sender, const std::vector<std::
 			}
 			//channel.PrintData();
 		}
-		server->SendJoinMessage(sender ,channelName);
+		Channel &channel = server->getChannel(channelName);
+		channel.ChannelJoinResponse(sender);
 	}
 }
 

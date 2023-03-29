@@ -72,6 +72,7 @@ std::vector<CommandData>	MessageController::Parse(std::string &input) const
 
 void	MessageController::PrintData(std::vector<CommandData> &dataVector) const
 {
+	return ;
 	std::vector<CommandData>::iterator	data;
 	for(data = dataVector.begin(); data != dataVector.end(); data++)
 	{
