@@ -185,7 +185,8 @@ void	Command<CommandType::quit>::execute(Client &sender, const std::vector<std::
 {
 	ClientManager *manager = ClientManager::getManager();
 	int socket = sender.getSocket();
-	manager->CloseClient(socket, arguments[0]);
+	std::string reason = arguments.size() == 0 ? " no reason " : arguments[0];
+	manager->CloseClient(socket, reason);
 	manager->RemoveClient(socket);
 }
 

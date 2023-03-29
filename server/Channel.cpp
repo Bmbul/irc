@@ -20,6 +20,10 @@ void Channel::AddMember(const std::string &memberNick)
 
 void Channel::KickMember(const std::string &admin, const std::string &memberNick)
 {
+	//":" + admin_->getPrefix() + " KICK " + name_ + " " + client->getNick() + " :" + reason
+	/* const Client &admin_class = ClientManager::getManager()->getClient(admin);
+	std::string message = ":" + admin_class.GetFormattedText() + " KICK " + name + " " + memberNick + " : BYE!!!";
+	std::map<std::string */
 	ValidateCanModifyAdmin(admin, memberNick);
 	LeaveMember(memberNick);
 }
@@ -291,7 +295,7 @@ void Channel::ChannelJoinResponse(Client const &client)
 	std::map<std::string,Client>::iterator it = members.begin();
 	if(it == members.end())
 		std::cout << "errrorrr" << std::endl;
-	for (; it != members.end() ; ++it)
+	for (; it != members.end() ; it++)
 	{
 		SendMessageWithSocket(it->second.getSocket(),message);
 		std::cout << "sockett = "<<it->second.getSocket() << std::endl;
