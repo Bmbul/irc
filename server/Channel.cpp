@@ -10,140 +10,129 @@ Channel::Channel() {}
 
 Channel::~Channel() {}
 
-void Channel::AddMember(const std::string &memberNick)
+void Channel::AddMember(int clientSocket)
 {
 	if (members.size() == 0)
-		SetAdmin(memberNick);
-	Client addingClient = ClientManager::getManager()->getClient(memberNick);
-	members.insert(std::pair<std::string, Client>(memberNick, addingClient));
+		SetAdmin(clientSocket);
+	Client addingClient = ClientManager::getManager()->getClient(clientSocket);
+	members.insert(std::pair<int, Client>(clientSocket, addingClient));
 }
 
-void Channel::KickMember(const std::string &admin, const std::string &memberNick)
+void Channel::KickMember(int admin, int memberSocket)
 {
 	//":" + admin_->getPrefix() + " KICK " + name_ + " " + client->getNick() + " :" + reason
 	/* const Client &admin_class = ClientManager::getManager()->getClient(admin);
 	std::string message = ":" + admin_class.GetFormattedText() + " KICK " + name + " " + memberNick + " : BYE!!!";
 	std::map<std::string */
-	ValidateCanModifyAdmin(admin, memberNick);
-	LeaveMember(memberNick);
+	ValidateCanModifyAdmin(admin, memberSocket);
+	LeaveMember(memberSocket);
 }
 
-void	Channel::LeaveMember(const std::string &memberNick)
+void	Channel::LeaveMember(int memberSocket)
 {
-	ValidateAdminIsInChannel(memberNick);
-	members.erase(memberNick);
-	if (IsAdmin(memberNick))
-		DeleteAdmin(memberNick);
+	ValidateAdminIsInChannel(memberSocket);
+	members.erase(memberSocket);
+	if (IsAdmin(memberSocket))
+		DeleteAdmin(memberSocket);
 }
 
-void	Channel::LeaveIfMember(const std::string &memberNick)
+void	Channel::LeaveIfMember(int memberSocket)
 {
-	if (members.count(memberNick) != 0)
-		LeaveMember(memberNick);
+	if (members.count(memberSocket) != 0)
+	{
+		members.erase(memberSocket);
+		if (IsAdmin(memberSocket))
+			DeleteAdmin(memberSocket);
+	}
 }
 
-void Channel::MakeAdmin(const std::string &admin, const std::string &newAdmin)
+void Channel::MakeAdmin(int admin, int newAdmin)
 {
 	ValidateCanModifyAdmin(admin, newAdmin);
 	SetAdmin(newAdmin);
 }
 
-void Channel::SetAdmin(const std::string &newAdmin)
+void Channel::SetAdmin(int newAdmin)
 {
 	admins.push_back(newAdmin);
 }
 
-std::string	Channel::GetAdmin() { return *(admins.begin()); }
+int	Channel::GetAdmin() { return *(admins.begin()); }
 
-void Channel::RemoveFromAdmins(const std::string &admin, const std::string &removingAdmin)
+std::string	Channel::GetNickWithSocket(int socket) const
+{
+	std::map<int, Client>::const_iterator it = members.find(socket);
+	return it->second.getNick();
+}
+
+
+void Channel::RemoveFromAdmins(int admin, int removingAdmin)
 {
 	ValidateCanModifyAdmin(admin, removingAdmin);
 
 	DeleteAdmin(removingAdmin);
 }
 
-void	Channel::DeleteAdmin(const std::string &removingAdmin)
+void	Channel::DeleteAdmin(int removingAdmin)
 {
-	std::vector<std::string>::iterator it = std::find(admins.begin(), admins.end(), removingAdmin);
+	std::vector<int>::iterator it = std::find(admins.begin(), admins.end(), removingAdmin);
 	admins.erase(it);
 	if (admins.empty() && !members.empty())
 		SetAdmin(members.begin()->first);
 }
 
 
-void Channel::ValidateCanModifyAdmin(const std::string &admin, const std::string &modifyingMember) const
+void Channel::ValidateCanModifyAdmin(int admin, int modifyingMember) const
 {
 	ValidateAdmin(admin);
 	ValidateClientIsInServer(modifyingMember);
 	ValidateClientIsInChannel(admin, modifyingMember);
 }
 
-void Channel::ValidateAdmin(const std::string &admin) const
+void Channel::ValidateAdmin(int admin) const
 {
 	ValidateClientIsInServer(admin);
 	ValidateAdminIsInChannel(admin);
 	if (!IsAdmin(admin))
-		throw ChannelOpPrivsNeeded(admin, this->name);
+		throw ChannelOpPrivsNeeded(GetNickWithSocket(admin), this->name);
 }
 
-void Channel::ValidateClientIsInChannel(const std::string &admin, const std::string &client) const
+void Channel::ValidateClientIsInChannel(int admin, int client) const
 {
 	if (!HasMember(client))
-		throw UserNotInChannel(admin, client, this->name);
+		throw UserNotInChannel(GetNickWithSocket(admin), GetNickWithSocket(client), this->name);
 }
 
-void Channel::ValidateAdminIsInChannel(const std::string &admin) const
+void Channel::ValidateAdminIsInChannel(int admin) const
 {
 	if (!HasMember(admin))
-		throw NotOnChannel(admin, this->name);
+		throw NotOnChannel(GetNickWithSocket(admin), this->name);
 }
 
-void Channel::ValidateClientIsInServer(const std::string &client) const
+void Channel::ValidateClientIsInServer(int client) const
 {
 	if (!ClientManager::getManager()->HasClient(client))
-		throw NoSuchNick(client, this->name);
+		throw NoSuchNick(GetNickWithSocket(client), this->name);
 }
 
-bool Channel::IsAdmin(const std::string &memberNick) const
+bool Channel::IsAdmin(int memberSocket) const
 {
-	std::vector<std::string>::iterator it = std::find(admins.begin(), admins.end(), memberNick);
+	std::vector<int>::iterator it = std::find(admins.begin(), admins.end(), memberSocket);
 	return (it != admins.end());
 }
 
-bool Channel::HasMember(const std::string &memberName) const
+bool Channel::HasMember(int memberSocket) const
 {
-	return (members.count(memberName));
-}
-
-void Channel::Ban(const std::string &admin, const std::string &memberName)
-{
-	ValidateAdmin(admin);
-	ValidateClientIsInServer(memberName);
-	std::vector<int>::const_iterator it = std::find(bannedClients.begin(),
-													bannedClients.end(), members[memberName].getSocket());
-	if (it == bannedClients.end())
-		bannedClients.push_back(members[memberName].getSocket());
-}
-
-void Channel::Unban(const std::string &admin, const std::string &memberName)
-{
-	ValidateAdmin(admin);
-	ValidateClientIsInServer(memberName);
-	ValidateClientIsInChannel(admin, memberName);
-
-	int unbanSock = ClientManager::getManager()->GetClientSocket(memberName);
-	std::vector<int>::iterator memberToUnban = std::find(bannedClients.begin(), bannedClients.end(), unbanSock);
-	if (memberToUnban != bannedClients.end())
-		bannedClients.erase(memberToUnban);
+	return (members.count(memberSocket));
 }
 
 void Channel::Broadcast(const Client &sender,
 	const std::string &message, const std::string &command) const
 {
-	for (std::map<std::string, Client>::const_iterator it = members.begin();
+	for (std::map<int, Client>::const_iterator it = members.begin();
 		it != members.end(); it++)
 	{
-		if (!(it->second == sender))
+		if (!(it->first == sender.getSocket()))
 			sender.SendMessageFromChannel(it->second, command, this->name, message);
 	}
 }
@@ -151,7 +140,7 @@ void Channel::Broadcast(const Client &sender,
 void	Channel::SendChannelReply(const std::string &message) const
 {
 	Server *server = Server::getServer();
-	for (std::map<std::string, Client>::const_iterator it = members.begin();
+	for (std::map<int, Client>::const_iterator it = members.begin();
 		it != members.end(); it++)
 	{
 		server->SendMessageToClient(it->second, message);
@@ -163,7 +152,7 @@ void	Channel::SendJoinReply(const Client &client) const
 {
 	Server *server = Server::getServer();
 	std::string message_body;
-	for (std::map<std::string, Client>::const_iterator it = members.begin(); it != members.end();it++)
+	for (std::map<int, Client>::const_iterator it = members.begin(); it != members.end();it++)
 	{
 		std::string sign = " :+";
 		if(IsAdmin(it->first))
@@ -182,7 +171,7 @@ void	Channel::SendWhoReply(const Client &client) const
 {
 	Server	*server = Server::getServer();
 	std::string host = server->getHost();
-	for (std::map<std::string, Client>::const_iterator it = members.begin(); it != members.end();it++)
+	for (std::map<int, Client>::const_iterator it = members.begin(); it != members.end();it++)
 	{
 		std::string sign = " +";
 		if(IsAdmin(it->first))
@@ -199,14 +188,14 @@ void Channel::PrintData()
 	std::cout << "CHANNEL: " << name << std::endl;
 	std::cout << "PASSWORD: " << password << std::endl;
 	std::cout << "MEMBERS: " << std::endl;
-	for (std::map<std::string, Client>::iterator it = members.begin();
+	for (std::map<int, Client>::iterator it = members.begin();
 		it != members.end(); it++)
 	{
 		std::cout << "Nick: " << it->first << ", fd: " << it->second.getSocket() << std::endl;
 	}
 	std::cout << std::endl;
 	std::cout << "ADMINS: " << std::endl;
-	for (std::vector<std::string>::iterator it = admins.begin();
+	for (std::vector<int>::iterator it = admins.begin();
 		it != admins.end(); it++)
 	{
 		std::cout << "Socket: " << *it << std::endl;
@@ -277,7 +266,7 @@ void Channel::ChannelWhoResponse(Client const &client)
 	(*it)->getHost() + " ft_irc " + (*it)->getNick() 
 	+ " " + "H" + " :1 " + (*it)->getReal()*/
 	std::string message;
-	std::map<std::string,Client>::iterator it = members.begin();
+	std::map<int, Client>::iterator it = members.begin();
 	for (; it != members.end(); ++it)
 	{
 		message = "352 " + client.getNick() + " " + name + " " + it->second.getName() +
@@ -292,7 +281,7 @@ void Channel::ChannelJoinResponse(Client const &client)
 {
 	
 	std::string message = client.GetFormattedText() + " JOIN " + "#" + name;
-	std::map<std::string,Client>::iterator it = members.begin();
+	std::map<int, Client>::iterator it = members.begin();
 	if(it == members.end())
 		std::cout << "errrorrr" << std::endl;
 	for (; it != members.end() ; it++)

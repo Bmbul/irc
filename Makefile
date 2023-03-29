@@ -15,7 +15,7 @@ BOT_HEADERS = $(wildcard bot/*.hpp)
 PRE_HEADERS = $(HEADERS:%.hpp=$(OBJECTS_FOLDER)%.hpp.gch)
 BOT_PRE_HEADERS = $(BOT_HEADERS:%.hpp=$(OBJECTS_FOLDER)%.hpp.gch)
 
-CFLAGS = -Wall -Wextra -Werror -std=c++98 #-fsanitize=address -g
+CFLAGS = -Wall -Wextra -Werror -std=c++98 # -fsanitize=address -g
 
 CC = c++
 

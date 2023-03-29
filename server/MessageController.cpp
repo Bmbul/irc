@@ -72,7 +72,6 @@ std::vector<CommandData>	MessageController::Parse(std::string &input) const
 
 void	MessageController::PrintData(std::vector<CommandData> &dataVector) const
 {
-	return ;
 	std::vector<CommandData>::iterator	data;
 	for(data = dataVector.begin(); data != dataVector.end(); data++)
 	{
@@ -80,7 +79,7 @@ void	MessageController::PrintData(std::vector<CommandData> &dataVector) const
 			std::cout << "MY: COMMAND: "<< data->command << std::endl;
 		for (size_t i = 0; i < data->args.size(); i++)
 		{
-			std::cout << "  MY: ARG[" << i << "] : " << data->args[i] << "size ===> " << data->args[i].size() << " last_element is ==> " << data->args[i].at(data->args[i].size() - 1)<< std::endl;
+			std::cout << "  MY: ARG[" << i << "] : " << data->args[i] <<std::endl;
 		}
 		std::cout << std::endl;
 	}
@@ -202,7 +201,7 @@ std::string	MessageController::GetModesString(const std::string &argument, char 
 	size_t	pos = argument.find(sign);
 	if (pos == std::string::npos)
 		return std::string();
-	size_t	endPos = argument.find_first_not_of("wriok", pos + 1);
+	size_t	endPos = argument.find_first_not_of("wriobk", pos + 1);
 	if (endPos == pos)
 		return std::string();
 	if (endPos == std::string::npos)

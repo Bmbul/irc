@@ -26,12 +26,12 @@ void	Bot::Setup()
 void	Bot::CreateServer()
 {
 
-	if( (socketfd = socket(PF_INET , SOCK_STREAM , 0)) < 0) // prev  if( (socketfd = socket(AF_INET , SOCK_STREAM , 0)) == 0)
+	if( (socketfd = socket(AF_INET , SOCK_STREAM , 0)) < 0) // prev  if( (socketfd = socket(AF_INET , SOCK_STREAM , 0)) == 0)
 	{
 		perror("Failed to create a socket");
 		exit(EXIT_FAILURE);
 	}
-	address.sin_family = PF_INET;
+	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = inet_addr(host.c_str());
 	address.sin_port = htons(port);
 }

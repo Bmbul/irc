@@ -31,7 +31,7 @@ ClientManager::~ClientManager()
 
 }
 
-void	ClientManager::AddClient(const int socketFd)
+void	ClientManager::AddClient(int socketFd)
 {
 	std::pair<int, Client> newClient(socketFd, Client(socketFd));
 	clientMap.insert(newClient);
@@ -39,7 +39,7 @@ void	ClientManager::AddClient(const int socketFd)
 		<< clientMap.size() << std::endl;
 }
 
-void	ClientManager::RemoveClient(const int socketFd)
+void	ClientManager::RemoveClient(int socketFd)
 {
 	std::map<int, Client>::iterator it = clientMap.find(socketFd);
 
@@ -65,15 +65,26 @@ int		ClientManager::AddClientstToReadFds(fd_set *readfds)
 	return (0);
 }
 
-bool	ClientManager::HasClient(const std::string &clientName) const
+bool	ClientManager::HasClient(int clientSocket) const
 {
 	for (it = clientMap.begin(); it != clientMap.end(); it++)
 	{
-		if (it->second.getNick() == clientName)
+		if (it->second.getSocket() == clientSocket)
 			return (true);
 	}
 	return (false);
 }
+
+bool	ClientManager::HasClient(const std::string &clientNicck) const
+{
+	for (it = clientMap.begin(); it != clientMap.end(); it++)
+	{
+		if (it->second.getNick() == clientNicck)
+			return (true);
+	}
+	return (false);
+}
+
 
 int	ClientManager::GetClientSocket(const std::string &clientName) const
 {
@@ -164,12 +175,23 @@ void	ClientManager::HandleInput(fd_set *readfds)
 	}
 }
 
-const Client &ClientManager::getClient(std::string const &nickName) const
+const Client &ClientManager::getClient(int clientSocket) const
 {
 	std::map<int, Client>::const_iterator it;
 	for (it = clientMap.begin(); it != clientMap.end(); it++)
 	{
-		if (it->second.getNick() == nickName)
+		if (it->second.getSocket() == clientSocket)
+			break;
+	}
+	return it->second;
+}
+
+const Client &ClientManager::getClient(const std::string &clientNick) const
+{
+	std::map<int, Client>::const_iterator it;
+	for (it = clientMap.begin(); it != clientMap.end(); it++)
+	{
+		if (it->second.getNick() == clientNick)
 			break;
 	}
 	return it->second;
