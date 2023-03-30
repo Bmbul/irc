@@ -76,19 +76,30 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 				"PRIVMSG", MessageBody);
 			if (arguments[1].find("DCC") != std::string::npos)
 			{
+				
 				std::vector<std::string> params = messageController->Split(arguments[1], " ");
+				if(params.size() < 3)
+					return ;
 				int port = std::stoi(params[4]);
-				int socketfd  = socket(AF_INET , SOCK_STREAM , 0); 
+				//int sockfd  = socket(AF_INET , SOCK_STREAM , 0);
+				int sockfd = socket(AF_INET, SOCK_STREAM, 0);
+				int flags = fcntl(sockfd, F_GETFL, 0);
+				fcntl(sockfd, F_SETFL, flags | O_NONBLOCK);
 				struct sockaddr_in address;
+				uint32_t ip_int = params.size() > 2 ? std::stoi(params[3]) : 2130706433;
+				struct in_addr addr;
+				addr.s_addr = htonl(ip_int);
+				std::string ip_str = inet_ntoa(addr);
 				address.sin_family = AF_INET;
 				address.sin_addr.s_addr = inet_addr("127.0.0.1");
 				address.sin_port = htons(port);
-				if (connect(socketfd,(struct sockaddr *)&address, sizeof(address)) != 0)
+			 	if (connect(sockfd,(struct sockaddr *)&address, sizeof(address)) != 0)
 				{
 					perror("Connect");
 				}
-				std::string message = "/DCC GET " + sender.getNick()+ " " + params[2];
-				if (send(clientManager->GetClientSocket(arguments[0]), message.c_str(), message.length() + 1, 0) != 0)
+				std::string response = ":DCC GET " + ip_str + " " + std::to_string(port) + " " + params[2] + " " + std::to_string(0) + "\r\n";
+				//std::string message = ":DCC SEND " + sender.getNick()+ " " + params[3] +" "+ params[4] + " "+ params[5];
+				if (send(sockfd/* clientManager->GetClientSocket(arguments[0]) */, response.c_str(), response.length() + 1, 0) != 0)
 				{
 					perror("Send");
 				}
