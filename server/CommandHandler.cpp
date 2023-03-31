@@ -46,6 +46,7 @@ void	CommandHandler::InitilizeCommands()
 	commands["CAP"] = new Command<CommandType::cap>();
 	commands["bot"] = new Command<CommandType::bot>();
 	commands["botme"] = new Command<CommandType::botme>();
+	commands["ftp"] = new Command<CommandType::ftp>();
 }
 
 void	CommandHandler::ClearCommands()

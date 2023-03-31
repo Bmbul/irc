@@ -33,8 +33,10 @@ void	CommandResponse::KickMessage(const Client &client, std::string const &chann
 {
     (void) client;
 	Channel &channel = Server::getServer()->getChannel(channelName);
-	std::string kick_reply = " KICK FROM #" + channelName + " BY " + admin;
-    channel.SendChannelReply(kick_reply);
+	const Client &admin_class = ClientManager::getManager()->getClient(admin);
+	std::string message = ":" + admin_class.GetFormattedText() + " KICK " + "#"+channelName + " " + client.getNick() + " : BYE!!!";
+	std::string kick_reply = ":KICK FROM #" + channelName + " BY " + admin;
+    channel.SendChannelReply(message);
 }
 
 void	CommandResponse::WhoMessage(const Client &client, const std::string &channelName) const

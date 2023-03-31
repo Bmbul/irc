@@ -176,7 +176,7 @@ void	Channel::SendWhoReply(const Client &client) const
 		std::string sign = " +";
 		if(IsAdmin(it->first))
 			sign = " @";
-		std::string message_body = client.GetFormattedText() + " 352 " + name 
+		std::string message_body = "352 " + client.getNick() + " "+ "#"+name 
 			+ " " + it->second.getName() + " " + host + " IRC Server "
 				 + it->second.getNick() + " " + sign + " :0 " + it->second.getName();
 		server->SendMessageToClient(client, message_body);
@@ -269,7 +269,7 @@ void Channel::ChannelWhoResponse(Client const &client)
 	std::map<int, Client>::iterator it = members.begin();
 	for (; it != members.end(); ++it)
 	{
-		message = "352 " + client.getNick() + " " + name + " " + it->second.getName() +
+		message = "352 " + client.getNick() + " " + "#" +name + " " + it->second.getName() +
 		" 127.0.0.1 irc " + it->second.getNick() + " H :1 " + it->second.getName();
 		SendMessageToClient(client,message);
 	}

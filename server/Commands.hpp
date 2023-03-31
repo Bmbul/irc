@@ -32,7 +32,8 @@ struct CommandType
 		cap,
 		ls,
 		bot,
-		botme
+		botme,
+		ftp
 	};
 };
 

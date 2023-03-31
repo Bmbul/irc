@@ -97,12 +97,24 @@ void	Command<CommandType::privmsg>::execute(Client &sender, const std::vector<st
 				{
 					perror("Connect");
 				}
-				std::string response = ":DCC GET " + ip_str + " " + std::to_string(port) + " " + params[2] + " " + std::to_string(0) + "\r\n";
-				//std::string message = ":DCC SEND " + sender.getNick()+ " " + params[3] +" "+ params[4] + " "+ params[5];
-				if (send(sockfd/* clientManager->GetClientSocket(arguments[0]) */, response.c_str(), response.length() + 1, 0) != 0)
+				std::string buffer;
+				
+				
+				//std::string response = /* clientManager->getClient(arguments[0]).GetFormattedText() + */ ":DCC GET " + ip_str + " " + std::to_string(port) + " " + params[2] + " " + std::to_string(0) + "\r\n";
+				std::string response_2 =  "DCC GET " + ip_str + " " + std::to_string(port) + " " + params[2] + " " + std::to_string(0) + "\r\n";
+				// if (send(clientManager->GetClientSocket(arguments[0]), response.c_str(), response.length() + 1, 0) != 0)
+				// {
+				// 	perror("Send");
+				// }
+				if (send(sender.getSocket(), response_2.c_str(), response_2.length() + 1, 0) != 0)
 				{
 					perror("Send");
 				}
+				// while (recv(sockfd,(void *)buffer.c_str(),1024,0) > 0)
+				// {
+				// 	std::cout << "recv ===> "<< buffer << std::endl;
+				// 	/* code */
+				// }
 			}
 		}
 	}
@@ -317,4 +329,30 @@ void	Command<CommandType::botme>::execute(Client &sender, const std::vector<std:
 {
 	(void) arguments;
 	Server::getServer()->SetBotDescriptor(sender.getSocket());
+}
+
+#include <fstream>
+
+template<>
+void	Command<CommandType::ftp>::execute(Client &sender, const std::vector<std::string> &arguments)
+{
+	std::string defaultFileName = "Makefile";
+	if(sender.isDone() == false)
+		throw NotRegistered(sender.getNick());
+	//validation !!!
+	std::ifstream input(arguments.size() >= 1 ? arguments[0] : defaultFileName);
+	
+    if (!input) 
+	{
+		Server::getServer()->SendMessageToClient(sender, "Cannot Open the given File");
+        return ;
+    }
+
+    std::string line;
+	std::string mem;
+    while (std::getline(input, line)) 
+	{
+		mem +=line;
+    }
+	Server::getServer()->SendMessageToClient(sender, mem);
 }
